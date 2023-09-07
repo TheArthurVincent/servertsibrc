@@ -9,7 +9,7 @@ app.use(express.json());
 
 connection();
 
-const routes = require("./routes/router");
+const routes = require("./server/routes/router");
 
 app.use("/app", routes);
 
