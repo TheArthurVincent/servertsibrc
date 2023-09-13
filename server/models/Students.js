@@ -2,15 +2,6 @@ const mongoose = require("mongoose");
 
 const { Schema } = mongoose;
 
-const personalClassesSchema = new Schema(
-  {
-    type: { type: String, required: true },
-    date: { type: String, required: true },
-    comments: { type: String, required: false },
-    attachments: { type: Array, required: false },
-  },
-  { timestamps: true }
-);
 const studentSchema = new Schema(
   {
     username: { type: String, required: true },
@@ -22,6 +13,17 @@ const studentSchema = new Schema(
     phoneNumber: { type: String, required: true },
     dateOfBirth: { type: String, required: true },
     permissions: { type: String, required: false, default: "student" },
+  },
+  { timestamps: true }
+);
+
+
+const personalClassesSchema = new Schema(
+  {
+    type: { type: String, required: true },
+    date: { type: String, required: true },
+    comments: { type: String, required: false },
+    attachments: { type: Array, required: false },
   },
   { timestamps: true }
 );
