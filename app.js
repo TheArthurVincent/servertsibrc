@@ -123,6 +123,7 @@ app.post(`${mainroute}/students`, async (req, res) => {
   }
 });
 
+// Rodar aplicação
 app.listen(PORT, function () {
   console.log(`Servidor rodando na porta ${PORT}...`);
 });
