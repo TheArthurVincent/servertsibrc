@@ -7,7 +7,7 @@ const personalClassesSchema = new Schema(
     type: { type: String, required: true },
     date: { type: String, required: true },
     comments: { type: String, required: false },
-    attachments: [String],
+    attachments: { type: Array, required: false },
   },
   { timestamps: true }
 );
@@ -22,18 +22,17 @@ const studentSchema = new Schema(
     phoneNumber: { type: String, required: true },
     dateOfBirth: { type: String, required: true },
     permissions: { type: String, required: false, default: "student" },
-    classes: { type: [personalClassesSchema], required: false },
   },
   { timestamps: true }
 );
 
 const Student_Model = mongoose.model("Student", studentSchema);
-const PersonalClasses_Model = mongoose.model(
+const PersonalClass_Model = mongoose.model(
   "PersonalClasses",
   personalClassesSchema
 );
 
 module.exports = {
   Student_Model,
-  PersonalClasses_Model,
+  PersonalClass_Model,
 };
