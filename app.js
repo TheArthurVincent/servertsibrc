@@ -15,17 +15,6 @@ const mainroute = "/api/v1";
 //   })
 // );
 
-// const routes = require("./server/routes/router");
-// app.use("/app", routes);
-
-// app.get("/", (req, res) => {
-//   res.status(200).json({ message: "oi", app: "oi" });
-// });
-
-// app.post("/", (req, res) => {
-//   res.status(200).json({ message: "post", app: "oi" });
-// });
-
 // Ver todos os alunos
 app.get(`${mainroute}/students`, async (req, res) => {
   try {
