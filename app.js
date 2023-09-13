@@ -123,7 +123,98 @@ app.post(`${mainroute}/students`, async (req, res) => {
   }
 });
 
-// Rodar aplicação
-app.listen(PORT, function () {
-  console.log(`Servidor rodando na porta ${PORT}...`);
+// Editar um aluno
+app.put(`${mainroute}/students`, async (req, res) => {
+  const {
+    username,
+    email,
+    password,
+    name,
+    lastname,
+    doc,
+    phoneNumber,
+    dateOfBirth,
+  } = req.body;
+
+  try {
+    // Verifique se os campos obrigatórios estão presentes
+    if (
+      !username ||
+      !email ||
+      !password ||
+      !name ||
+      !lastname ||
+      !doc ||
+      !phoneNumber ||
+      !dateOfBirth
+    ) {
+      return res.status(400).json({ message: "Campos obrigatórios faltando" });
+    }
+
+    // Verifique se o aluno com o username fornecido existe
+    const existingStudent = await Student_Model.findOne({ username: username });
+
+    if (!existingStudent) {
+      return res.status(404).json({ message: "Aluno não encontrado" });
+    }
+
+    // Atualize os campos do aluno com os valores fornecidos na solicitação
+
+    if (
+      existingStudent.email === email &&
+      existingStudent.password === password &&
+      existingStudent.name === name &&
+      existingStudent.lastname === lastname &&
+      existingStudent.doc === doc &&
+      existingStudent.phoneNumber === phoneNumber &&
+      existingStudent.dateOfBirth === dateOfBirth
+    ) {
+      res.json({
+        message: `Nenhuma edição feita no usuário ${existingStudent.username}`,
+      });
+    } else {
+      existingStudent.email = email;
+      existingStudent.password = password;
+      existingStudent.name = name;
+      existingStudent.lastname = lastname;
+      existingStudent.doc = doc;
+      existingStudent.phoneNumber = phoneNumber;
+      existingStudent.dateOfBirth = dateOfBirth;
+
+      // Salve as atualizações no banco de dados
+      await existingStudent.save();
+
+      res.status(200).json({
+        message: "Aluno editado com sucesso",
+        updatedUser: existingStudent,
+      });
+      console.error(existingStudent);
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Erro ao editar aluno");
+  }
+});
+
+app.delete(`${mainroute}/students`, async (req, res) => {
+  try {
+    const { username } = req.body;
+    const student = await Student_Model.findOne({ username: username });
+
+    if (!student) {
+      return res.status(404).json({ message: "Aluno não encontrado" });
+    } else {
+      await student.deleteOne();
+      res.status(200).json({
+        status: "Aluno excluído com sucesso",
+      });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ erro: "Falha ao excluir aluno!", status: error });
+  }
+});
+
+app.listen(PORT, () => {
+  console.log(`Servidor está ouvindo na porta ${PORT}`);
 });
