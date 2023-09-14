@@ -19,7 +19,6 @@ const blogPosts_getAll = async (req, res) => {
   }
 };
 
-// Postar novo blogpost
 const blogPosts_editOne = async (req, res) => {
   const { title, videoUrl, text } = req.body;
 
