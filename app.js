@@ -3,8 +3,6 @@ const app = express();
 const database = require("./db/conn");
 const PORT = 3501;
 const cors = require("cors");
-const { Student_Model } = require("./server/models/Students");
-const { Blog_Model } = require("./server/models/Posts");
 const {
   students_getAll,
   students_getOne,
