@@ -6,6 +6,7 @@ const classCourseSchema = new Schema(
   {
     title: { type: String, required: true },
     description: { type: String, required: false },
+    videoUrl: { type: String, required: false },
     attachments: { type: Array, required: false },
   },
   { timestamps: true }
@@ -15,15 +16,16 @@ const moduleCourseSchema = new Schema(
   {
     title: { type: String, required: true },
     description: { type: String, required: false },
-    classes: { type: [classCourseSchema], required: true },
+    classes: { type: [classCourseSchema], required: false },
   },
   { timestamps: true }
 );
 const universalCourseSchema = new Schema(
   {
     title: { type: String, required: true },
+    img: { type: String, required: false },
     description: { type: String, required: false },
-    modules: { type: [moduleCourseSchema], required: true },
+    modules: { type: [moduleCourseSchema], required: false },
   },
   { timestamps: true }
 );
