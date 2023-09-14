@@ -120,7 +120,6 @@ const student_editOne = async (req, res) => {
   } = req.body;
 
   try {
-    // Verifique se os campos obrigatórios estão presentes
     if (
       !username ||
       !email ||
@@ -134,14 +133,11 @@ const student_editOne = async (req, res) => {
       return res.status(400).json({ message: "Campos obrigatórios faltando" });
     }
 
-    // Verifique se o aluno com o username fornecido existe
     const existingStudent = await Student_Model.findOne({ username: username });
 
     if (!existingStudent) {
       return res.status(404).json({ message: "Aluno não encontrado" });
     }
-
-    // Atualize os campos do aluno com os valores fornecidos na solicitação
 
     if (
       existingStudent.email === email &&
@@ -164,7 +160,6 @@ const student_editOne = async (req, res) => {
       existingStudent.phoneNumber = phoneNumber;
       existingStudent.dateOfBirth = dateOfBirth;
 
-      // Salve as atualizações no banco de dados
       await existingStudent.save();
 
       res.status(200).json({
