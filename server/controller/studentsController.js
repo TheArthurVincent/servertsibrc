@@ -17,8 +17,10 @@ const students_getAll = async (req, res) => {
         phoneNumber: student.phoneNumber,
       };
     });
+
     res.status(200).json({
       status: "Alunos encontrados",
+      students: students,
       numberOfStudents: students.length,
       listOfStudents: formattedStudentsData,
     });

@@ -13,6 +13,9 @@ const {
 const {
   blogPosts_getAll,
   blogPosts_editOne,
+  blogPosts_getSpecific,
+  blogPosts_postOne,
+  blogPosts_deleteOne,
 } = require("./server/controller/blogPostsController");
 database();
 app.use(express.json());
@@ -34,10 +37,10 @@ app.delete(`${mainroute}/students`, student_deleteOne);
 
 // **BLOG POSTS**
 app.get(`${mainroute}/blogposts`, blogPosts_getAll);
-app.get(`${mainroute}/blogposts/:id`, async (req, res) => {});
-app.post(`${mainroute}/blogposts`, blogPosts_editOne);
-app.put(`${mainroute}/blogposts`, async (req, res) => {});
-app.delete(`${mainroute}/blogposts`, async (req, res) => {});
+app.get(`${mainroute}/filteredblogposts/`, blogPosts_getSpecific);
+app.post(`${mainroute}/blogposts`, blogPosts_postOne);
+app.put(`${mainroute}/blogposts/:id`, blogPosts_editOne);
+app.delete(`${mainroute}/blogposts`, blogPosts_deleteOne);
 
 // ** App rodando **
 app.listen(PORT, () => {
