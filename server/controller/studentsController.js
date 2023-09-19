@@ -1,4 +1,6 @@
 const { Student_Model } = require("../models/Students");
+const jwt = require("jsonwebtoken");
+const bcrypt = require("bcrypt");
 
 const students_getAll = async (req, res) => {
   try {
@@ -6,22 +8,33 @@ const students_getAll = async (req, res) => {
     const formattedStudentsData = students.map((student, index) => {
       return {
         position: index,
-        sub: student._id,
+        id: student._id,
         username: student.username,
         email: student.email,
         name: student.name,
         lastname: student.lastname,
+        password: student.password,
+        dateOfBirth: student.dateOfBirth,
         fullname: student.name + " " + student.lastname,
         permissions: student.permissions,
         doc: student.doc,
         phoneNumber: student.phoneNumber,
       };
     });
+    formattedStudentsData.sort((a, b) => {
+      const nameA = a.name.toLowerCase();
+      const nameB = b.name.toLowerCase();
+      if (nameA < nameB) {
+        return -1;
+      }
+      if (nameA > nameB) {
+        return 1;
+      }
+      return 0; // Nomes são iguais
+    });
 
     res.status(200).json({
-      status: "Alunos encontrados",
-      students: students,
-      numberOfStudents: students.length,
+      status: `Sucesso! Foram encontrados ${students.length - 1} alunos.`,
       listOfStudents: formattedStudentsData,
     });
     console.log(students);
@@ -41,8 +54,8 @@ const students_getOne = async (req, res) => {
     }
 
     const formattedStudentData = {
+      id: student._id,
       username: student.username,
-      sub: student._id,
       email: student.email,
       name: student.name,
       lastname: student.lastname,
@@ -74,6 +87,8 @@ const student_postOne = async (req, res) => {
     dateOfBirth,
   } = req.body;
 
+  const hashedPassword = bcrypt.hashSync(password, 10);
+
   try {
     const existingStudent = await Student_Model.findOne({
       $or: [{ email: email }, { doc: doc }, { username: username }],
@@ -90,6 +105,7 @@ const student_postOne = async (req, res) => {
       email,
       password,
       name,
+      password: hashedPassword,
       lastname,
       doc,
       phoneNumber,
@@ -109,6 +125,39 @@ const student_postOne = async (req, res) => {
   }
 };
 
+const student_login = async (req, res) => {
+  const { username, email, password } = req.body;
+
+  if (!password || (!email && !username))
+    return res.status(400).json("Dados faltantes");
+
+  try {
+    const student = await Student_Model.findOne({
+      $or: [{ username: username }, { email: email }],
+    });
+
+    if (!student) throw new Error("Usuário não encontrado");
+
+    if (!(await bcrypt.compare(password, student.password_hash)))
+      throw new Error("Senha incorreta");
+
+    const token = jwt.sign({ id: student._id }, config.secretToken, {
+      expiresIn: "15d",
+    });
+    const data = {
+      name: student.name,
+      username: student.username,
+      id: student._id,
+      token: token,
+    };
+
+    console.log(data);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Ocorreu um erro ao fazer login" });
+  }
+};
+
 const student_editOne = async (req, res) => {
   const {
     username,
@@ -116,59 +165,53 @@ const student_editOne = async (req, res) => {
     password,
     name,
     lastname,
-    doc,
+    permissions,
     phoneNumber,
-    dateOfBirth,
   } = req.body;
 
   try {
-    if (
+    const { id } = req.params;
+    const studentToEdit = await Student_Model.findById(id);
+
+    if (!studentToEdit) {
+      return res.status(404).json({ message: "Aluno não encontrado" });
+    } else if (
       !username ||
       !email ||
       !password ||
       !name ||
       !lastname ||
-      !doc ||
-      !phoneNumber ||
-      !dateOfBirth
+      !permissions ||
+      !phoneNumber
     ) {
       return res.status(400).json({ message: "Campos obrigatórios faltando" });
-    }
-
-    const existingStudent = await Student_Model.findOne({ username: username });
-
-    if (!existingStudent) {
-      return res.status(404).json({ message: "Aluno não encontrado" });
-    }
-
-    if (
-      existingStudent.email === email &&
-      existingStudent.password === password &&
-      existingStudent.name === name &&
-      existingStudent.lastname === lastname &&
-      existingStudent.doc === doc &&
-      existingStudent.phoneNumber === phoneNumber &&
-      existingStudent.dateOfBirth === dateOfBirth
+    } else if (
+      studentToEdit.name === name &&
+      studentToEdit.lastname === lastname &&
+      studentToEdit.email === email &&
+      studentToEdit.password === password &&
+      studentToEdit.phoneNumber === phoneNumber &&
+      studentToEdit.permissions === permissions
     ) {
       res.json({
-        message: `Nenhuma edição feita no usuário ${existingStudent.username}`,
+        message: `Nenhuma edição feita no usuário ${studentToEdit.username}`,
       });
     } else {
-      existingStudent.email = email;
-      existingStudent.password = password;
-      existingStudent.name = name;
-      existingStudent.lastname = lastname;
-      existingStudent.doc = doc;
-      existingStudent.phoneNumber = phoneNumber;
-      existingStudent.dateOfBirth = dateOfBirth;
+      studentToEdit.name = name;
+      studentToEdit.lastname = lastname;
+      studentToEdit.username = username;
+      studentToEdit.email = email;
+      studentToEdit.password = password;
+      studentToEdit.permissions = permissions;
+      studentToEdit.phoneNumber = phoneNumber;
 
-      await existingStudent.save();
+      await studentToEdit.save();
 
       res.status(200).json({
         message: "Aluno editado com sucesso",
-        updatedUser: existingStudent,
+        updatedUser: studentToEdit,
       });
-      console.error(existingStudent);
+      console.error(studentToEdit);
     }
   } catch (error) {
     console.error(error);
@@ -176,10 +219,11 @@ const student_editOne = async (req, res) => {
   }
 };
 
+
 const student_deleteOne = async (req, res) => {
   try {
-    const { username } = req.body;
-    const student = await Student_Model.findOne({ username: username });
+    const { id } = req.params;
+    const student = await Student_Model.findById(id);
 
     if (!student) {
       return res.status(404).json({ message: "Aluno não encontrado" });
@@ -194,10 +238,12 @@ const student_deleteOne = async (req, res) => {
     res.status(500).json({ erro: "Falha ao excluir aluno!", status: error });
   }
 };
+
 module.exports = {
   students_getAll,
   students_getOne,
   student_postOne,
   student_editOne,
   student_deleteOne,
+  student_login,
 };

@@ -5,17 +5,19 @@ const blogPosts_getAll = async (req, res) => {
     const blogPosts = await Blog_Model.find();
 
     if (blogPosts.length === 0) {
-      res.status(200).json({ message: "Nenhum post" });
+      res.status(200).json({
+        message: "Nenhum post",
+      });
     } else {
       res.status(200).json({
         status: "Blog Posts encontrados",
         numberOfPosts: blogPosts.length,
-        listOfPosts: blogPosts,
+        listOfPosts: blogPosts.reverse(),
       });
     }
   } catch (error) {
     console.error(error);
-    res.status(500).send("Nenhum post");
+    res.status(500).json({ error, listOfPosts: "Nenhum post encontrado" });
   }
 };
 
