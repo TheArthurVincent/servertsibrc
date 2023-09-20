@@ -7,8 +7,10 @@ const {
   students_getAll,
   students_getOne,
   student_postOne,
-  student_editOne,
+  student_editGeneralData,
   student_deleteOne,
+  student_editPassword,
+  student_editPermissions,
   student_login,
 } = require("./server/controller/studentsController");
 const {
@@ -30,13 +32,17 @@ app.use(
 );
 
 // ** STUDENTS **
-app.get(`${mainroute}/students`, students_getAll);
-app.get(`${mainroute}/student/:id`, students_getOne);
 app.post(`${mainroute}/students`, student_postOne);
-app.put(`${mainroute}/students/:id`, student_editOne);
-app.delete(`${mainroute}/students/:id`, student_deleteOne);
 
 app.post(`${mainroute}/students/:id`, student_login);
+app.get(`${mainroute}/students`, students_getAll);
+app.get(`${mainroute}/student/:id`, students_getOne);
+
+app.put(`${mainroute}/students/:id`, student_editGeneralData);
+app.put(`${mainroute}/studentpassword/:id`, student_editPassword);
+app.put(`${mainroute}/studentpermissions/:id`, student_editPermissions);
+
+app.delete(`${mainroute}/students/:id`, student_deleteOne);
 
 // **BLOG POSTS**
 app.get(`${mainroute}/blogposts`, blogPosts_getAll);
