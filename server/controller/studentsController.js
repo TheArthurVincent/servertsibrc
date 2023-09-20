@@ -161,11 +161,9 @@ const student_login = async (req, res) => {
 const student_editOne = async (req, res) => {
   const { username, email, name, lastname, permissions, phoneNumber } =
     req.body;
-
   try {
     const { id } = req.params;
     const studentToEdit = await Student_Model.findById(id);
-
     if (!studentToEdit) {
       return res.status(404).json({ message: "Aluno não encontrado" });
     } else if (
@@ -210,59 +208,34 @@ const student_editOne = async (req, res) => {
 };
 
 const student_editPassword = async (req, res) => {
-  const {
-    username,
-    email,
-    password,
-    name,
-    lastname,
-    permissions,
-    phoneNumber,
-  } = req.body;
+  const { password } = req.body;
+  const hashedPassword = bcrypt.hashSync(password, 10);
 
   try {
     const { id } = req.params;
-    const studentToEdit = await Student_Model.findById(id);
+    const studentWhosePasswordYouWantToChange = await Student_Model.findById(
+      id
+    );
 
-    if (!studentToEdit) {
+    if (!studentWhosePasswordYouWantToChange) {
       return res.status(404).json({ message: "Aluno não encontrado" });
+    } else if (!hashedPassword) {
+      return res.status(400).json({ message: "Escolha uma nova senha" });
     } else if (
-      !username ||
-      !email ||
-      !password ||
-      !name ||
-      !lastname ||
-      !permissions ||
-      !phoneNumber
-    ) {
-      return res.status(400).json({ message: "Campos obrigatórios faltando" });
-    } else if (
-      studentToEdit.name === name &&
-      studentToEdit.lastname === lastname &&
-      studentToEdit.email === email &&
-      studentToEdit.password === password &&
-      studentToEdit.phoneNumber === phoneNumber &&
-      studentToEdit.permissions === permissions
+      studentWhosePasswordYouWantToChange.password === hashedPassword
     ) {
       res.json({
-        message: `Nenhuma edição feita no usuário ${studentToEdit.username}`,
+        message: `Escolha uma senha diferente para ${studentWhosePasswordYouWantToChange.username}`,
       });
     } else {
-      studentToEdit.name = name;
-      studentToEdit.lastname = lastname;
-      studentToEdit.username = username;
-      studentToEdit.email = email;
-      studentToEdit.password = password;
-      studentToEdit.permissions = permissions;
-      studentToEdit.phoneNumber = phoneNumber;
-
-      await studentToEdit.save();
+      studentWhosePasswordYouWantToChange.password = hashedPassword;
+      await studentWhosePasswordYouWantToChange.save();
 
       res.status(200).json({
-        message: "Aluno editado com sucesso",
-        updatedUser: studentToEdit,
+        message: "Senha edtada com sucesso",
+        updatedUser: studentWhosePasswordYouWantToChange,
       });
-      console.error(studentToEdit);
+      console.error(studentWhosePasswordYouWantToChange);
     }
   } catch (error) {
     console.error(error);
