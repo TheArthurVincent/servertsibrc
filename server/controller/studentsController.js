@@ -158,8 +158,8 @@ const student_login = async (req, res) => {
   }
 };
 
-const student_editOne = async (req, res) => {
-  const { username, email, name, lastname, permissions, phoneNumber } =
+const student_editGeneralData = async (req, res) => {
+  const { username, email, name, lastname, phoneNumber } =
     req.body;
   try {
     const { id } = req.params;
@@ -171,16 +171,15 @@ const student_editOne = async (req, res) => {
       !email ||
       !name ||
       !lastname ||
-      !permissions ||
       !phoneNumber
     ) {
       return res.status(400).json({ message: "Campos obrigatórios faltando" });
     } else if (
       studentToEdit.name === name &&
       studentToEdit.lastname === lastname &&
+      studentToEdit.username === username &&
       studentToEdit.email === email &&
-      studentToEdit.phoneNumber === phoneNumber &&
-      studentToEdit.permissions === permissions
+      studentToEdit.phoneNumber === phoneNumber
     ) {
       res.json({
         message: `Nenhuma edição feita no usuário ${studentToEdit.username}`,
@@ -190,7 +189,6 @@ const student_editOne = async (req, res) => {
       studentToEdit.lastname = lastname;
       studentToEdit.username = username;
       studentToEdit.email = email;
-      studentToEdit.permissions = permissions;
       studentToEdit.phoneNumber = phoneNumber;
 
       await studentToEdit.save();
@@ -205,7 +203,7 @@ const student_editOne = async (req, res) => {
     console.error(error);
     res.status(500).send("Erro ao editar aluno");
   }
-};
+};  
 
 const student_editPassword = async (req, res) => {
   const { password } = req.body;
@@ -243,6 +241,36 @@ const student_editPassword = async (req, res) => {
   }
 };
 
+const student_editPermissions = async (req, res) => {
+  const { permissions } = req.body;
+  try {
+    const { id } = req.params;
+    const studentWhosePermissionsToEdit = await Student_Model.findById(id);
+    if (!studentWhosePermissionsToEdit) {
+      return res.status(404).json({ message: "Aluno não encontrado" });
+    } else if (!permissions) {
+      return res.status(400).json({ message: "Campos obrigatórios faltando" });
+    } else if (studentWhosePermissionsToEdit.permissions === permissions) {
+      res.json({
+        message: `Nenhuma edição de permissões feita no usuário ${studentWhosePermissionsToEdit.username}`,
+      });
+    } else {
+      studentWhosePermissionsToEdit.permissions = permissions;
+
+      await studentWhosePermissionsToEdit.save();
+
+      res.status(200).json({
+        message: "Permissões do aluno editadas com sucesso",
+        updatedUser: studentWhosePermissionsToEdit,
+      });
+      console.error(studentWhosePermissionsToEdit);
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Erro ao editar permissões do aluno");
+  }
+};
+
 const student_deleteOne = async (req, res) => {
   try {
     const { id } = req.params;
@@ -263,10 +291,16 @@ const student_deleteOne = async (req, res) => {
 };
 
 module.exports = {
+  //C
+  student_postOne,
+  //R
   students_getAll,
   students_getOne,
-  student_postOne,
-  student_editOne,
-  student_deleteOne,
   student_login,
+  //U
+  student_editGeneralData,
+  student_editPassword,
+  student_editPermissions,
+  //D
+  student_deleteOne,
 };
