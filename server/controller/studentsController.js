@@ -159,6 +159,57 @@ const student_login = async (req, res) => {
 };
 
 const student_editOne = async (req, res) => {
+  const { username, email, name, lastname, permissions, phoneNumber } =
+    req.body;
+
+  try {
+    const { id } = req.params;
+    const studentToEdit = await Student_Model.findById(id);
+
+    if (!studentToEdit) {
+      return res.status(404).json({ message: "Aluno não encontrado" });
+    } else if (
+      !username ||
+      !email ||
+      !name ||
+      !lastname ||
+      !permissions ||
+      !phoneNumber
+    ) {
+      return res.status(400).json({ message: "Campos obrigatórios faltando" });
+    } else if (
+      studentToEdit.name === name &&
+      studentToEdit.lastname === lastname &&
+      studentToEdit.email === email &&
+      studentToEdit.phoneNumber === phoneNumber &&
+      studentToEdit.permissions === permissions
+    ) {
+      res.json({
+        message: `Nenhuma edição feita no usuário ${studentToEdit.username}`,
+      });
+    } else {
+      studentToEdit.name = name;
+      studentToEdit.lastname = lastname;
+      studentToEdit.username = username;
+      studentToEdit.email = email;
+      studentToEdit.permissions = permissions;
+      studentToEdit.phoneNumber = phoneNumber;
+
+      await studentToEdit.save();
+
+      res.status(200).json({
+        message: "Aluno editado com sucesso",
+        updatedUser: studentToEdit,
+      });
+      console.error(studentToEdit);
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Erro ao editar aluno");
+  }
+};
+
+const student_editPassword = async (req, res) => {
   const {
     username,
     email,
@@ -218,7 +269,6 @@ const student_editOne = async (req, res) => {
     res.status(500).send("Erro ao editar aluno");
   }
 };
-
 
 const student_deleteOne = async (req, res) => {
   try {
