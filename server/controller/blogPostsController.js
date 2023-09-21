@@ -37,7 +37,6 @@ const blogPosts_getOne = async (req, res) => {
       status: "Post encontrado",
       formattedBlogPost,
     });
-    console.log(formattedBlogPost);
   } catch (error) {
     console.error(error);
     res.status(500).send("Blog post não encontrado");
@@ -105,7 +104,6 @@ const blogPosts_editOne = async (req, res) => {
         message: "Post editado com sucesso",
         updatedUser: postToEdit,
       });
-      console.log(postToEdit);
     }
   } catch (error) {
     console.error(error);
@@ -126,7 +124,6 @@ const blogPosts_deleteOne = async (req, res) => {
       });
     }
   } catch (error) {
-    console.log(error);
     res.status(500).json({ erro: "Falha ao excluir post!", status: error });
   }
 };

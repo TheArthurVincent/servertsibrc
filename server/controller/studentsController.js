@@ -37,7 +37,6 @@ const students_getAll = async (req, res) => {
       status: `Sucesso! Foram encontrados ${students.length - 1} alunos.`,
       listOfStudents: formattedStudentsData,
     });
-    console.log(students);
   } catch (error) {
     console.error(error);
     res.status(500).send("Nenhum aluno");
@@ -67,7 +66,6 @@ const students_getOne = async (req, res) => {
       status: "Aluno encontrado",
       formattedStudentData,
     });
-    console.log(formattedStudentData);
   } catch (error) {
     console.error(error);
     res.status(500).json({ erro: "Nenhum aluno encontrado!", status: error });
@@ -149,8 +147,6 @@ const student_login = async (req, res) => {
       id: student._id,
       token: token,
     };
-
-    console.log(data);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Ocorreu um erro ao fazer login" });
@@ -196,7 +192,6 @@ const student_editGeneralData = async (req, res) => {
         message: "Aluno editado com sucesso",
         updatedUser: studentToEdit,
       });
-      console.log(studentToEdit);
     }
   } catch (error) {
     console.error(error);
