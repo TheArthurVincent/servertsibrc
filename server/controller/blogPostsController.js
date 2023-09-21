@@ -21,35 +21,26 @@ const blogPosts_getAll = async (req, res) => {
   }
 };
 
-const blogPosts_getSpecific = async (req, res) => {
-  const { title } = req.body;
-  const blogPosts = await Blog_Model.find({
-    title: { $regex: title, $options: "i" },
-  });
-
-  if (!blogPosts) {
-    res.status(500).send("Nenhum post com este nome");
-    return;
-  }
+const blogPosts_getOne = async (req, res) => {
+  const blogPost = await Blog_Model.findById(req.params.id);
   try {
-    const formattedBlogPosts = blogPosts.map((blogPost, index) => {
-      return {
-        position: index,
-        title: blogPost.title,
-        videoUrl: blogPost.videoUrl,
-        text: blogPost.text,
-        createdAt: blogPost.createdAt,
-      };
-    });
+    if (!blogPost) {
+      return res.status(404).json({ message: "Post não encontrado" });
+    }
+    const formattedBlogPost = {
+      id: blogPost._id,
+      title: blogPost.title,
+      videoUrl: blogPost.videoUrl,
+      text: blogPost.text,
+    };
     res.status(200).json({
-      status: "Posts encontrados",
-      posts: blogPosts,
-      numberOfPosts: formattedBlogPosts.length,
-      listOfPosts: formattedBlogPosts,
+      status: "Post encontrado",
+      formattedBlogPost,
     });
+    console.log(formattedBlogPost);
   } catch (error) {
     console.error(error);
-    res.status(500).send("Nenhum aluno");
+    res.status(500).send("Blog post não encontrado");
   }
 };
 
@@ -89,37 +80,36 @@ const blogPosts_editOne = async (req, res) => {
   const { title, videoUrl, text } = req.body;
 
   try {
-    if (!title || !text) {
-      return res.status(400).json({ message: "Informações faltantes" });
+    const { id } = req.params;
+    const postToEdit = await Blog_Model.findById(id);
+    if (!postToEdit) {
+      return res.status(404).json({ message: "Post não encontrado" });
+    } else if (!title || !text) {
+      return res.status(400).json({ message: "Campos obrigatórios faltando" });
+    } else if (
+      postToEdit.title === title &&
+      postToEdit.videoUrl === videoUrl &&
+      postToEdit.text === text
+    ) {
+      res.json({
+        message: `Nenhuma edição feita no post ${postToEdit.title}`,
+      });
     } else {
-      const existingBlogPost = await Blog_Model.findOne({ title: title });
+      postToEdit.title = title;
+      postToEdit.videoUrl = videoUrl;
+      postToEdit.text = text;
 
-      if (!existingBlogPost) {
-        return res.status(400).json({ message: "Post não existe" });
-      }
+      await postToEdit.save();
 
-      if (
-        existingBlogPost.title === title &&
-        existingBlogPost.videoUrl === videoUrl &&
-        existingBlogPost.text === text
-      ) {
-        res.json({
-          message: `Nenhuma edição feita no post ${existingBlogPost.title}`,
-        });
-      } else {
-        existingBlogPost.title = title;
-        existingBlogPost.videoUrl = videoUrl;
-        existingBlogPost.text = text;
-        await existingBlogPost.save();
-        res.status(201).json({
-          message: "Post editado com sucesso!",
-          updatedBlogPost: existingBlogPost,
-        });
-      }
+      res.status(200).json({
+        message: "Post editado com sucesso",
+        updatedUser: postToEdit,
+      });
+      console.log(postToEdit);
     }
   } catch (error) {
     console.error(error);
-    res.status(500).send("Blog post não editado");
+    res.status(500).json({ message: "Blog post não editado" });
   }
 };
 
@@ -144,7 +134,7 @@ const blogPosts_deleteOne = async (req, res) => {
 module.exports = {
   blogPosts_getAll,
   blogPosts_editOne,
-  blogPosts_getSpecific,
+  blogPosts_getOne,
   blogPosts_postOne,
   blogPosts_deleteOne,
 };

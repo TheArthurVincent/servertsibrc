@@ -47,7 +47,6 @@ const students_getAll = async (req, res) => {
 const students_getOne = async (req, res) => {
   try {
     const student = await Student_Model.findById(req.params.id);
-    console.log(req.body);
 
     if (!student) {
       return res.status(404).json({ message: "Aluno não encontrado" });
@@ -197,7 +196,7 @@ const student_editGeneralData = async (req, res) => {
         message: "Aluno editado com sucesso",
         updatedUser: studentToEdit,
       });
-      console.error(studentToEdit);
+      console.log(studentToEdit);
     }
   } catch (error) {
     console.error(error);

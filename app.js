@@ -16,7 +16,7 @@ const {
 const {
   blogPosts_getAll,
   blogPosts_editOne,
-  blogPosts_getSpecific,
+  blogPosts_getOne,
   blogPosts_postOne,
   blogPosts_deleteOne,
 } = require("./server/controller/blogPostsController");
@@ -46,7 +46,7 @@ app.delete(`${mainroute}/students/:id`, student_deleteOne);
 
 // **BLOG POSTS**
 app.get(`${mainroute}/blogposts`, blogPosts_getAll);
-app.get(`${mainroute}/filteredblogposts/`, blogPosts_getSpecific);
+app.get(`${mainroute}/blogpost/:id`, blogPosts_getOne);
 app.post(`${mainroute}/blogposts`, blogPosts_postOne);
 app.put(`${mainroute}/blogposts/:id`, blogPosts_editOne);
 app.delete(`${mainroute}/blogposts/`, blogPosts_deleteOne);
