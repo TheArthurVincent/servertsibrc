@@ -112,9 +112,9 @@ const blogPosts_editOne = async (req, res) => {
 };
 
 const blogPosts_deleteOne = async (req, res) => {
+  const blogPost = await Blog_Model.findById(req.params.id);
+
   try {
-    const { title } = req.body;
-    const blogPost = await Blog_Model.findOne({ title: title });
     if (!blogPost) {
       return res.status(404).json({ message: "Post não existe" });
     } else {

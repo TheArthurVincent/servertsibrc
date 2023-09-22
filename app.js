@@ -49,7 +49,7 @@ app.get(`${mainroute}/blogposts`, blogPosts_getAll);
 app.get(`${mainroute}/blogpost/:id`, blogPosts_getOne);
 app.post(`${mainroute}/blogposts`, blogPosts_postOne);
 app.put(`${mainroute}/blogposts/:id`, blogPosts_editOne);
-app.delete(`${mainroute}/blogposts/`, blogPosts_deleteOne);
+app.delete(`${mainroute}/blogposts/:id`, blogPosts_deleteOne);
 
 // ** App rodando **
 app.listen(PORT, () => {
