@@ -1,12 +1,19 @@
 const mongoose = require("mongoose");
+const validator = require("validator");
 
 const { Schema } = mongoose;
 
 const studentSchema = new Schema(
   {
-    username: { type: String, required: true },
-    password: { type: String, required: true },
-    email: { type: String, required: true },
+    username: { type: String, required: true, unique: true },
+    password: { type: String, required: true, minlength: 8 },
+    email: {
+      type: String,
+      required: true,
+      unique: true,
+      lowercase: true,
+      validade: [validator.isEmail, "Escolha um e-mail válido"],
+    },
     name: { type: String, required: true },
     lastname: { type: String, required: true },
     doc: { type: String, required: true },
@@ -16,7 +23,6 @@ const studentSchema = new Schema(
   },
   { timestamps: true }
 );
-
 
 const personalClassesSchema = new Schema(
   {

@@ -7,11 +7,13 @@ const {
   students_getAll,
   students_getOne,
   student_postOne,
-  student_editGeneralData,
   student_deleteOne,
+  student_editGeneralData,
   student_editPassword,
   student_editPermissions,
   student_login,
+
+  logout,
 } = require("./server/controller/studentsController");
 const {
   blogPosts_getAll,
@@ -20,6 +22,8 @@ const {
   blogPosts_postOne,
   blogPosts_deleteOne,
 } = require("./server/controller/blogPostsController");
+
+const { signup } = require("./server/controller/authController");
 database();
 app.use(express.json());
 
@@ -31,10 +35,14 @@ app.use(
   })
 );
 
+// Auth
+app.post(`${mainroute}/signup`, student_postOne);
+
 // ** STUDENTS **
 app.post(`${mainroute}/students`, student_postOne);
 
-app.post(`${mainroute}/students/:id`, student_login);
+app.post(`${mainroute}/studentlogin/`, student_login);
+app.post(`${mainroute}/logout/`, logout);
 app.get(`${mainroute}/students`, students_getAll);
 app.get(`${mainroute}/student/:id`, students_getOne);
 

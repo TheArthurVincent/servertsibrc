@@ -1,6 +1,7 @@
 const { Student_Model } = require("../models/Students");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
+const { Black_List } = require("../models/BlackList");
 
 const students_getAll = async (req, res) => {
   try {
@@ -100,7 +101,6 @@ const student_postOne = async (req, res) => {
     const newStudent = new Student_Model({
       username,
       email,
-      password,
       name,
       password: hashedPassword,
       lastname,
@@ -135,10 +135,10 @@ const student_login = async (req, res) => {
 
     if (!student) throw new Error("Usuário não encontrado");
 
-    if (!(await bcrypt.compare(password, student.password_hash)))
+    if (!(await bcrypt.compare(password, student.password)))
       throw new Error("Senha incorreta");
 
-    const token = jwt.sign({ id: student._id }, config.secretToken, {
+    const token = jwt.sign({ id: student._id }, "process.env.SECRET", {
       expiresIn: "15d",
     });
     const data = {
@@ -147,27 +147,60 @@ const student_login = async (req, res) => {
       id: student._id,
       token: token,
     };
+
+    res.status(200).json({ token, data });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Ocorreu um erro ao fazer login" });
   }
 };
 
+async function auth_loggedIn(req, res, next) {
+  const header = req.headers["authorization"];
+  const token = header && header.split(" ")[1];
+  if (!token) {
+    return res.status(401).json({ message: "Acesso negado!" });
+  }
+
+  const blacklistedToken = await Black_List.findOne({ token });
+
+  if (blacklistedToken) {
+    return res.status(401).json({ message: "Token na lista negra" });
+  }
+
+  try {
+    jwt.verify(token, "process.env.SECRET");
+    next();
+  } catch (error) {
+    res.status(400).json({ error: "Acesso negado" });
+  }
+}
+
+async function logout(req, res) {
+  const header = req.headers["authorization"];
+  const token = header && header.split(" ")[1];
+  if (!token) {
+    return res.status(401).json({ message: "Token não fornecido" });
+  }
+
+  try {
+    // Crie um documento Black_List com o token inválido
+    await Black_List.create({ token });
+    res.status(200).json({ message: "Logout realizado com sucesso" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Erro ao adicionar o token à lista negra" });
+  }
+}
+
 const student_editGeneralData = async (req, res) => {
-  const { username, email, name, lastname, phoneNumber } =
-    req.body;
+  const { username, email, name, lastname, phoneNumber } = req.body;
   try {
     const { id } = req.params;
     const studentToEdit = await Student_Model.findById(id);
     if (!studentToEdit) {
       return res.status(404).json({ message: "Aluno não encontrado" });
-    } else if (
-      !username ||
-      !email ||
-      !name ||
-      !lastname ||
-      !phoneNumber
-    ) {
+    } else if (!username || !email || !name || !lastname || !phoneNumber) {
       return res.status(400).json({ message: "Campos obrigatórios faltando" });
     } else if (
       studentToEdit.name === name &&
@@ -187,6 +220,7 @@ const student_editGeneralData = async (req, res) => {
       studentToEdit.phoneNumber = phoneNumber;
 
       await studentToEdit.save();
+      console.log(studentToEdit);
 
       res.status(200).json({
         message: "Aluno editado com sucesso",
@@ -197,7 +231,7 @@ const student_editGeneralData = async (req, res) => {
     console.error(error);
     res.status(500).send("Erro ao editar aluno");
   }
-};  
+};
 
 const student_editPassword = async (req, res) => {
   const { password } = req.body;
@@ -287,6 +321,8 @@ const student_deleteOne = async (req, res) => {
 module.exports = {
   //C
   student_postOne,
+  auth_loggedIn,
+  logout,
   //R
   students_getAll,
   students_getOne,
