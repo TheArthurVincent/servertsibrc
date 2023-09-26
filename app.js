@@ -12,8 +12,9 @@ const {
   student_editPassword,
   student_editPermissions,
   student_login,
-
+  signup,
   logout,
+  loggedIn,
 } = require("./server/controller/studentsController");
 const {
   blogPosts_getAll,
@@ -23,7 +24,6 @@ const {
   blogPosts_deleteOne,
 } = require("./server/controller/blogPostsController");
 
-const { signup } = require("./server/controller/authController");
 database();
 app.use(express.json());
 
@@ -36,14 +36,13 @@ app.use(
 );
 
 // Auth
-app.post(`${mainroute}/signup`, student_postOne);
+app.post(`${mainroute}/signup`, signup);
 
 // ** STUDENTS **
 app.post(`${mainroute}/students`, student_postOne);
 
 app.post(`${mainroute}/studentlogin/`, student_login);
-app.post(`${mainroute}/logout/`, logout);
-app.get(`${mainroute}/students`, students_getAll);
+app.get(`${mainroute}/students`, loggedIn, students_getAll);
 app.get(`${mainroute}/student/:id`, students_getOne);
 
 app.put(`${mainroute}/students/:id`, student_editGeneralData);

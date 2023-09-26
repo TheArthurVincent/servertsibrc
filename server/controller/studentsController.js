@@ -2,6 +2,7 @@ const { Student_Model } = require("../models/Students");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const { Black_List } = require("../models/BlackList");
+const { secretToken } = require("../../config");
 
 const students_getAll = async (req, res) => {
   try {
@@ -122,75 +123,106 @@ const student_postOne = async (req, res) => {
   }
 };
 
-const student_login = async (req, res) => {
-  const { username, email, password } = req.body;
+const signup = async (req, res) => {
+  const {
+    username,
+    email,
+    password,
+    name,
+    lastname,
+    doc,
+    phoneNumber,
+    dateOfBirth,
+  } = req.body;
 
-  if (!password || (!email && !username))
-    return res.status(400).json("Dados faltantes");
+  const hashedPassword = bcrypt.hashSync(password, 10);
 
   try {
-    const student = await Student_Model.findOne({
-      $or: [{ username: username }, { email: email }],
+    const existingStudent = await Student_Model.findOne({
+      $or: [{ email: email }, { doc: doc }, { username: username }],
     });
+
+    if (existingStudent) {
+      return res
+        .status(400)
+        .json({ message: "Email, doc ou username já estão em uso" });
+    }
+
+    const newStudent = new Student_Model({
+      username,
+      email,
+      password: hashedPassword,
+      name,
+      lastname,
+      doc,
+      phoneNumber,
+      dateOfBirth,
+    });
+
+    const token = jwt.sign({ id: newStudent._id }, "secretToken()", {
+      expiresIn: "15d",
+    });
+
+    await newStudent.save();
+
+    res.status(201).json({
+      status: "Aluno registrado, logando no sistema",
+      data: { newStudent },
+      token,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Aluno não cadastrado", error: error });
+  }
+};
+
+const student_login = async (req, res) => {
+  const { email, password } = req.body;
+
+  if (!password) {
+    return res.status(400).json("Digite sua senha");
+  } else if (!email) {
+    return res.status(400).json("Digite seu e-mail");
+  }
+  try {
+    const student = await Student_Model.findOne({ email: email });
 
     if (!student) throw new Error("Usuário não encontrado");
 
     if (!(await bcrypt.compare(password, student.password)))
       throw new Error("Senha incorreta");
 
-    const token = jwt.sign({ id: student._id }, "process.env.SECRET", {
+    const token = jwt.sign({ id: student._id }, "secretToken()", {
       expiresIn: "15d",
     });
-    const data = {
-      name: student.name,
-      username: student.username,
-      id: student._id,
-      token: token,
-    };
 
-    res.status(200).json({ token, data });
+    res.status(200).json({ token });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Ocorreu um erro ao fazer login" });
   }
 };
 
-async function auth_loggedIn(req, res, next) {
-  const header = req.headers["authorization"];
-  const token = header && header.split(" ")[1];
+async function loggedIn(req, res, next) {
+  // get the token
+  let token;
+  if (
+    req.headers.authorization &&
+    req.headers.authorization.startsWith("Bearer")
+  ) {
+    token = req.headers.authorization.split(" ")[1];
+  }
   if (!token) {
-    return res.status(401).json({ message: "Acesso negado!" });
+    res.status(401).JSON({ ERRO: "NENHUM USUÁRIO LOGADO" });
   }
 
-  const blacklistedToken = await Black_List.findOne({ token });
+  // validate the token
 
-  if (blacklistedToken) {
-    return res.status(401).json({ message: "Token na lista negra" });
-  }
+  // if it was successful (stil exists?)
 
-  try {
-    jwt.verify(token, "process.env.SECRET");
-    next();
-  } catch (error) {
-    res.status(400).json({ error: "Acesso negado" });
-  }
-}
+  // check if user changed password ater token was issued
 
-async function logout(req, res) {
-  const header = req.headers["authorization"];
-  const token = header && header.split(" ")[1];
-  if (!token) {
-    return res.status(401).json({ message: "Token não fornecido" });
-  }
-
-  try {
-    // Crie um documento Black_List com o token inválido
-    await Black_List.create({ token });
-    res.status(200).json({ message: "Logout realizado com sucesso" });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Erro ao adicionar o token à lista negra" });
-  }
+  next();
 }
 
 const student_editGeneralData = async (req, res) => {
@@ -321,8 +353,8 @@ const student_deleteOne = async (req, res) => {
 module.exports = {
   //C
   student_postOne,
-  auth_loggedIn,
-  logout,
+  loggedIn,
+  signup,
   //R
   students_getAll,
   students_getOne,
