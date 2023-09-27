@@ -1,8 +1,7 @@
 const { Student_Model } = require("../models/Students");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
-const { Black_List } = require("../models/BlackList");
-const { secretToken } = require("../../config");
+const { promisify } = require("util");
 
 const students_getAll = async (req, res) => {
   try {
@@ -41,7 +40,7 @@ const students_getAll = async (req, res) => {
     });
   } catch (error) {
     console.error(error);
-    res.status(500).send("Nenhum aluno");
+    res.status(500).json({ erro: "Nenhum aluno / Erro no servidor" });
   }
 };
 
@@ -195,8 +194,21 @@ const student_login = async (req, res) => {
     const token = jwt.sign({ id: student._id }, "secretToken()", {
       expiresIn: "15d",
     });
+    student.changedPasswordBeforeLogInAgain = false;
 
-    res.status(200).json({ token });
+    const loggedIn = {
+      username: student.username,
+      email: student.email,
+      name: student.name,
+      lastname: student.lastname,
+      doc: student.doc,
+      phoneNumber: student.phoneNumber,
+      dateOfBirth: student.dateOfBirth,
+      permissions: student.permissions,
+    };
+    res.status(200).json({ token: token, loggedIn: loggedIn });
+
+    console.log("AQUIIII", loggedIn);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Ocorreu um erro ao fazer login" });
@@ -204,25 +216,44 @@ const student_login = async (req, res) => {
 };
 
 async function loggedIn(req, res, next) {
-  // get the token
   let token;
   if (
     req.headers.authorization &&
     req.headers.authorization.startsWith("Bearer")
   ) {
+    console.log(req.headers.authorization);
     token = req.headers.authorization.split(" ")[1];
   }
   if (!token) {
-    res.status(401).JSON({ ERRO: "NENHUM USUÁRIO LOGADO" });
+    res.status(401).json({ erro: "NENHUM USUÁRIO LOGADO" });
   }
-
-  // validate the token
-
-  // if it was successful (stil exists?)
-
-  // check if user changed password ater token was issued
-
-  next();
+  try {
+    const decoded = await promisify(jwt.verify)(token, "secretToken()");
+    const freshUser = await Student_Model.findById(decoded.id);
+    if (!freshUser) {
+      return res.status(500).json({
+        error: "Este usuário já não existe mais",
+      });
+    } else if (freshUser.changedPasswordBeforeLogInAgain) {
+      return res.status(500).json({
+        error: "Você recentemente mudou sua senha. Faça login novamente",
+      });
+    } else {
+      console.log(
+        token,
+        decoded,
+        freshUser,
+        freshUser.changedPasswordBeforeLogInAgain
+      );
+      next();
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      error:
+        "Você não está logado de maneira válida, portanto não pode executar esta rota",
+    });
+  }
 }
 
 const student_editGeneralData = async (req, res) => {

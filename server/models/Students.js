@@ -20,6 +20,7 @@ const studentSchema = new Schema(
     phoneNumber: { type: String, required: true },
     dateOfBirth: { type: String, required: true },
     permissions: { type: String, required: false, default: "student" },
+    changedPasswordBeforeLogInAgain: { type: Boolean, default: false },
   },
   { timestamps: true }
 );

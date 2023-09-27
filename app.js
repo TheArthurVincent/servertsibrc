@@ -14,7 +14,7 @@ const {
   student_login,
   signup,
   logout,
-  loggedIn,
+  /*loggedIn,*/
 } = require("./server/controller/studentsController");
 const {
   blogPosts_getAll,
@@ -42,21 +42,25 @@ app.post(`${mainroute}/signup`, signup);
 app.post(`${mainroute}/students`, student_postOne);
 
 app.post(`${mainroute}/studentlogin/`, student_login);
-app.get(`${mainroute}/students`, loggedIn, students_getAll);
-app.get(`${mainroute}/student/:id`, students_getOne);
+app.get(`${mainroute}/students`, /*loggedIn,*/ students_getAll);
+app.get(`${mainroute}/student/:id`, /*loggedIn,*/ students_getOne);
 
-app.put(`${mainroute}/students/:id`, student_editGeneralData);
-app.put(`${mainroute}/studentpassword/:id`, student_editPassword);
-app.put(`${mainroute}/studentpermissions/:id`, student_editPermissions);
+app.put(`${mainroute}/students/:id`, /*loggedIn,*/ student_editGeneralData);
+app.put(`${mainroute}/studentpassword/:id`, /*loggedIn,*/ student_editPassword);
+app.put(
+  `${mainroute}/studentpermissions/:id`,
+  /*loggedIn,*/
+  student_editPermissions
+);
 
-app.delete(`${mainroute}/students/:id`, student_deleteOne);
+app.delete(`${mainroute}/students/:id`, /*loggedIn,*/ student_deleteOne);
 
 // **BLOG POSTS**
-app.get(`${mainroute}/blogposts`, blogPosts_getAll);
-app.get(`${mainroute}/blogpost/:id`, blogPosts_getOne);
-app.post(`${mainroute}/blogposts`, blogPosts_postOne);
-app.put(`${mainroute}/blogposts/:id`, blogPosts_editOne);
-app.delete(`${mainroute}/blogposts/:id`, blogPosts_deleteOne);
+app.get(`${mainroute}/blogposts`, /*loggedIn,*/ blogPosts_getAll);
+app.get(`${mainroute}/blogpost/:id`, /*loggedIn,*/ blogPosts_getOne);
+app.post(`${mainroute}/blogposts`, /*loggedIn,*/ blogPosts_postOne);
+app.put(`${mainroute}/blogposts/:id`, /*loggedIn,*/ blogPosts_editOne);
+app.delete(`${mainroute}/blogposts/:id`, /*loggedIn,*/ blogPosts_deleteOne);
 
 // ** App rodando **
 app.listen(PORT, () => {
