@@ -25,23 +25,8 @@ const studentSchema = new Schema(
   { timestamps: true }
 );
 
-const personalClassesSchema = new Schema(
-  {
-    type: { type: String, required: true },
-    date: { type: String, required: true },
-    comments: { type: String, required: false },
-    attachments: { type: Array, required: false },
-  },
-  { timestamps: true }
-);
-
 const Student_Model = mongoose.model("Student", studentSchema);
-const PersonalClass_Model = mongoose.model(
-  "PersonalClasses",
-  personalClassesSchema
-);
 
 module.exports = {
   Student_Model,
-  PersonalClass_Model,
 };
