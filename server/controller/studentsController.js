@@ -117,8 +117,7 @@ const student_postOne = async (req, res) => {
       username,
     });
   } catch (error) {
-    console.error(error);
-    res.status(500).send("Aluno não cadastrado");
+    res.status(500).json({ Erro: "Aluno não registrado" });
   }
 };
 
@@ -197,6 +196,7 @@ const student_login = async (req, res) => {
     student.changedPasswordBeforeLogInAgain = false;
 
     const loggedIn = {
+      id: student._id,
       username: student.username,
       email: student.email,
       name: student.name,

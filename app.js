@@ -23,6 +23,12 @@ const {
   blogPosts_postOne,
   blogPosts_deleteOne,
 } = require("./server/controller/blogPostsController");
+const {
+  tutoring_postOne,
+  tutoring_getAllFromParticularStudent,
+  tutoring_getAllFromParticularStudentInAParticularMonth,
+  tutoring_getListOfAParticularMonthOfAStudent,
+} = require("./server/controller/tutoringController");
 
 database();
 app.use(express.json());
@@ -35,13 +41,10 @@ app.use(
   })
 );
 
-// Auth
-app.post(`${mainroute}/signup`, signup);
-
 // ** STUDENTS **
 app.post(`${mainroute}/students`, student_postOne);
-
 app.post(`${mainroute}/studentlogin/`, student_login);
+
 app.get(`${mainroute}/students`, /*loggedIn,*/ students_getAll);
 app.get(`${mainroute}/student/:id`, /*loggedIn,*/ students_getOne);
 
@@ -58,9 +61,30 @@ app.delete(`${mainroute}/students/:id`, /*loggedIn,*/ student_deleteOne);
 // **BLOG POSTS**
 app.get(`${mainroute}/blogposts`, /*loggedIn,*/ blogPosts_getAll);
 app.get(`${mainroute}/blogpost/:id`, /*loggedIn,*/ blogPosts_getOne);
+
 app.post(`${mainroute}/blogposts`, /*loggedIn,*/ blogPosts_postOne);
+
 app.put(`${mainroute}/blogposts/:id`, /*loggedIn,*/ blogPosts_editOne);
+
 app.delete(`${mainroute}/blogposts/:id`, /*loggedIn,*/ blogPosts_deleteOne);
+
+// ** TUTOTING - Aulas Particulares **
+app.post(`${mainroute}/tutoring`, /*loggedIn,*/ tutoring_postOne);
+
+app.get(
+  `${mainroute}/tutoring/:studentID`,
+  /*loggedIn,*/ tutoring_getAllFromParticularStudent
+);
+app.get(
+  `${mainroute}/tutoringclassesofthemonth/`,
+  /*loggedIn,*/ tutoring_getAllFromParticularStudentInAParticularMonth
+);
+app.get(
+  `${mainroute}/tutoringmonthyear/:studentID`,
+  /*loggedIn,*/ tutoring_getListOfAParticularMonthOfAStudent
+);
+
+
 
 // ** App rodando **
 app.listen(PORT, () => {

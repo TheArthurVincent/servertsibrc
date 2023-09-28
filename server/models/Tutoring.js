@@ -4,10 +4,13 @@ const { Schema } = mongoose;
 
 const tutoringSchema = new Schema(
   {
-    type: { type: String, required: true },
+    title: { type: String, required: true },
+    studentID: { type: String, required: true },
     date: { type: String, required: true },
+    monthYear: { type: String, required: true },
+    videoUrl: { type: String, required: false },
     comments: { type: String, required: false },
-    attachments: { type: Array, required: false },
+    attachments: { type: String, required: false },
   },
   { timestamps: true }
 );
