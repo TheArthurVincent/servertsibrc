@@ -43,7 +43,7 @@ const tutoring_getAllFromParticularStudent = async (req, res) => {
         id: tutoring._id,
         title: tutoring.title,
         date: tutoring.date,
-        videoUrl: tutoring.videoUrl ,
+        videoUrl: tutoring.videoUrl,
         comments: tutoring.comments,
         attachments: tutoring.attachments,
         createdAt: tutoring.createdAt,
@@ -58,6 +58,9 @@ const tutoring_getAllFromParticularStudent = async (req, res) => {
       };
     }
   );
+
+  formattedTutoringFromParticularStudent.reverse();
+
   try {
     res.status(201).json({
       status: "Aulas encontradas",
