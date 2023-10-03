@@ -283,7 +283,6 @@ const student_editGeneralData = async (req, res) => {
       studentToEdit.phoneNumber = phoneNumber;
 
       await studentToEdit.save();
-      console.log(studentToEdit);
 
       res.status(200).json({
         message: "Aluno editado com sucesso",

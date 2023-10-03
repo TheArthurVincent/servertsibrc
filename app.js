@@ -29,6 +29,9 @@ const {
   tutoring_getAllFromParticularStudentInAParticularMonth,
   tutoring_getListOfAParticularMonthOfAStudent,
 } = require("./server/controller/tutoringController");
+const {
+  nextTutoring_editNext,
+} = require("./server/controller/nextEventsController");
 
 database();
 app.use(express.json());
@@ -40,6 +43,9 @@ app.use(
     origin: "*",
   })
 );
+
+// ** NEXT CLASSES **
+app.post(`${mainroute}/nexttutoring`, nextTutoring_editNext);
 
 // ** STUDENTS **
 app.post(`${mainroute}/students`, student_postOne);
@@ -83,8 +89,6 @@ app.get(
   `${mainroute}/tutoringmonthyear/:studentID`,
   /*loggedIn,*/ tutoring_getListOfAParticularMonthOfAStudent
 );
-
-
 
 // ** App rodando **
 app.listen(PORT, () => {
