@@ -5,6 +5,7 @@ const nextTutoring = new Schema(
   {
     studentID: { type: String, required: true, unique: true },
     date: { type: String, required: true, unique: true },
+    time: { type: String, required: true, unique: true },
     meetingUrl: { type: String, required: true },
   },
   { timestamps: true }
@@ -14,6 +15,7 @@ const nextLiveClass = new Schema(
   {
     title: { type: String, required: true },
     date: { type: String, required: true },
+    time: { type: String, required: true },
     comments: { type: String, required: false },
     meetingUrl: { type: String, required: true },
     password: { type: String, required: false },
