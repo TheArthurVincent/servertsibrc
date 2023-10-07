@@ -9,7 +9,7 @@ const tutoringSchema = new Schema(
     date: { type: String, required: true },
     monthYear: { type: String, required: true },
     videoUrl: { type: String, required: false },
-    comments: { type: String, required: false },
+    comments: { type: String, required: false }, 
     attachments: { type: String, required: false },
   },
   { timestamps: true }
