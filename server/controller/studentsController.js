@@ -2,6 +2,7 @@ const { Student_Model } = require("../models/Students");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const { promisify } = require("util");
+const { NextTutoring_Model } = require("../models/NextEvents");
 
 const students_getAll = async (req, res) => {
   try {
@@ -31,7 +32,7 @@ const students_getAll = async (req, res) => {
       if (nameA > nameB) {
         return 1;
       }
-      return 0; // Nomes são iguais
+      return 0;
     });
 
     res.status(200).json({
@@ -83,6 +84,9 @@ const student_postOne = async (req, res) => {
     doc,
     phoneNumber,
     dateOfBirth,
+    date,
+    time,
+    link,
   } = req.body;
 
   const hashedPassword = bcrypt.hashSync(password, 10);
@@ -107,6 +111,7 @@ const student_postOne = async (req, res) => {
       doc,
       phoneNumber,
       dateOfBirth,
+      nextClass: { date, time, link },
     });
 
     await newStudent.save();
@@ -191,9 +196,14 @@ const student_login = async (req, res) => {
       throw new Error("Senha incorreta");
 
     const token = jwt.sign({ id: student._id }, "secretToken()", {
-      expiresIn: "15d",
+      expiresIn: "1d",
     });
+
     student.changedPasswordBeforeLogInAgain = false;
+
+    const nextTutoring = await NextTutoring_Model.findOne({
+      studentID: student._id,
+    });
 
     const loggedIn = {
       id: student._id,
@@ -206,7 +216,10 @@ const student_login = async (req, res) => {
       dateOfBirth: student.dateOfBirth,
       permissions: student.permissions,
     };
-    res.status(200).json({ token: token, loggedIn: loggedIn });
+
+    res
+      .status(200)
+      .json({ token: token, loggedIn: loggedIn, nextTutoring: nextTutoring });
 
     console.log("AQUIIII", loggedIn);
   } catch (error) {
@@ -215,7 +228,7 @@ const student_login = async (req, res) => {
   }
 };
 
-async function loggedIn(req, res, next) {
+const loggedIn = async (req, res, next) => {
   let token;
   if (
     req.headers.authorization &&
@@ -254,7 +267,7 @@ async function loggedIn(req, res, next) {
         "Você não está logado de maneira válida, portanto não pode executar esta rota",
     });
   }
-}
+};
 
 const student_editGeneralData = async (req, res) => {
   const { username, email, name, lastname, phoneNumber } = req.body;
@@ -324,6 +337,34 @@ const student_editPassword = async (req, res) => {
         updatedUser: studentWhosePasswordYouWantToChange,
       });
       console.error(studentWhosePasswordYouWantToChange);
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Erro ao editar aluno");
+  }
+};
+
+const student_editNextClass = async (req, res) => {
+  const { date, time, link } = req.body;
+  const { id } = req.params;
+
+  try {
+    const studentWhoseClassYouWantToChange = await Student_Model.findById(id);
+
+    if (!studentWhoseClassYouWantToChange) {
+      return res.status(404).json({ message: "Aluno não encontrado" });
+    } else {
+      studentWhoseClassYouWantToChange.nextClass.date = date;
+      studentWhoseClassYouWantToChange.nextClass.time = time;
+      studentWhoseClassYouWantToChange.nextClass.link = link;
+
+      await studentWhoseClassYouWantToChange.save();
+
+      res.status(200).json({
+        message: "Aula salva com sucesso",
+        updatedUser: studentWhoseClassYouWantToChange,
+      });
+      console.error(studentWhoseClassYouWantToChange);
     }
   } catch (error) {
     console.error(error);

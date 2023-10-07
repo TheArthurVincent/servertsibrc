@@ -1,3 +1,4 @@
+const { NextTutoring_Model } = require("../models/NextEvents");
 const { Student_Model } = require("../models/Students");
 const { Tutoring_Model } = require("../models/Tutoring");
 
@@ -73,7 +74,6 @@ const tutoring_getAllFromParticularStudent = async (req, res) => {
 };
 
 const tutoring_getListOfAParticularMonthOfAStudent = async (req, res) => {
-  // Encontrar todas as aula de um aluno naquele mês em particular
   const { studentID } = req.params;
   try {
     const distinctMonthYears = await Tutoring_Model.distinct("monthYear", {
@@ -113,13 +113,25 @@ const tutoring_getAllFromParticularStudentInAParticularMonth = async (
   }
 };
 
+const tutoring_getNext = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const nextTutoring = await NextTutoring_Model.findOne({
+      studentID: id,
+    });
+    res.status(200).json({ nextTutoring: nextTutoring });
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .json({ error: "Ocorreu um erro ao encontrar a próxima aula" });
+  }
+};
+
 module.exports = {
-  //C
   tutoring_postOne,
-  //R
   tutoring_getAllFromParticularStudent,
   tutoring_getListOfAParticularMonthOfAStudent,
   tutoring_getAllFromParticularStudentInAParticularMonth,
-  //U
-  //D
+  tutoring_getNext,
 };

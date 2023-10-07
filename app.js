@@ -12,8 +12,6 @@ const {
   student_editPassword,
   student_editPermissions,
   student_login,
-  signup,
-  logout,
   /*loggedIn,*/
 } = require("./server/controller/studentsController");
 const {
@@ -28,9 +26,11 @@ const {
   tutoring_getAllFromParticularStudent,
   tutoring_getAllFromParticularStudentInAParticularMonth,
   tutoring_getListOfAParticularMonthOfAStudent,
+  tutoring_getNext,
 } = require("./server/controller/tutoringController");
 const {
   nextTutoring_editNext,
+  nextTutoring_seeAllTutorings,
 } = require("./server/controller/nextEventsController");
 
 database();
@@ -46,6 +46,8 @@ app.use(
 
 // ** NEXT CLASSES **
 app.post(`${mainroute}/nexttutoring`, nextTutoring_editNext);
+app.get(`${mainroute}/nexttutoring`, nextTutoring_seeAllTutorings);
+app.get(`${mainroute}/nexttutoring/:id`, tutoring_getNext);
 
 // ** STUDENTS **
 app.post(`${mainroute}/students`, student_postOne);
