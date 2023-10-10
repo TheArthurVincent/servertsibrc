@@ -36,7 +36,7 @@ const students_getAll = async (req, res) => {
     });
 
     res.status(200).json({
-      status: `Sucesso! Foram encontrados ${students.length - 1} alunos.`,
+      status: `Sucesso! Foram encontrados ${students.length} alunos.`,
       listOfStudents: formattedStudentsData,
     });
   } catch (error) {
@@ -220,8 +220,6 @@ const student_login = async (req, res) => {
     res
       .status(200)
       .json({ token: token, loggedIn: loggedIn, nextTutoring: nextTutoring });
-
-    console.log("AQUIIII", loggedIn);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Ocorreu um erro ao fazer login" });
@@ -234,7 +232,6 @@ const loggedIn = async (req, res, next) => {
     req.headers.authorization &&
     req.headers.authorization.startsWith("Bearer")
   ) {
-    console.log(req.headers.authorization);
     token = req.headers.authorization.split(" ")[1];
   }
   if (!token) {
@@ -261,7 +258,6 @@ const loggedIn = async (req, res, next) => {
       next();
     }
   } catch (error) {
-    console.error(error);
     res.status(500).json({
       error:
         "Você não está logado de maneira válida, portanto não pode executar esta rota",
@@ -303,7 +299,6 @@ const student_editGeneralData = async (req, res) => {
       });
     }
   } catch (error) {
-    console.error(error);
     res.status(500).send("Erro ao editar aluno");
   }
 };
@@ -367,7 +362,6 @@ const student_editNextClass = async (req, res) => {
       console.error(studentWhoseClassYouWantToChange);
     }
   } catch (error) {
-    console.error(error);
     res.status(500).send("Erro ao editar aluno");
   }
 };
@@ -416,7 +410,6 @@ const student_deleteOne = async (req, res) => {
       });
     }
   } catch (error) {
-    console.error(error);
     res.status(500).json({ erro: "Falha ao excluir aluno!", status: error });
   }
 };

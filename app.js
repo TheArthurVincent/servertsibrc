@@ -12,7 +12,7 @@ const {
   student_editPassword,
   student_editPermissions,
   student_login,
-  /*loggedIn,*/
+  loggedIn,
 } = require("./server/controller/studentsController");
 const {
   blogPosts_getAll,
@@ -32,6 +32,13 @@ const {
   nextTutoring_editNext,
   nextTutoring_seeAllTutorings,
 } = require("./server/controller/nextEventsController");
+const {
+  courses_postOneCourse,
+  courses_editOneCourse,
+  courses_deleteOneCourse,
+  courses_getAll,
+  courses_getOne,
+} = require("./server/controller/coursesController");
 
 database();
 app.use(express.json());
@@ -43,6 +50,13 @@ app.use(
     origin: "*",
   })
 );
+
+// ** COURSES **
+app.post(`${mainroute}/courses`, courses_postOneCourse);
+app.get(`${mainroute}/courses`, courses_getAll);
+app.get(`${mainroute}/courses/:id`, courses_getOne);
+app.put(`${mainroute}/courses/:id`, courses_editOneCourse);
+app.delete(`${mainroute}/courses/:id`, courses_deleteOneCourse);
 
 // ** NEXT CLASSES **
 app.post(`${mainroute}/nexttutoring`, nextTutoring_editNext);

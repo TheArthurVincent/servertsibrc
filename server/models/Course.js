@@ -1,18 +1,36 @@
 const mongoose = require("mongoose");
 const { Schema } = mongoose;
 
-const Course = new Schema(
+const course = new Schema(
   {
-    title: { type: String, required: true },
+    courseTitle: { type: String, required: true },
     description: { type: String, required: false },
+    courseImgLink: {
+      type: String,
+      required: false,
+      default:
+        "https://img.myloview.com.br/posters/digital-study-icon-outline-digital-study-vector-icon-color-flat-isolated-700-275116571.jpg",
+    },
     modules: [
       {
-        title: { type: String, required: true },
-        description: { type: String, required: true },
+        moduleTitle: { type: String, required: true },
+        description: { type: String, required: false },
+        moduleImgLink: {
+          type: String,
+          required: false,
+          default:
+            "https://img.myloview.com.br/posters/digital-study-icon-outline-digital-study-vector-icon-color-flat-isolated-700-275116571.jpg",
+        },
         classes: [
           {
-            title: { type: String, required: true },
+            classTitle: { type: String, required: true },
             description: { type: String, required: true },
+            classImgLink: {
+              type: String,
+              required: false,
+              default:
+                "https://img.myloview.com.br/posters/digital-study-icon-outline-digital-study-vector-icon-color-flat-isolated-700-275116571.jpg",
+            },
             videoUrl: { type: String, required: false },
             attachments: { type: String, required: false },
           },
@@ -22,7 +40,7 @@ const Course = new Schema(
   },
   { timestamps: true }
 );
-const Course_Model = mongoose.model("nextTutoring", Course);
+const Course_Model = mongoose.model("newCourse", course);
 
 module.exports = {
   Course_Model,
