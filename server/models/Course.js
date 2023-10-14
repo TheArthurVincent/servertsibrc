@@ -1,46 +1,48 @@
 const mongoose = require("mongoose");
 const { Schema } = mongoose;
 
-const course = new Schema(
+const classSchema = new Schema({
+  classTitle: { type: String, required: true },
+  description: { type: String, required: true },
+  srcVideos: [
+    {
+      title: { type: String, required: false },
+      url: { type: String, required: false },
+      description: { type: String, required: false },
+    },
+  ],
+  srcAttachments: [
+    {
+      title: { type: String, required: false },
+      src: { type: String, required: false },
+      description: { type: String, required: false },
+    },
+  ],
+});
+
+const moduleSchema = new Schema({
+  moduleTitle: { type: String, required: true },
+  classes: [classSchema],
+});
+
+const courseSchema = new Schema(
   {
     courseTitle: { type: String, required: true },
+    link: { type: String, required: true },
     description: { type: String, required: false },
-    courseImgLink: {
+    courseColor: { type: String, required: false, default: "#1e1e1e" },
+    img: {
       type: String,
       required: false,
       default:
         "https://img.myloview.com.br/posters/digital-study-icon-outline-digital-study-vector-icon-color-flat-isolated-700-275116571.jpg",
     },
-    modules: [
-      {
-        moduleTitle: { type: String, required: true },
-        description: { type: String, required: false },
-        moduleImgLink: {
-          type: String,
-          required: false,
-          default:
-            "https://img.myloview.com.br/posters/digital-study-icon-outline-digital-study-vector-icon-color-flat-isolated-700-275116571.jpg",
-        },
-        classes: [
-          {
-            classTitle: { type: String, required: true },
-            description: { type: String, required: true },
-            classImgLink: {
-              type: String,
-              required: false,
-              default:
-                "https://img.myloview.com.br/posters/digital-study-icon-outline-digital-study-vector-icon-color-flat-isolated-700-275116571.jpg",
-            },
-            videoUrl: { type: String, required: false },
-            attachments: { type: String, required: false },
-          },
-        ],
-      },
-    ],
+    modules: [moduleSchema],
   },
   { timestamps: true }
 );
-const Course_Model = mongoose.model("newCourse", course);
+
+const Course_Model = mongoose.model("Course", courseSchema);
 
 module.exports = {
   Course_Model,
