@@ -34,12 +34,12 @@ const {
 } = require("./server/controller/nextEventsController");
 const {
   courses_postOneCourse,
-  courses_editOneCourse,
-  courses_deleteOneCourse,
-  courses_getAll,
-  courses_getOne,
-  courses_postOneModule,
-  courses_editOneModule,
+  // courses_editOneCourse,
+  // courses_deleteOneCourse,
+  // courses_getAll,
+  // courses_getOne,
+  // courses_postOneModule,
+  // courses_editOneModule,
 } = require("./server/controller/coursesController");
 
 database();
@@ -55,12 +55,12 @@ app.use(
 
 // ** COURSES **
 app.post(`${mainroute}/courses`, courses_postOneCourse);
-app.get(`${mainroute}/courses`, courses_getAll);
-app.get(`${mainroute}/courses/:id`, courses_getOne);
-app.put(`${mainroute}/courses/:id`, courses_editOneCourse);
-app.delete(`${mainroute}/courses/:id`, courses_deleteOneCourse);
-app.post(`${mainroute}/moduleforcourse/:id`, courses_postOneModule);
-app.put(`${mainroute}/moduleforcourse/:course`, courses_editOneModule);
+// app.get(`${mainroute}/courses`, courses_getAll);
+// app.get(`${mainroute}/courses/:id`, courses_getOne);
+// app.put(`${mainroute}/courses/:id`, courses_editOneCourse);
+// app.delete(`${mainroute}/courses/:id`, courses_deleteOneCourse);
+// app.post(`${mainroute}/moduleforcourse/:id`, courses_postOneModule);
+// app.put(`${mainroute}/moduleforcourse/:course`, courses_editOneModule);
 
 // ** NEXT CLASSES **
 app.post(`${mainroute}/nexttutoring`, nextTutoring_editNext);
