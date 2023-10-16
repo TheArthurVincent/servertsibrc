@@ -22,7 +22,7 @@ const classSchema = new Schema({
 
 const moduleSchema = new Schema({
   moduleTitle: { type: String, required: true },
-  classes: [classSchema],
+  classes: { type: [classSchema], required: false, default: [] },
 });
 
 const courseSchema = new Schema(
@@ -37,7 +37,7 @@ const courseSchema = new Schema(
       default:
         "https://img.myloview.com.br/posters/digital-study-icon-outline-digital-study-vector-icon-color-flat-isolated-700-275116571.jpg",
     },
-    modules: [moduleSchema],
+    modules: { type: [moduleSchema], required: false, default: [] },
   },
   { timestamps: true }
 );

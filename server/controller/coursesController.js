@@ -1,7 +1,7 @@
 const { Course_Model } = require("../models/Course");
 
 const courses_postOneCourse = async (req, res) => {
-  const { courseTitle, img, courseImgLink, courseColor } = req.body;
+  const { courseTitle, img, link, courseColor } = req.body;
   const course = await Course_Model.findOne({ courseTitle: courseTitle });
   try {
     if (!courseTitle) {
@@ -12,7 +12,7 @@ const courses_postOneCourse = async (req, res) => {
       const newCourse = new Course_Model({
         courseTitle,
         img,
-        courseImgLink,
+        link,
         courseColor,
       });
 
