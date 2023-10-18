@@ -286,6 +286,36 @@ const courses_editOneClass = async (req, res) => {
   }
 };
 
+const courses_getClassesFromOneModule = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const module = await Module_Model.findById(id);
+
+    if (!module) {
+      return res.status(400).json({ message: "Módulo não existe" });
+    } else {
+      const classIds = module.classes;
+
+      const classPromises = classIds.map(async (classId) => {
+        const theClass = await Class_Model.findById(classId);
+        return theClass;
+      });
+
+      const classes = await Promise.all(classPromises);
+
+      res.status(200).json({
+        status: "Classes encontradas",
+        classes,
+      });
+    }
+  } catch (error) {
+    res.status(400).json({
+      status: "Erro ao buscar aulas",
+      error: error.message,
+    });
+  }
+};
+
 module.exports = {
   courses_postOneCourse,
   courses_getAll,
@@ -297,5 +327,6 @@ module.exports = {
   courses_editOneModule,
   courses_deleteOneModule,
   courses_postOneClass,
+  courses_getClassesFromOneModule,
   courses_editOneClass,
 };

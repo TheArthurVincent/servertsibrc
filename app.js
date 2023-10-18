@@ -44,6 +44,7 @@ const {
   courses_getModulesFromOneCourse,
   courses_postOneClass,
   courses_editOneClass,
+  courses_getClassesFromOneModule,
 } = require("./server/controller/coursesController");
 
 database();
@@ -70,7 +71,9 @@ app.put(`${mainroute}/moduleforcourse/:id`, courses_editOneModule);
 app.delete(`${mainroute}/moduleforcourse/:id`, courses_deleteOneModule);
 // * classes *
 app.post(`${mainroute}/classformodule/:id`, courses_postOneClass);
+app.get(`${mainroute}/classformodule/:id`, courses_getClassesFromOneModule);
 app.put(`${mainroute}/classformodule/:id`, courses_editOneClass);
+
 
 // ** NEXT CLASSES **
 app.post(`${mainroute}/nexttutoring`, nextTutoring_editNext);
