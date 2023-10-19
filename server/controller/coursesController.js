@@ -47,7 +47,7 @@ const courses_getAll = async (req, res) => {
 const courses_getOne = async (req, res) => {
   try {
     const { id } = req.params;
-    const course = await Course_Model.findById(id);
+    const course = await Course_Model.findById(id).populate("modules"); // 'modules' é o nome do campo que contém os IDs dos módulos
 
     if (!course) {
       res.status(400).json({
@@ -174,6 +174,7 @@ const courses_editOneModule = async (req, res) => {
     });
   }
 };
+
 const courses_getModulesFromOneCourse = async (req, res) => {
   const { id } = req.params;
   try {
@@ -184,21 +185,31 @@ const courses_getModulesFromOneCourse = async (req, res) => {
     } else {
       const moduleIds = course.modules;
 
-      const modulePromises = moduleIds.map(async (moduleId) => {
-        const module = await Module_Model.findById(moduleId);
-        return module;
-      });
+      const modulesWithClasses = await Promise.all(
+        moduleIds.map(async (moduleId) => {
+          const module = await Module_Model.findById(moduleId);
 
-      const modules = await Promise.all(modulePromises);
+          if (!module) {
+            return null;
+          }
+
+          await Module_Model.populate(module, {
+            path: "classes",
+            model: Class_Model,
+          });
+
+          return module;
+        })
+      );
 
       res.status(200).json({
-        status: "Módulos encontrados",
-        modules,
+        status: "Módulos encontrados com aulas",
+        modules: modulesWithClasses,
       });
     }
   } catch (error) {
     res.status(400).json({
-      status: "Erro ao buscar módulos",
+      status: "Erro ao buscar módulos com aulas",
       error: error.message,
     });
   }
@@ -294,17 +305,16 @@ const courses_getClassesFromOneModule = async (req, res) => {
     if (!module) {
       return res.status(400).json({ message: "Módulo não existe" });
     } else {
-      const classIds = module.classes;
-
-      const classPromises = classIds.map(async (classId) => {
-        const theClass = await Class_Model.findById(classId);
-        return theClass;
+      // Use populate no modelo de módulo, não na instância de módulo
+      await Module_Model.populate(module, {
+        path: "classes",
+        model: Class_Model, // Substitua pelo nome correto do modelo de Classe
       });
 
-      const classes = await Promise.all(classPromises);
+      const classes = module.classes;
 
       res.status(200).json({
-        status: "Classes encontradas",
+        status: "Aulas encontradas",
         classes,
       });
     }
