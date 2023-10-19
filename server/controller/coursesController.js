@@ -111,15 +111,35 @@ const courses_deleteOneCourse = async (req, res) => {
     if (!courseToDelete) {
       return res.status(404).json({ message: "Curso não encontrado" });
     } else {
+      const moduleIds = courseToDelete.modules;
+
+      await Promise.all(
+        moduleIds.map(async (moduleId) => {
+          const moduleToDelete = await Module_Model.findById(moduleId);
+          if (moduleToDelete) {
+            const classIds = moduleToDelete.classes;
+            await Promise.all(
+              classIds.map(async (classId) => {
+                const classToDelete = await Class_Model.findById(classId);
+                if (classToDelete) {
+                  await classToDelete.deleteOne();
+                }
+              })
+            );
+            await moduleToDelete.deleteOne();
+          }
+        })
+      );
+
       await courseToDelete.deleteOne();
 
       res.status(200).json({
-        message: "Curso excluído com sucesso",
+        message: "Curso, módulos e aulas excluídos com sucesso",
       });
     }
   } catch (error) {
     res.status(400).json({
-      status: "Erro ao excluir curso",
+      status: "Erro ao excluir curso, módulos e aulas",
     });
   }
 };
@@ -222,15 +242,26 @@ const courses_deleteOneModule = async (req, res) => {
     if (!moduleToDelete) {
       return res.status(400).json({ message: "Módulo não existe" });
     } else {
+      const classIds = moduleToDelete.classes;
+
+      await Promise.all(
+        classIds.map(async (classId) => {
+          const classToDelete = await Class_Model.findById(classId);
+          if (classToDelete) {
+            await classToDelete.deleteOne();
+          }
+        })
+      );
+
       await moduleToDelete.deleteOne();
 
       res.status(201).json({
-        status: "Modulo excluído com sucesso",
+        status: "Módulo e aulas excluídos com sucesso",
       });
     }
   } catch (error) {
     res.status(400).json({
-      status: "Modulo não excluído",
+      status: "Módulo e/ou aulas não excluídos",
     });
   }
 };
