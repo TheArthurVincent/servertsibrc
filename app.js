@@ -45,6 +45,7 @@ const {
   courses_postOneClass,
   courses_editOneClass,
   courses_getClassesFromOneModule,
+  courses_deleteOneClass,
 } = require("./server/controller/coursesController");
 
 database();
@@ -73,7 +74,7 @@ app.delete(`${mainroute}/moduleforcourse/:id`, courses_deleteOneModule);
 app.post(`${mainroute}/classformodule/:id`, courses_postOneClass);
 app.get(`${mainroute}/classformodule/:id`, courses_getClassesFromOneModule);
 app.put(`${mainroute}/classformodule/:id`, courses_editOneClass);
-
+app.delete(`${mainroute}/classformodule/:id`, courses_deleteOneClass);
 
 // ** NEXT CLASSES **
 app.post(`${mainroute}/nexttutoring`, nextTutoring_editNext);

@@ -316,6 +316,26 @@ const courses_getClassesFromOneModule = async (req, res) => {
   }
 };
 
+const courses_deleteOneClass = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const classToDelete = await Class_Model.findById(id);
+    if (!classToDelete) {
+      return res.status(400).json({ message: "Aula não existe" });
+    } else {
+      await classToDelete.deleteOne();
+
+      res.status(201).json({
+        status: "Aula excluída com sucesso",
+      });
+    }
+  } catch (error) {
+    res.status(400).json({
+      status: "Aula não excluído",
+    });
+  }
+};
+
 module.exports = {
   courses_postOneCourse,
   courses_getAll,
@@ -329,4 +349,5 @@ module.exports = {
   courses_postOneClass,
   courses_getClassesFromOneModule,
   courses_editOneClass,
+  courses_deleteOneClass,
 };
