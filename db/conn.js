@@ -7,8 +7,8 @@ async function main() {
       {
         useNewUrlParser: true,
         useUnifiedTopology: true,
-        connectTimeoutMS: 30000, // 30 segundos
-        socketTimeoutMS: 30000, // 30 segundos
+        connectTimeoutMS: 30000,
+        socketTimeoutMS: 30000,
       }
     );
 
