@@ -22,7 +22,7 @@ const classSchema = new Schema({
 
 const moduleSchema = new Schema({
   moduleTitle: { type: String, required: true },
-  classes: [  
+  classes: [
     { type: Schema.Types.ObjectId, ref: "Class", required: false, default: [] },
   ],
 });

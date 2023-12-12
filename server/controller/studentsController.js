@@ -41,7 +41,7 @@ const students_getAll = async (req, res) => {
     });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ erro: "Nenhum aluno / Erro no servidor" });
+    res.status(500).json({ erro: "Nenhum aluno / Erro no servidor", error });
   }
 };
 
@@ -122,7 +122,7 @@ const student_postOne = async (req, res) => {
       username,
     });
   } catch (error) {
-    res.status(500).json({ Erro: "Aluno não registrado" });
+    res.status(500).json({ Erro: "Aluno não registrado", error });
   }
 };
 
@@ -222,7 +222,7 @@ const student_login = async (req, res) => {
       .json({ token: token, loggedIn: loggedIn, nextTutoring: nextTutoring });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: "Ocorreu um erro ao fazer login" });
+    res.status(500).json({ error: error, e: "Ocorreu um erro ao fazer login" });
   }
 };
 
