@@ -20,6 +20,10 @@ const studentSchema = new Schema(
     phoneNumber: { type: String, required: true },
     dateOfBirth: { type: String, required: true },
     permissions: { type: String, required: false, default: "student" },
+    ankiEmail: { type: String, required: false },
+    ankiPassword: { type: String, required: false },
+    googleDriveLink: { type: String, required: false },
+    language: { type: String, required: false, default: "pt" },
     changedPasswordBeforeLogInAgain: { type: Boolean, default: false },
   },
   { timestamps: true }

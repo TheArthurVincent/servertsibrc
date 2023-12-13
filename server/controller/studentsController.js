@@ -21,6 +21,9 @@ const students_getAll = async (req, res) => {
         permissions: student.permissions,
         doc: student.doc,
         phoneNumber: student.phoneNumber,
+        ankiEmail: student.ankiEmail,
+        ankiPassword: student.ankiPassword,
+        googleDriveLink: student.googleDriveLink,
       };
     });
     formattedStudentsData.sort((a, b) => {
@@ -84,6 +87,9 @@ const student_postOne = async (req, res) => {
     doc,
     phoneNumber,
     dateOfBirth,
+    ankiEmail,
+    ankiPassword,
+    googleDriveLink,
     date,
     time,
     link,
@@ -111,6 +117,9 @@ const student_postOne = async (req, res) => {
       doc,
       phoneNumber,
       dateOfBirth,
+      ankiEmail,
+      ankiPassword,
+      googleDriveLink,
       nextClass: { date, time, link },
     });
 
@@ -215,6 +224,9 @@ const student_login = async (req, res) => {
       phoneNumber: student.phoneNumber,
       dateOfBirth: student.dateOfBirth,
       permissions: student.permissions,
+      ankiEmail: student.ankiEmail,
+      ankiPassword: student.ankiPassword,
+      googleDriveLink: student.googleDriveLink,
     };
 
     res
