@@ -3,12 +3,12 @@ const mongoose = require("mongoose");
 async function main() {
   try {
     await mongoose.connect(
-      "mongodb+srv://arthurcardosocorp:lu4FZOZIo3Jwn33z@arvin.aotxd5a.mongodb.net/?retryWrites=true&w=majority",
+      "mongodb+srv://actualvincent:VRdsUMFo8rJ70KKX@arvin.aotxd5a.mongodb.net/?retryWrites=true&w=majority",
       {
         useNewUrlParser: true,
         useUnifiedTopology: true,
-        connectTimeoutMS: 30000,
-        socketTimeoutMS: 30000,
+        connectTimeoutMS: 3000,
+        socketTimeoutMS: 3000,
       }
     );
 
@@ -19,3 +19,5 @@ async function main() {
 }
 
 module.exports = main;
+// HoKUnIXu31bJ3P1g --> actual-vincent
+// "mongodb+srv://arthurcardosocorp:lu4FZOZIo3Jwn33z@arvin.aotxd5a.mongodb.net/?retryWrites=true&w=majority",
