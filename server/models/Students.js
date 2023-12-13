@@ -24,7 +24,7 @@ const studentSchema = new Schema(
     ankiPassword: { type: String, required: false },
     googleDriveLink: { type: String, required: false },
     language: { type: String, required: false, default: "pt" },
-    changedPasswordBeforeLogInAgain: { type: Boolean, default: false },
+    changedPasswordBeforeLogInAgain: { type: Boolean, default: false }
   },
   { timestamps: true }
 );
