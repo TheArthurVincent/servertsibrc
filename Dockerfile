@@ -11,4 +11,4 @@ RUN npm install
 # Bundle app source
 COPY . .
 EXPOSE 3502
-CMD [ "npm", "start" ]
+CMD [ "npm", "start:prod" ]
