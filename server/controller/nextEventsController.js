@@ -1,12 +1,13 @@
 const { NextTutoring_Model } = require("../models/NextEvents");
 const { Student_Model } = require("../models/Students");
+const sendEmail = require("../useful/sendmail");
 
 const nextTutoring_editNext = async (req, res) => {
   const { studentID, meetingUrl, date, time } = req.body;
 
+  const nextClass = await NextTutoring_Model.findOne({ studentID });
+  const student = await Student_Model.findById(studentID);
   try {
-    const nextClass = await NextTutoring_Model.findOne({ studentID });
-
     if (!nextClass) {
       const newNextClass = new NextTutoring_Model({
         studentID,
@@ -27,6 +28,13 @@ const nextTutoring_editNext = async (req, res) => {
 
       await nextClass.save();
       console.log(nextClass);
+      try {
+        sendEmail(
+          student.email,
+          "Aula particular marcada!",
+          `Sua próxima aula particular está marcada para o dia ${date},às ${time} `
+        );
+      } catch (e) {}
       res.status(200).json({
         message: "Aula marcada",
         tutoring: nextClass,

@@ -6,6 +6,7 @@ const blogSchema = new Schema(
   {
     title: { type: String, required: true },
     videoUrl: { type: String, required: false },
+    img: { type: String, required: false },
     text: { type: String, required: true },
   },
   { timestamps: true }

@@ -44,7 +44,7 @@ const blogPosts_getOne = async (req, res) => {
 };
 
 const blogPosts_postOne = async (req, res) => {
-  const { title, videoUrl, text } = req.body;
+  const { title, videoUrl, text, img } = req.body;
 
   try {
     const existingTitle = await Blog_Model.findOne({
@@ -61,6 +61,7 @@ const blogPosts_postOne = async (req, res) => {
         title,
         videoUrl,
         text,
+        img,
       });
 
       await newBlogPost.save();
