@@ -1,12 +1,17 @@
 const { NextTutoring_Model } = require("../models/NextEvents");
 const { Student_Model } = require("../models/Students");
-const sendEmail = require("../useful/sendmail");
+const formatDate = require("../useful/formulas");
+const {
+  sendEmail,
+  renderEmailTemplateScheduledClass,
+} = require("../useful/sendmail");
 
 const nextTutoring_editNext = async (req, res) => {
   const { studentID, meetingUrl, date, time } = req.body;
 
   const nextClass = await NextTutoring_Model.findOne({ studentID });
   const student = await Student_Model.findById(studentID);
+
   try {
     if (!nextClass) {
       const newNextClass = new NextTutoring_Model({
@@ -27,14 +32,26 @@ const nextTutoring_editNext = async (req, res) => {
       nextClass.time = time;
 
       await nextClass.save();
-      console.log(nextClass);
+      const formattedDate = formatDate(date);
+
+      const html = await renderEmailTemplateScheduledClass(
+        student.name,
+        formattedDate,
+        time,
+        meetingUrl
+      );
+
       try {
         sendEmail(
           student.email,
-          "Aula particular marcada!",
-          `Sua próxima aula particular está marcada para o dia ${date},às ${time} `
+          `Aula particular - ${formattedDate} às ${time}! | ARVIN ENGLISH SCHOOL`,
+          html,
+          "text/html"
         );
-      } catch (e) {}
+      } catch (e) {
+        console.error("Erro ao enviar e-mail:", e);
+      }
+
       res.status(200).json({
         message: "Aula marcada",
         tutoring: nextClass,
@@ -45,6 +62,7 @@ const nextTutoring_editNext = async (req, res) => {
     res.status(500).json({ Erro: "Aula não registrada" });
   }
 };
+
 const nextTutoring_seeAllTutorings = async (req, res) => {
   try {
     const tutorings = await NextTutoring_Model.find();
