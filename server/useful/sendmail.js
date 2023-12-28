@@ -1,11 +1,10 @@
 const nodemailer = require("nodemailer");
+const ejs = require("ejs");
 
 const emailConfig = {
-  email: "arthurcardosocorp@gmail.com",
-  password: "Tui2209Vini1305#@#@",
+  email: "arvinenglishschool@gmail.com",
+  password: "pbjy jfog mqyg srlm",
 };
-
-// Configuração do transporte
 const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
@@ -14,17 +13,14 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-// Função para enviar e-mail
 const sendEmail = (to, subject, text) => {
-  // Configuração do e-mail
   const mailOptions = {
     from: emailConfig.email,
     to: to,
     subject: subject,
-    text: text,
+    html: text,
   };
 
-  // Envio do e-mail
   transporter.sendMail(mailOptions, (error, info) => {
     if (error) {
       console.error(error);
@@ -34,4 +30,30 @@ const sendEmail = (to, subject, text) => {
   });
 };
 
-module.exports = sendEmail;
+const renderEmailTemplateScheduledClass = async (
+  studentName,
+  classDate,
+  classTime,
+  meetingUrl
+) => {
+  return new Promise((resolve, reject) => {
+    const templatePath = "server/useful/emailtemplates/scheduledclass.ejs";
+    ejs.renderFile(
+      templatePath,
+      { studentName, classDate, classTime, meetingUrl },
+      (err, htmlContent) => {
+        if (err) {
+          console.error("Erro ao renderizar o template EJS:", err);
+          reject(err);
+        } else {
+          resolve(htmlContent);
+        }
+      }
+    );
+  });
+};
+
+module.exports = {
+  sendEmail,
+  renderEmailTemplateScheduledClass,
+};
