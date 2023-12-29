@@ -34,7 +34,19 @@ const tutoring_postOne = async (req, res) => {
         html,
         "text/html"
       );
+      sendEmail(
+        "arvinenglishschool@gmail.com",
+        `SUCESSO - Vídeo da aula de ${student.name}, do dia ${date} às ${time} postada`,
+        `SUCESSO - Vídeo da aula de ${student.name}, do dia ${date} às ${time} postada`,
+        "text/html"
+      );
     } catch (e) {
+      sendEmail(
+        "arvinenglishschool@gmail.com",
+        `FALHA - Vídeo da aula de ${student.name}, do dia ${date} às ${time} não postada`,
+        `FALHA - Vídeo da aula de ${student.name}, do dia ${date} às ${time} não postada`,
+        "text/html"
+      );
       console.error("Erro ao enviar e-mail:", e);
     }
     res.status(201).json({
