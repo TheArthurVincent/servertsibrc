@@ -14,7 +14,7 @@ const transporter = nodemailer.createTransport({
     pass: emailConfig.password,
   },
   secure: true,
-  connectionTimeout: 20000, // 20 seconds
+  connectionTimeout: 100000, // 100 seconds
 });
 
 const sendEmail = (to, subject, text) => {
