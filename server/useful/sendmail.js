@@ -8,14 +8,27 @@ const emailConfig = {
 const transporter = nodemailer.createTransport({
   service: "gmail",
   host: "smtp.gmail.com",
-  port: 587,
+  port: 465,
   auth: {
     user: emailConfig.email,
     pass: emailConfig.password,
   },
-  secure: false,
+  secure: true,
   connectionTimeout: 100000, // 100 seconds
 });
+
+// const transporter = nodemailer.createTransport({
+//   service: "gmail",
+//   host: "smtp.gmail.com",
+//   port: 587,
+//   auth: {
+//     user: emailConfig.email,
+//     pass: emailConfig.password,
+//   },
+//   secure: false,
+//   connectionTimeout: 100000, // 100 seconds
+// });
+
 
 const sendEmail = (to, subject, text) => {
   const mailOptions = {
