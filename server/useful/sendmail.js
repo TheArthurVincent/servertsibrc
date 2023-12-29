@@ -28,6 +28,7 @@ const sendEmail = (to, subject, text) => {
   transporter.sendMail(mailOptions, (error, info) => {
     if (error) {
       console.error(error);
+      console.log(`E-mails de aula marcada enviados ${new Date()}, ${error}`);
     } else {
       console.log("E-mail enviado: " + info.response);
     }
@@ -50,7 +51,6 @@ const renderEmailTemplateScheduledClass = async (
           console.error("Erro ao renderizar o template EJS:", err);
           reject(err);
         } else {
-          console.log(`E-mails de aula marcada não enviados ${new Date()}`);
           resolve(htmlContent);
         }
       }
