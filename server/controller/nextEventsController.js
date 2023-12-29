@@ -84,30 +84,26 @@ const nextTutoring_editNext = async (req, res) => {
 
 const nextTutoring_seeAllTutorings = async (req, res) => {
   try {
-    // Obter todos os tutorings
     const tutorings = await NextTutoring_Model.find();
 
-    // Obter todos os IDs de alunos dos tutorings
     const studentIDs = tutorings.map((tutoring) => tutoring.studentID);
 
-    // Obter todos os alunos correspondentes aos IDs
     const students = await Student_Model.find({ _id: { $in: studentIDs } });
 
-    // Filtrar os tutorings que têm studentIDs correspondentes
     const validTutorings = tutorings.filter((tutoring) =>
       students.some(
         (student) => student._id.toString() === tutoring.studentID.toString()
       )
     );
 
-    // Separar os tutorings em duas listas: passados e futuros
     const currentDate = new Date();
-    const pastTutorings = [];
-    const futureTutorings = [];
+    let pastTutorings = [];
+    let futureTutorings = [];
 
     validTutorings.forEach((tutoring) => {
       const tutoringDate = new Date(tutoring.date + " " + tutoring.time);
 
+      // Comparar com o horário atual
       if (tutoringDate < currentDate) {
         pastTutorings.push(tutoring);
       } else {
