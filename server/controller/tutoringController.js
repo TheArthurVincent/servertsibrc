@@ -1,9 +1,15 @@
 const { NextTutoring_Model } = require("../models/NextEvents");
 const { Student_Model } = require("../models/Students");
 const { Tutoring_Model } = require("../models/Tutoring");
+const formatDate = require("../useful/formulas");
+const {
+  sendEmail,
+  renderEmailTemplatePostedClass,
+} = require("../useful/sendmail");
 
 const tutoring_postOne = async (req, res) => {
   const { title, date, comments, attachments, studentID, videoUrl } = req.body;
+  const student = await Student_Model.findById(studentID);
 
   const [day, month, year] = date.split("/");
 
@@ -16,8 +22,21 @@ const tutoring_postOne = async (req, res) => {
     attachments,
     studentID,
   });
+
+  const html = await renderEmailTemplatePostedClass(student.name, date, title);
+
   try {
     await newTutoring.save();
+    try {
+      sendEmail(
+        student.email,
+        `Vídeo da aula particular do dia ${date} postado! | ARVIN ENGLISH SCHOOL`,
+        html,
+        "text/html"
+      );
+    } catch (e) {
+      console.error("Erro ao enviar e-mail:", e);
+    }
     res.status(201).json({
       status: "Aula particular salva",
       newTutoring,
