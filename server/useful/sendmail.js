@@ -13,7 +13,7 @@ const transporter = nodemailer.createTransport({
     user: emailConfig.email,
     pass: emailConfig.password,
   },
-  secure: true,
+  secure: false,
   connectionTimeout: 100000, // 100 seconds
 });
 
