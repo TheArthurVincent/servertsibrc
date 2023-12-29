@@ -54,6 +54,7 @@ const nextTutoring_editNext = async (req, res) => {
           `SUCESSO - E-mail enviado e aula particular de ${student.name}- ${formattedDate} às ${time} marcada - ${meetingUrl}`,
           "text/html"
         );
+        console.log(`E-mails de aula marcada enviados ${new Date()}`);
       } catch (e) {
         sendEmail(
           "arvinenglishschool@gmail.com",
@@ -83,17 +84,63 @@ const nextTutoring_editNext = async (req, res) => {
 
 const nextTutoring_seeAllTutorings = async (req, res) => {
   try {
+    // Obter todos os tutorings
     const tutorings = await NextTutoring_Model.find();
+
+    // Obter todos os IDs de alunos dos tutorings
     const studentIDs = tutorings.map((tutoring) => tutoring.studentID);
 
-    const students = await Promise.all(
-      studentIDs.map(async (studentID) => {
-        const student = await Student_Model.findById(studentID);
-        return student;
-      })
+    // Obter todos os alunos correspondentes aos IDs
+    const students = await Student_Model.find({ _id: { $in: studentIDs } });
+
+    // Filtrar os tutorings que têm studentIDs correspondentes
+    const validTutorings = tutorings.filter((tutoring) =>
+      students.some(
+        (student) => student._id.toString() === tutoring.studentID.toString()
+      )
     );
 
-    const formattedTutorings = tutorings.map((tutoring, index) => {
+    // Separar os tutorings em duas listas: passados e futuros
+    const currentDate = new Date();
+    const pastTutorings = [];
+    const futureTutorings = [];
+
+    validTutorings.forEach((tutoring) => {
+      const tutoringDate = new Date(tutoring.date + " " + tutoring.time);
+
+      if (tutoringDate < currentDate) {
+        pastTutorings.push(tutoring);
+      } else {
+        futureTutorings.push(tutoring);
+      }
+    });
+
+    // Organizar as listas por data
+    pastTutorings.sort(
+      (a, b) =>
+        new Date(b.date + " " + b.time) - new Date(a.date + " " + a.time)
+    );
+    futureTutorings.sort(
+      (a, b) =>
+        new Date(a.date + " " + a.time) - new Date(b.date + " " + b.time)
+    );
+
+    const formattedPastTutorings = pastTutorings.map((tutoring, index) => {
+      const student = students.find(
+        (s) => s._id.toString() === tutoring.studentID.toString()
+      );
+
+      return {
+        position: index,
+        id: tutoring._id,
+        studentID: tutoring.studentID,
+        student: student.name + " " + student.lastname + " | " + student.email,
+        dateTime: tutoring.date + " " + tutoring.time,
+        meetingUrl: tutoring.meetingUrl,
+      };
+    });
+
+    const formattedFutureTutorings = futureTutorings.map((tutoring, index) => {
       const student = students.find(
         (s) => s._id.toString() === tutoring.studentID.toString()
       );
@@ -109,8 +156,9 @@ const nextTutoring_seeAllTutorings = async (req, res) => {
     });
 
     res.status(200).json({
-      status: `Sucesso! Foram encontradas ${formattedTutorings.length} aulas.`,
-      listOfTutorings: formattedTutorings,
+      status: `Sucesso! Foram encontradas ${validTutorings.length} aulas.`,
+      pastTutorings: formattedPastTutorings,
+      futureTutorings: formattedFutureTutorings,
     });
   } catch (error) {
     console.log(error);

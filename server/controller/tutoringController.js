@@ -1,7 +1,6 @@
 const { NextTutoring_Model } = require("../models/NextEvents");
 const { Student_Model } = require("../models/Students");
 const { Tutoring_Model } = require("../models/Tutoring");
-const formatDate = require("../useful/formulas");
 const {
   sendEmail,
   renderEmailTemplatePostedClass,
