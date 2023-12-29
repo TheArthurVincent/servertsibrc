@@ -48,7 +48,19 @@ const nextTutoring_editNext = async (req, res) => {
           html,
           "text/html"
         );
+        sendEmail(
+          "arthurcardosocorp@gmail.com",
+          `E-mail enviado e aula particular de ${student.name}- ${formattedDate} às ${time} marcada`,
+          `E-mail enviado e aula particular de ${student.name}- ${formattedDate} às ${time} marcada - ${meetingUrl}`,
+          "text/html"
+        );
       } catch (e) {
+        sendEmail(
+          "arthurcardosocorp@gmail.com",
+          `E-mail NÃO enviado da aula particular de ${student.name}- ${formattedDate} às ${time} marcada`,
+          `E-mail NÃO enviado da aula particular de ${student.name}- ${formattedDate} às ${time} marcada - ${meetingUrl}`,
+          "text/html"
+        );
         console.error("Erro ao enviar e-mail:", e);
       }
 
