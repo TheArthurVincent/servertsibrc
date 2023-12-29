@@ -50,7 +50,7 @@ const renderEmailTemplateScheduledClass = async (
           console.error("Erro ao renderizar o template EJS:", err);
           reject(err);
         } else {
-          console.log(`E-mails de aula marcada enviados ${new Date()}`);
+          console.log(`E-mails de aula marcada não enviados ${new Date()}`);
           resolve(htmlContent);
         }
       }
