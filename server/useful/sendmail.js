@@ -3,7 +3,7 @@ const ejs = require("ejs");
 
 const emailConfig = {
   email: "arvinenglishschool@gmail.com",
-  password: "pbjy jfog mqyg srlm",
+  password: "bdiv cvpc kvrm gnsd",
 };
 const transporter = nodemailer.createTransport({
   service: "gmail",
