@@ -63,6 +63,103 @@ const tutoring_postOne = async (req, res) => {
     res.status(500).json({ Erro: "Aula não registrada" });
   }
 };
+const tutoring_deleteOne = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const deletedTutoring = await Tutoring_Model.findByIdAndDelete(id);
+
+    if (!deletedTutoring) {
+      res.status(404).json({ Erro: "Aula não encontrada" });
+      return;
+    }
+
+    res.status(200).json({ status: "Aula excluída com sucesso" });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ Erro: "Erro ao excluir aula" });
+  }
+};
+const tutoring_getAll = async (req, res) => {
+  try {
+    const tutorings = await Tutoring_Model.find();
+    const students = await Student_Model.find();
+    const tutoringsByStudent = {};
+    tutorings.forEach((tutoring) => {
+      const studentID = tutoring.studentID;
+
+      // Verifica se o aluno com o ID existe
+      const studentTheClassBelongsTo = students.find(
+        (student) => student._id.toString() === studentID.toString()
+      );
+
+      if (!studentTheClassBelongsTo) {
+        // Se o aluno não existe, apaga a aula
+        deleteTutoring(tutoring._id);
+        return; // Pula para a próxima iteração
+      }
+
+      // Verifica se o aluno já está no objeto
+      if (!tutoringsByStudent[studentID]) {
+        tutoringsByStudent[studentID] = {
+          student: {
+            id: studentID,
+            name:
+              studentTheClassBelongsTo.name +
+              " " +
+              studentTheClassBelongsTo.lastname,
+            username: studentTheClassBelongsTo.username,
+          },
+          tutorings: [],
+        };
+      }
+
+      // Adiciona a aula ao array correspondente ao aluno
+      tutoringsByStudent[studentID].tutorings.push({
+        id: tutoring._id,
+        title: tutoring.title,
+        date: tutoring.date,
+        videoUrl: tutoring.videoUrl,
+        comments: tutoring.comments,
+        attachments: tutoring.attachments,
+        createdAt: tutoring.createdAt,
+        updatedAt: tutoring.updatedAt,
+      });
+    });
+
+    const formattedTutoringsByStudent = Object.values(
+      tutoringsByStudent
+    ).filter((group) => group.tutorings.length > 0);
+
+    res.status(200).json({
+      status: "Aulas encontradas",
+      formattedTutoringsByStudent,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ Erro: "Não há aulas registradas" });
+  }
+};
+
+// Função de exemplo para excluir uma aula
+async function deleteTutoring(tutoringID) {
+  try {
+    await Tutoring_Model.findByIdAndDelete(tutoringID);
+    console.log(`Aula com ID ${tutoringID} excluída`);
+  } catch (error) {
+    console.log(`Erro ao excluir aula com ID ${tutoringID}: ${error}`);
+  }
+}
+
+// Função de exemplo para obter informações do aluno
+function getStudentInfo(studentID) {
+  // Substitua isso com a lógica real para obter as informações do aluno com base no ID
+  return {
+    name: "Nome do Aluno",
+    lastname: "Sobrenome do Aluno",
+    username: "Nome de Usuário do Aluno",
+  };
+}
 
 const tutoring_getAllFromParticularStudent = async (req, res) => {
   const { studentID } = req.params;
@@ -170,4 +267,6 @@ module.exports = {
   tutoring_getListOfAParticularMonthOfAStudent,
   tutoring_getAllFromParticularStudentInAParticularMonth,
   tutoring_getNext,
+  tutoring_getAll,
+  tutoring_deleteOne,
 };

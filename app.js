@@ -27,6 +27,8 @@ const {
   tutoring_getAllFromParticularStudentInAParticularMonth,
   tutoring_getListOfAParticularMonthOfAStudent,
   tutoring_getNext,
+  tutoring_getAll,
+  tutoring_deleteOne,
 } = require("./server/controller/tutoringController");
 const {
   nextTutoring_editNext,
@@ -110,6 +112,8 @@ app.delete(`${mainroute}/blogposts/:id`, /*loggedIn,*/ blogPosts_deleteOne);
 
 // ** TUTOTING - Aulas Particulares **
 app.post(`${mainroute}/tutoring`, /*loggedIn,*/ tutoring_postOne);
+app.delete(`${mainroute}/tutoring/:id`, /*loggedIn,*/ tutoring_deleteOne);
+app.get(`${mainroute}/tutoring`, /*loggedIn,*/ tutoring_getAll);
 
 app.get(
   `${mainroute}/tutoring/:studentID`,
