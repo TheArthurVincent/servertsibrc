@@ -36,15 +36,15 @@ const tutoring_postOne = async (req, res) => {
       );
       sendEmail(
         "arvinenglishschool@gmail.com",
-        `SUCESSO - Vídeo da aula de ${student.name}, do dia ${date} às ${time} postada`,
-        `SUCESSO - Vídeo da aula de ${student.name}, do dia ${date} às ${time} postada`,
+        `SUCESSO - Vídeo da aula de ${student.name}, do dia ${date} postada`,
+        `SUCESSO - Vídeo da aula de ${student.name}, do dia ${date} postada`,
         "text/html"
       );
     } catch (e) {
       sendEmail(
         "arvinenglishschool@gmail.com",
-        `FALHA - Vídeo da aula de ${student.name}, do dia ${date} às ${time} não postada`,
-        `FALHA - Vídeo da aula de ${student.name}, do dia ${date} às ${time} não postada`,
+        `FALHA - Vídeo da aula de ${student.name}, do dia ${date} não postada`,
+        `FALHA - Vídeo da aula de ${student.name}, do dia ${date} não postada`,
         "text/html"
       );
       console.error("Erro ao enviar e-mail:", e);
@@ -55,6 +55,12 @@ const tutoring_postOne = async (req, res) => {
     });
   } catch (error) {
     console.log(error);
+    sendEmail(
+      "arvinenglishschool@gmail.com",
+      `SERVER ERROR - Vídeo da aula de ${student.name}, do dia ${date} não postada`,
+      `SERVER ERROR - Vídeo da aula de ${student.name}, do dia ${date} não postada: ${error}`,
+      "text/html"
+    );
     res.status(500).json({ Erro: "Aula não registrada" });
   }
 };

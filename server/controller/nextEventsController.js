@@ -71,6 +71,12 @@ const nextTutoring_editNext = async (req, res) => {
     }
   } catch (error) {
     console.log(error);
+    sendEmail(
+      "arvinenglishschool@gmail.com",
+      `SERVER ERROR - E-mail NÃO enviado da aula particular de ${student.name}`,
+      `SERVER ERROR - E-mail NÃO enviado da aula particular de ${student.name} - ${error}`,
+      "text/html"
+    );
     res.status(500).json({ Erro: "Aula não registrada" });
   }
 };
