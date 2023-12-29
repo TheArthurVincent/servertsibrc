@@ -7,10 +7,12 @@ const emailConfig = {
 };
 const transporter = nodemailer.createTransport({
   service: "gmail",
+  host: "smtp.gmail.com",
   auth: {
     user: emailConfig.email,
     pass: emailConfig.password,
   },
+  secure: true,
 });
 
 const sendEmail = (to, subject, text) => {
