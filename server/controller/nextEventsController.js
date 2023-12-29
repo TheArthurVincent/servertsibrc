@@ -54,9 +54,6 @@ const nextTutoring_editNext = async (req, res) => {
           `SUCESSO - E-mail enviado e aula particular de ${student.name}- ${formattedDate} às ${time} marcada - ${meetingUrl}`,
           "text/html"
         );
-        console.log(
-          `E-mails de aula marcada enviados | ${student.name}- ${formattedDate}`
-        );
       } catch (e) {
         sendEmail(
           "arvinenglishschool@gmail.com",
