@@ -53,7 +53,29 @@ const renderEmailTemplateScheduledClass = async (
   });
 };
 
+const renderEmailTemplatePostedClass = async (
+  studentName,
+  classDate,
+  classTitle
+) => {
+  return new Promise((resolve, reject) => {
+    const templatePath = "server/useful/emailtemplates/newtutoringposted.ejs";
+    ejs.renderFile(
+      templatePath,
+      { studentName, classDate, classTitle },
+      (err, htmlContent) => {
+        if (err) {
+          console.error("Erro ao renderizar o template EJS:", err);
+          reject(err);
+        } else {
+          resolve(htmlContent);
+        }
+      }
+    );
+  });
+};
 module.exports = {
   sendEmail,
   renderEmailTemplateScheduledClass,
+  renderEmailTemplatePostedClass,
 };
