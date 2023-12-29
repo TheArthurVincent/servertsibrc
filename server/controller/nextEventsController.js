@@ -96,7 +96,7 @@ const nextTutoring_seeAllTutorings = async (req, res) => {
         position: index,
         id: tutoring._id,
         studentID: tutoring.studentID,
-        student: student.name + " " + student.lastname + " | " + student.email, // Use the student data fetched above
+        student: student.name + " " + student.lastname + " | " + student.email,
         dateTime: tutoring.date + " " + tutoring.time,
         meetingUrl: tutoring.meetingUrl,
       };
