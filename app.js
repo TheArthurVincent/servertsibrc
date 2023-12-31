@@ -78,10 +78,11 @@ app.get(`${mainroute}/moduleforcourse/:id`, courses_getModulesFromOneCourse);
 app.put(`${mainroute}/moduleforcourse/:id`, courses_editOneModule);
 app.delete(`${mainroute}/moduleforcourse/:id`, courses_deleteOneModule);
 // * classes *
-app.post(`${mainroute}/classformodule/:id`, courses_postOneClass);
-app.get(`${mainroute}/classformodule/:id`, courses_getClassesFromOneModule);
-app.put(`${mainroute}/classformodule/:id`, courses_editOneClass);
-app.delete(`${mainroute}/classformodule/:id`, courses_deleteOneClass);
+// app.post(`${mainroute}/classformodule/:id`, courses_postOneClass);
+app.post(`${mainroute}/courseclass`, courses_postOneClass);
+app.put(`${mainroute}/courseclass/:id`, courses_editOneClass);
+app.get(`${mainroute}/courseclass/`, courses_getClassesFromOneModule);
+app.delete(`${mainroute}/courseclass/:id`, courses_deleteOneClass);
 
 // ** NEXT CLASSES **
 app.post(`${mainroute}/nexttutoring`, nextTutoring_editNext);

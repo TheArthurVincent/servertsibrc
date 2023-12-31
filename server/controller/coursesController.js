@@ -267,31 +267,27 @@ const courses_deleteOneModule = async (req, res) => {
 };
 
 const courses_postOneClass = async (req, res) => {
-  const { id } = req.params;
-  const { classTitle, description, srcVideos, srcAttachments } = req.body;
+  const {
+    classTitle,
+    description,
+    videoUrl,
+    moduleTitle,
+    courseTitle,
+    partner,
+  } = req.body;
   try {
-    const moduleToPostClassIn = await Module_Model.findById(id);
-    if (!moduleToPostClassIn) {
-      return res.status(400).json({ message: "Módulo não existe" });
-    } else if (!classTitle || !description) {
-      return res
-        .status(400)
-        .json({ message: "Título do módulo ou descrição faltando" });
-    } else {
-      const newClass = new Class_Model({
-        classTitle,
-        description,
-        srcVideos,
-        srcAttachments,
-      });
-      await newClass.save();
-      moduleToPostClassIn.classes.push(newClass);
-      await moduleToPostClassIn.save();
-      res.status(201).json({
-        NewClass: newClass,
-        UpdatedModule: moduleToPostClassIn,
-      });
-    }
+    const newClass = new Class_Model({
+      classTitle,
+      description,
+      videoUrl,
+      moduleTitle,
+      courseTitle,
+      partner,
+    });
+    await newClass.save();
+    res.status(201).json({
+      NewClass: newClass,
+    });
   } catch (error) {
     res.status(400).json({
       status: "Aula não postada",
@@ -301,20 +297,27 @@ const courses_postOneClass = async (req, res) => {
 
 const courses_editOneClass = async (req, res) => {
   const { id } = req.params;
-  const { classTitle, description, srcVideos, srcAttachments } = req.body;
+  const {
+    classTitle,
+    description,
+    videoUrl,
+    moduleTitle,
+    courseTitle,
+    // partner,
+  } = req.body;
   try {
     const classToEdit = await Class_Model.findById(id);
     if (!classToEdit) {
       return res.status(400).json({ message: "Aula não existe" });
-    } else if (!classTitle || !description) {
-      return res
-        .status(400)
-        .json({ message: "Título do módulo ou descrição faltando" });
+    } else if (!classTitle) {
+      return res.status(400).json({ message: "Título faltando" });
     } else {
       classToEdit.classTitle = classTitle;
       classToEdit.description = description;
-      classToEdit.srcVideos = srcVideos;
-      classToEdit.srcAttachments = srcAttachments;
+      classToEdit.videoUrl = videoUrl;
+      classToEdit.moduleTitle = moduleTitle;
+      classToEdit.courseTitle = courseTitle;
+      // classToEdit.partner = partner;
       await classToEdit.save();
       res.status(201).json({
         status: "Aula atualizada",
@@ -329,31 +332,18 @@ const courses_editOneClass = async (req, res) => {
 };
 
 const courses_getClassesFromOneModule = async (req, res) => {
-  const { id } = req.params;
+  const { moduleTitle, courseTitle } = req.body;
+
   try {
-    const module = await Module_Model.findById(id);
-
-    if (!module) {
-      return res.status(400).json({ message: "Módulo não existe" });
-    } else {
-      // Use populate no modelo de módulo, não na instância de módulo
-      await Module_Model.populate(module, {
-        path: "classes",
-        model: Class_Model, // Substitua pelo nome correto do modelo de Classe
-      });
-
-      const classes = module.classes;
-
-      res.status(200).json({
-        status: "Aulas encontradas",
-        classes,
-      });
-    }
-  } catch (error) {
-    res.status(400).json({
-      status: "Erro ao buscar aulas",
-      error: error.message,
+    const classes = await Class_Model.find({
+      moduleTitle: moduleTitle,
+      courseTitle: courseTitle,
     });
+
+    res.json(classes);
+  } catch (error) {
+    console.error("Erro ao obter as aulas:", error);
+    res.status(500).json({ error: "Erro interno do servidor" });
   }
 };
 
