@@ -45,23 +45,19 @@ const courses_getAll = async (req, res) => {
 };
 
 const courses_getOne = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const course = await Course_Model.findById(id).populate("modules"); // 'modules' é o nome do campo que contém os IDs dos módulos
+  const { id } = req.params;
 
-    if (!course) {
-      res.status(400).json({
-        error: "Nenhum curso com este id",
-      });
-    } else {
-      res.status(200).json({
-        course,
-      });
+  try {
+    const classDetails = await Class_Model.findById(id);
+
+    if (!classDetails) {
+      return res.status(404).json({ error: "Aula não encontrada" });
     }
+
+    res.json(classDetails);
   } catch (error) {
-    res.status(400).json({
-      status: "Erro ao encontrar curso",
-    });
+    console.error("Erro ao obter os detalhes da aula:", error);
+    res.status(500).json({ error: "Erro interno do servidor" });
   }
 };
 
@@ -333,7 +329,6 @@ const courses_editOneClass = async (req, res) => {
 
 const courses_getClassesFromOneModule = async (req, res) => {
   const { moduleTitle, courseTitle } = req.body;
-
   try {
     const classes = await Class_Model.find({
       moduleTitle: moduleTitle,
@@ -343,6 +338,29 @@ const courses_getClassesFromOneModule = async (req, res) => {
     res.json(classes);
   } catch (error) {
     console.error("Erro ao obter as aulas:", error);
+    res.status(500).json({ error: "Erro interno do servidor" });
+  }
+};
+const courses_getCoursesTitles = async (req, res) => {
+  try {
+    const classes = await Class_Model.find();
+
+    // Filtra as classes que têm courseTitle não nulo
+    const filteredClasses = classes.filter(
+      (classItem) => classItem.courseTitle !== null
+    );
+
+    // Cria um Set para armazenar títulos únicos
+    const uniqueCourseTitlesSet = new Set(
+      filteredClasses.map((classItem) => classItem.courseTitle)
+    );
+
+    // Converte o Set para um array
+    const uniqueCourseTitles = [...uniqueCourseTitlesSet];
+
+    res.json(uniqueCourseTitles);
+  } catch (error) {
+    console.error("Erro ao listar cursos:", error);
     res.status(500).json({ error: "Erro interno do servidor" });
   }
 };
@@ -381,4 +399,5 @@ module.exports = {
   courses_getClassesFromOneModule,
   courses_editOneClass,
   courses_deleteOneClass,
+  courses_getCoursesTitles,
 };

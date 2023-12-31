@@ -53,6 +53,7 @@ const {
   courses_editOneClass,
   courses_getClassesFromOneModule,
   courses_deleteOneClass,
+  courses_getCoursesTitles,
 } = require("./server/controller/coursesController");
 
 database();
@@ -67,9 +68,10 @@ app.use(
 );
 
 // ** COURSES **
+app.get(`${mainroute}/courses`, courses_getCoursesTitles);
+
 app.post(`${mainroute}/courses`, courses_postOneCourse);
 app.get(`${mainroute}/courses`, courses_getAll);
-app.get(`${mainroute}/courses/:id`, courses_getOne);
 app.put(`${mainroute}/courses/:id`, courses_editOneCourse);
 app.delete(`${mainroute}/courses/:id`, courses_deleteOneCourse);
 // * Modules *
@@ -78,10 +80,10 @@ app.get(`${mainroute}/moduleforcourse/:id`, courses_getModulesFromOneCourse);
 app.put(`${mainroute}/moduleforcourse/:id`, courses_editOneModule);
 app.delete(`${mainroute}/moduleforcourse/:id`, courses_deleteOneModule);
 // * classes *
-// app.post(`${mainroute}/classformodule/:id`, courses_postOneClass);
 app.post(`${mainroute}/courseclass`, courses_postOneClass);
 app.put(`${mainroute}/courseclass/:id`, courses_editOneClass);
 app.get(`${mainroute}/courseclass/`, courses_getClassesFromOneModule);
+app.get(`${mainroute}/courseclass/:id`, courses_getOne);
 app.delete(`${mainroute}/courseclass/:id`, courses_deleteOneClass);
 
 // ** NEXT CLASSES **
