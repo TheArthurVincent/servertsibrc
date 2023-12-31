@@ -1,4 +1,4 @@
-const { Blog_Model } = require("../models/Posts");
+const { Blog_Model, TBlog_Model } = require("../models/Posts");
 
 const blogPosts_getAll = async (req, res) => {
   try {
@@ -129,10 +129,147 @@ const blogPosts_deleteOne = async (req, res) => {
   }
 };
 
+// Talking Business
+
+const tbBlogPosts_getAll = async (req, res) => {
+  try {
+    const blogPosts = await TBlog_Model.find();
+
+    if (blogPosts.length === 0) {
+      res.status(200).json({
+        message: "Nenhum post",
+      });
+    } else {
+      res.status(200).json({
+        status: "Blog Posts encontrados",
+        numberOfPosts: blogPosts.length,
+        listOfPosts: blogPosts.reverse(),
+      });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error, listOfPosts: "Nenhum post encontrado" });
+  }
+};
+
+const tbBlogPosts_postOne = async (req, res) => {
+  const { title, videoUrl, text, img } = req.body;
+
+  try {
+    const existingTitle = await TBlog_Model.findOne({
+      title: title,
+    });
+    if (!title || !text) {
+      res.status(400).json({ message: "Informações faltantes" });
+    } else if (existingTitle) {
+      return res
+        .status(400)
+        .json({ message: "Escolha outro título, este já existe." });
+    } else {
+      const newBlogPost = await new TBlog_Model({
+        title,
+        videoUrl,
+        text,
+        img,
+      });
+
+      await newBlogPost.save();
+      res.status(201).json({
+        status: "Post criado!",
+        newBlogPost,
+      });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Blog post não criado");
+  }
+};
+
+const tbBlogPosts_getOne = async (req, res) => {
+  const blogPost = await TBlog_Model.findById(req.params.id);
+  try {
+    if (!blogPost) {
+      return res.status(404).json({ message: "Post não encontrado" });
+    }
+    const formattedBlogPost = {
+      id: blogPost._id,
+      title: blogPost.title,
+      videoUrl: blogPost.videoUrl,
+      text: blogPost.text,
+    };
+    res.status(200).json({
+      status: "Post encontrado",
+      formattedBlogPost,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Blog post não encontrado");
+  }
+};
+
+const tbBlogPosts_editOne = async (req, res) => {
+  const { title, videoUrl, text } = req.body;
+
+  try {
+    const { id } = req.params;
+    const postToEdit = await TBlog_Model.findById(id);
+    if (!postToEdit) {
+      return res.status(404).json({ message: "Post não encontrado" });
+    } else if (!title || !text) {
+      return res.status(400).json({ message: "Campos obrigatórios faltando" });
+    } else if (
+      postToEdit.title === title &&
+      postToEdit.videoUrl === videoUrl &&
+      postToEdit.text === text
+    ) {
+      res.json({
+        message: `Nenhuma edição feita no post ${postToEdit.title}`,
+      });
+    } else {
+      postToEdit.title = title;
+      postToEdit.videoUrl = videoUrl;
+      postToEdit.text = text;
+
+      await postToEdit.save();
+
+      res.status(200).json({
+        message: "Post editado com sucesso",
+        updatedUser: postToEdit,
+      });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Blog post não editado" });
+  }
+};
+
+const tbBlogPosts_deleteOne = async (req, res) => {
+  const blogPost = await TBlog_Model.findById(req.params.id);
+
+  try {
+    if (!blogPost) {
+      return res.status(404).json({ message: "Post não existe" });
+    } else {
+      await blogPost.deleteOne();
+      res.status(200).json({
+        status: "Post excluído",
+      });
+    }
+  } catch (error) {
+    res.status(500).json({ erro: "Falha ao excluir post!", status: error });
+  }
+};
+
 module.exports = {
   blogPosts_getAll,
   blogPosts_editOne,
   blogPosts_getOne,
   blogPosts_postOne,
   blogPosts_deleteOne,
+  // Talking Business
+  tbBlogPosts_getAll,
+  tbBlogPosts_postOne,
+  tbBlogPosts_deleteOne,
+  tbBlogPosts_editOne,
+  tbBlogPosts_getOne,
 };

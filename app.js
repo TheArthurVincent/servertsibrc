@@ -20,6 +20,11 @@ const {
   blogPosts_getOne,
   blogPosts_postOne,
   blogPosts_deleteOne,
+  tbBlogPosts_getAll,
+  tbBlogPosts_postOne,
+  tbBlogPosts_editOne,
+  tbBlogPosts_deleteOne,
+  tbBlogPosts_getOne,
 } = require("./server/controller/blogPostsController");
 const {
   tutoring_postOne,
@@ -103,11 +108,8 @@ app.delete(`${mainroute}/students/:id`, /*loggedIn,*/ student_deleteOne);
 // **BLOG POSTS**
 app.get(`${mainroute}/blogposts`, /*loggedIn,*/ blogPosts_getAll);
 app.get(`${mainroute}/blogpost/:id`, /*loggedIn,*/ blogPosts_getOne);
-
 app.post(`${mainroute}/blogposts`, /*loggedIn,*/ blogPosts_postOne);
-
 app.put(`${mainroute}/blogposts/:id`, /*loggedIn,*/ blogPosts_editOne);
-
 app.delete(`${mainroute}/blogposts/:id`, /*loggedIn,*/ blogPosts_deleteOne);
 
 // ** TUTOTING - Aulas Particulares **
@@ -127,6 +129,13 @@ app.get(
   `${mainroute}/tutoringmonthyear/:studentID`,
   /*loggedIn,*/ tutoring_getListOfAParticularMonthOfAStudent
 );
+
+// Talking Business
+app.get(`${mainroute}/tbblogposts`, /*loggedIn,*/ tbBlogPosts_getAll);
+app.get(`${mainroute}/tbblogpost/:id`, /*loggedIn,*/ tbBlogPosts_getOne);
+app.post(`${mainroute}/tbblogposts`, /*loggedIn,*/ tbBlogPosts_postOne);
+app.put(`${mainroute}/tbblogposts/:id`, /*loggedIn,*/ tbBlogPosts_editOne);
+app.delete(`${mainroute}/tbblogposts/:id`, /*loggedIn,*/ tbBlogPosts_deleteOne);
 
 // ** App rodando **
 app.listen(PORT, () => {
