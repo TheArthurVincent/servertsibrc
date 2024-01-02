@@ -141,7 +141,6 @@ const tutoring_getAll = async (req, res) => {
   }
 };
 
-// Função de exemplo para excluir uma aula
 async function deleteTutoring(tutoringID) {
   try {
     await Tutoring_Model.findByIdAndDelete(tutoringID);
@@ -151,51 +150,46 @@ async function deleteTutoring(tutoringID) {
   }
 }
 
-// Função de exemplo para obter informações do aluno
-function getStudentInfo(studentID) {
-  // Substitua isso com a lógica real para obter as informações do aluno com base no ID
-  return {
-    name: "Nome do Aluno",
-    lastname: "Sobrenome do Aluno",
-    username: "Nome de Usuário do Aluno",
-  };
-}
-
 const tutoring_getAllFromParticularStudent = async (req, res) => {
   const { studentID } = req.params;
-  const tutoring = await Tutoring_Model.find({
-    studentID,
-  });
-  const studentTheClassBelongsTo = await Student_Model.findOne({
-    _id: studentID,
-  });
-
-  const formattedTutoringFromParticularStudent = tutoring.map(
-    (tutoring, index) => {
-      return {
-        position: index,
-        id: tutoring._id,
-        title: tutoring.title,
-        date: tutoring.date,
-        videoUrl: tutoring.videoUrl,
-        comments: tutoring.comments,
-        attachments: tutoring.attachments,
-        createdAt: tutoring.createdAt,
-        updatedAt: tutoring.updatedAt,
-        belongsTo: {
-          name:
-            studentTheClassBelongsTo.name +
-            " " +
-            studentTheClassBelongsTo.lastname,
-          username: studentTheClassBelongsTo.username,
-        },
-      };
-    }
-  );
-
-  formattedTutoringFromParticularStudent.reverse();
-
   try {
+    const tutoring = await Tutoring_Model.find({ studentID });
+    const studentTheClassBelongsTo = await Student_Model.findOne({
+      _id: studentID,
+    });
+
+    const formattedTutoringFromParticularStudent = tutoring.map(
+      (tutoring, index) => {
+        return {
+          position: index,
+          id: tutoring._id,
+          title: tutoring.title,
+          date: tutoring.date,
+          videoUrl: tutoring.videoUrl,
+          comments: tutoring.comments,
+          attachments: tutoring.attachments,
+          createdAt: tutoring.createdAt,
+          updatedAt: tutoring.updatedAt,
+          belongsTo: {
+            name:
+              studentTheClassBelongsTo.name +
+              " " +
+              studentTheClassBelongsTo.lastname,
+            username: studentTheClassBelongsTo.username,
+          },
+        };
+      }
+    );
+
+    // Sorting the array based on the 'date' property in ascending order
+    formattedTutoringFromParticularStudent.sort((a, b) => {
+      const dateA = new Date(a.date.split("/").reverse().join("-"));
+      const dateB = new Date(b.date.split("/").reverse().join("-"));
+      return dateA - dateB;
+    });
+
+    formattedTutoringFromParticularStudent.reverse();
+
     res.status(201).json({
       status: "Aulas encontradas",
       formattedTutoringFromParticularStudent,
