@@ -270,6 +270,7 @@ const courses_postOneClass = async (req, res) => {
     moduleTitle,
     courseTitle,
     partner,
+    googleDriveLink,
   } = req.body;
   try {
     const newClass = new Class_Model({
@@ -279,6 +280,7 @@ const courses_postOneClass = async (req, res) => {
       moduleTitle,
       courseTitle,
       partner,
+      googleDriveLink,
     });
     await newClass.save();
     res.status(201).json({
@@ -299,7 +301,7 @@ const courses_editOneClass = async (req, res) => {
     videoUrl,
     moduleTitle,
     courseTitle,
-    // partner,
+    googleDriveLink,
   } = req.body;
   try {
     const classToEdit = await Class_Model.findById(id);
@@ -313,7 +315,7 @@ const courses_editOneClass = async (req, res) => {
       classToEdit.videoUrl = videoUrl;
       classToEdit.moduleTitle = moduleTitle;
       classToEdit.courseTitle = courseTitle;
-      // classToEdit.partner = partner;
+      classToEdit.googleDriveLink = googleDriveLink;
       await classToEdit.save();
       res.status(201).json({
         status: "Aula atualizada",
@@ -328,11 +330,11 @@ const courses_editOneClass = async (req, res) => {
 };
 
 const courses_getClassesFromOneModule = async (req, res) => {
-  const { moduleTitle, courseTitle } = req.body;
+  const { moduleTitle, courseTitle } = req.query;
   try {
     const classes = await Class_Model.find({
-      moduleTitle: moduleTitle,
-      courseTitle: courseTitle,
+      moduleTitle,
+      courseTitle,
     });
 
     res.json(classes);
@@ -342,23 +344,54 @@ const courses_getClassesFromOneModule = async (req, res) => {
   }
 };
 const courses_getCoursesTitles = async (req, res) => {
+  const { partner } = req.query;
+  const partnerNumber = new Number(partner);
   try {
-    const classes = await Class_Model.find();
-
-    // Filtra as classes que têm courseTitle não nulo
+    await Class_Model.deleteMany({ courseTitle: null });
+    const classes = await Class_Model.find({
+      $and: [{ courseTitle: { $ne: null } }, { partner: partnerNumber }],
+    });
     const filteredClasses = classes.filter(
       (classItem) => classItem.courseTitle !== null
     );
-
-    // Cria um Set para armazenar títulos únicos
     const uniqueCourseTitlesSet = new Set(
       filteredClasses.map((classItem) => classItem.courseTitle)
     );
-
-    // Converte o Set para um array
     const uniqueCourseTitles = [...uniqueCourseTitlesSet];
-
     res.json(uniqueCourseTitles);
+  } catch (error) {
+    console.error("Erro ao listar cursos:", error);
+    res.status(500).json({ error: "Erro interno do servidor" });
+  }
+};
+const courses_getOneCourse = async (req, res) => {
+  const { courseName } = req.query;
+
+  try {
+    const classesFromTheCourse = await Class_Model.find({
+      courseTitle: courseName,
+    });
+
+    // Função para agrupar as aulas por moduleTitle
+    const groupBy = (array, key) => {
+      return array.reduce((result, currentValue) => {
+        (result[currentValue[key]] = result[currentValue[key]] || []).push(
+          currentValue
+        );
+        return result;
+      }, {});
+    };
+
+    const groupedClasses = groupBy(classesFromTheCourse, "moduleTitle");
+    const sortedModuleTitles = Object.keys(groupedClasses).sort();
+    const resultArray = sortedModuleTitles.map((moduleTitle) => {
+      return {
+        moduleName: moduleTitle,
+        classes: groupedClasses[moduleTitle],
+      };
+    });
+
+    res.json(resultArray);
   } catch (error) {
     console.error("Erro ao listar cursos:", error);
     res.status(500).json({ error: "Erro interno do servidor" });
@@ -384,8 +417,37 @@ const courses_deleteOneClass = async (req, res) => {
     });
   }
 };
+const deleteAllBut = async (req, res) => {
+  const { courseTitle } = req.query;
+
+  try {
+    // Find all classes whose courseTitle is not equal to the provided courseTitle
+    const classesToDelete = await Class_Model.find({
+      courseTitle: { $ne: courseTitle },
+    });
+
+    if (classesToDelete.length === 0) {
+      return res.status(400).json({ message: "No classes found for deletion" });
+    }
+
+    // Delete all classes found
+    await Class_Model.deleteMany({
+      _id: { $in: classesToDelete.map((cls) => cls._id) },
+    });
+
+    res.status(201).json({
+      status: "Classes successfully deleted",
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(400).json({
+      status: "Error deleting classes",
+    });
+  }
+};
 
 module.exports = {
+  deleteAllBut,
   courses_postOneCourse,
   courses_getAll,
   courses_getOne,
@@ -400,4 +462,5 @@ module.exports = {
   courses_editOneClass,
   courses_deleteOneClass,
   courses_getCoursesTitles,
+  courses_getOneCourse,
 };
