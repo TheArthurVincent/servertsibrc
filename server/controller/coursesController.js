@@ -364,15 +364,26 @@ const courses_getCoursesTitles = async (req, res) => {
     res.status(500).json({ error: "Erro interno do servidor" });
   }
 };
+
+const courses_getAllObjects = async (req, res) => {
+  try {
+    const classes = await Class_Model.find();
+    console.log(classes);
+    res.json(classes);
+  } catch (error) {
+    console.error("Erro ao listar cursos:", error);
+    res.status(500).json({ error: "Erro interno do servidor" });
+  }
+};
+
 const courses_getOneCourse = async (req, res) => {
-  const { courseName } = req.query;
+  let { courseName } = req.query;
 
   try {
     const classesFromTheCourse = await Class_Model.find({
       courseTitle: courseName,
     });
 
-    // Função para agrupar as aulas por moduleTitle
     const groupBy = (array, key) => {
       return array.reduce((result, currentValue) => {
         (result[currentValue[key]] = result[currentValue[key]] || []).push(
@@ -447,7 +458,6 @@ const deleteAllBut = async (req, res) => {
 };
 
 module.exports = {
-  deleteAllBut,
   courses_postOneCourse,
   courses_getAll,
   courses_getOne,
@@ -463,4 +473,5 @@ module.exports = {
   courses_deleteOneClass,
   courses_getCoursesTitles,
   courses_getOneCourse,
+  courses_getAllObjects,
 };

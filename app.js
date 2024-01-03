@@ -56,6 +56,7 @@ const {
   courses_getCoursesTitles,
   courses_getOneCourse,
   deleteAllBut,
+  courses_getAllObjects,
 } = require("./server/controller/coursesController");
 
 database();
@@ -72,6 +73,7 @@ app.use(
 // ** COURSES **
 app.get(`${mainroute}/courses`, courses_getCoursesTitles);
 app.get(`${mainroute}/course`, courses_getOneCourse);
+app.get(`${mainroute}/allcourseobjects`, courses_getAllObjects);
 
 app.post(`${mainroute}/courses`, courses_postOneCourse);
 app.get(`${mainroute}/courses`, courses_getAll);
