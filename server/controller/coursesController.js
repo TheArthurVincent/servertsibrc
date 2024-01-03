@@ -45,23 +45,19 @@ const courses_getAll = async (req, res) => {
 };
 
 const courses_getOne = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const course = await Course_Model.findById(id).populate("modules"); // 'modules' é o nome do campo que contém os IDs dos módulos
+  const { id } = req.params;
 
-    if (!course) {
-      res.status(400).json({
-        error: "Nenhum curso com este id",
-      });
-    } else {
-      res.status(200).json({
-        course,
-      });
+  try {
+    const classDetails = await Class_Model.findById(id);
+
+    if (!classDetails) {
+      return res.status(404).json({ error: "Aula não encontrada" });
     }
+
+    res.json(classDetails);
   } catch (error) {
-    res.status(400).json({
-      status: "Erro ao encontrar curso",
-    });
+    console.error("Erro ao obter os detalhes da aula:", error);
+    res.status(500).json({ error: "Erro interno do servidor" });
   }
 };
 
@@ -267,31 +263,29 @@ const courses_deleteOneModule = async (req, res) => {
 };
 
 const courses_postOneClass = async (req, res) => {
-  const { id } = req.params;
-  const { classTitle, description, srcVideos, srcAttachments } = req.body;
+  const {
+    classTitle,
+    description,
+    videoUrl,
+    moduleTitle,
+    courseTitle,
+    partner,
+    googleDriveLink,
+  } = req.body;
   try {
-    const moduleToPostClassIn = await Module_Model.findById(id);
-    if (!moduleToPostClassIn) {
-      return res.status(400).json({ message: "Módulo não existe" });
-    } else if (!classTitle || !description) {
-      return res
-        .status(400)
-        .json({ message: "Título do módulo ou descrição faltando" });
-    } else {
-      const newClass = new Class_Model({
-        classTitle,
-        description,
-        srcVideos,
-        srcAttachments,
-      });
-      await newClass.save();
-      moduleToPostClassIn.classes.push(newClass);
-      await moduleToPostClassIn.save();
-      res.status(201).json({
-        NewClass: newClass,
-        UpdatedModule: moduleToPostClassIn,
-      });
-    }
+    const newClass = new Class_Model({
+      classTitle,
+      description,
+      videoUrl,
+      moduleTitle,
+      courseTitle,
+      partner,
+      googleDriveLink,
+    });
+    await newClass.save();
+    res.status(201).json({
+      NewClass: newClass,
+    });
   } catch (error) {
     res.status(400).json({
       status: "Aula não postada",
@@ -301,20 +295,27 @@ const courses_postOneClass = async (req, res) => {
 
 const courses_editOneClass = async (req, res) => {
   const { id } = req.params;
-  const { classTitle, description, srcVideos, srcAttachments } = req.body;
+  const {
+    classTitle,
+    description,
+    videoUrl,
+    moduleTitle,
+    courseTitle,
+    googleDriveLink,
+  } = req.body;
   try {
     const classToEdit = await Class_Model.findById(id);
     if (!classToEdit) {
       return res.status(400).json({ message: "Aula não existe" });
-    } else if (!classTitle || !description) {
-      return res
-        .status(400)
-        .json({ message: "Título do módulo ou descrição faltando" });
+    } else if (!classTitle) {
+      return res.status(400).json({ message: "Título faltando" });
     } else {
       classToEdit.classTitle = classTitle;
       classToEdit.description = description;
-      classToEdit.srcVideos = srcVideos;
-      classToEdit.srcAttachments = srcAttachments;
+      classToEdit.videoUrl = videoUrl;
+      classToEdit.moduleTitle = moduleTitle;
+      classToEdit.courseTitle = courseTitle;
+      classToEdit.googleDriveLink = googleDriveLink;
       await classToEdit.save();
       res.status(201).json({
         status: "Aula atualizada",
@@ -329,31 +330,82 @@ const courses_editOneClass = async (req, res) => {
 };
 
 const courses_getClassesFromOneModule = async (req, res) => {
-  const { id } = req.params;
+  const { moduleTitle, courseTitle } = req.query;
   try {
-    const module = await Module_Model.findById(id);
-
-    if (!module) {
-      return res.status(400).json({ message: "Módulo não existe" });
-    } else {
-      // Use populate no modelo de módulo, não na instância de módulo
-      await Module_Model.populate(module, {
-        path: "classes",
-        model: Class_Model, // Substitua pelo nome correto do modelo de Classe
-      });
-
-      const classes = module.classes;
-
-      res.status(200).json({
-        status: "Aulas encontradas",
-        classes,
-      });
-    }
-  } catch (error) {
-    res.status(400).json({
-      status: "Erro ao buscar aulas",
-      error: error.message,
+    const classes = await Class_Model.find({
+      moduleTitle,
+      courseTitle,
     });
+
+    res.json(classes);
+  } catch (error) {
+    console.error("Erro ao obter as aulas:", error);
+    res.status(500).json({ error: "Erro interno do servidor" });
+  }
+};
+const courses_getCoursesTitles = async (req, res) => {
+  const { partner } = req.query;
+  const partnerNumber = new Number(partner);
+  try {
+    await Class_Model.deleteMany({ courseTitle: null });
+    const classes = await Class_Model.find({
+      $and: [{ courseTitle: { $ne: null } }, { partner: partnerNumber }],
+    });
+    const filteredClasses = classes.filter(
+      (classItem) => classItem.courseTitle !== null
+    );
+    const uniqueCourseTitlesSet = new Set(
+      filteredClasses.map((classItem) => classItem.courseTitle)
+    );
+    const uniqueCourseTitles = [...uniqueCourseTitlesSet];
+    res.json(uniqueCourseTitles);
+  } catch (error) {
+    console.error("Erro ao listar cursos:", error);
+    res.status(500).json({ error: "Erro interno do servidor" });
+  }
+};
+
+const courses_getAllObjects = async (req, res) => {
+  try {
+    const classes = await Class_Model.find();
+    console.log(classes);
+    res.json(classes);
+  } catch (error) {
+    console.error("Erro ao listar cursos:", error);
+    res.status(500).json({ error: "Erro interno do servidor" });
+  }
+};
+
+const courses_getOneCourse = async (req, res) => {
+  let { courseName } = req.query;
+
+  try {
+    const classesFromTheCourse = await Class_Model.find({
+      courseTitle: courseName,
+    });
+
+    const groupBy = (array, key) => {
+      return array.reduce((result, currentValue) => {
+        (result[currentValue[key]] = result[currentValue[key]] || []).push(
+          currentValue
+        );
+        return result;
+      }, {});
+    };
+
+    const groupedClasses = groupBy(classesFromTheCourse, "moduleTitle");
+    const sortedModuleTitles = Object.keys(groupedClasses).sort();
+    const resultArray = sortedModuleTitles.map((moduleTitle) => {
+      return {
+        moduleName: moduleTitle,
+        classes: groupedClasses[moduleTitle],
+      };
+    });
+
+    res.json(resultArray);
+  } catch (error) {
+    console.error("Erro ao listar cursos:", error);
+    res.status(500).json({ error: "Erro interno do servidor" });
   }
 };
 
@@ -376,6 +428,34 @@ const courses_deleteOneClass = async (req, res) => {
     });
   }
 };
+const deleteAllBut = async (req, res) => {
+  const { courseTitle } = req.query;
+
+  try {
+    // Find all classes whose courseTitle is not equal to the provided courseTitle
+    const classesToDelete = await Class_Model.find({
+      courseTitle: { $ne: courseTitle },
+    });
+
+    if (classesToDelete.length === 0) {
+      return res.status(400).json({ message: "No classes found for deletion" });
+    }
+
+    // Delete all classes found
+    await Class_Model.deleteMany({
+      _id: { $in: classesToDelete.map((cls) => cls._id) },
+    });
+
+    res.status(201).json({
+      status: "Classes successfully deleted",
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(400).json({
+      status: "Error deleting classes",
+    });
+  }
+};
 
 module.exports = {
   courses_postOneCourse,
@@ -391,4 +471,7 @@ module.exports = {
   courses_getClassesFromOneModule,
   courses_editOneClass,
   courses_deleteOneClass,
+  courses_getCoursesTitles,
+  courses_getOneCourse,
+  courses_getAllObjects,
 };
