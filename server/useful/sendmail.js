@@ -8,17 +8,16 @@ const emailConfig = {
 
 let transporter = nodemailer.createTransport({
   host: "smtp.gmail.com",
-  port: 465,
-  secure: true, 
+  port: 587,
+  secure: false,
   auth: {
     user: emailConfig.email,
     pass: emailConfig.password,
-  }
+  },
 });
 
-
 const sendEmail = (to, subject, text) => {
-   const mailOptions = {
+  const mailOptions = {
     from: emailConfig.email,
     to: [to, "arthurcardosocorp@gmail.com"],
     subject: subject,
@@ -84,4 +83,3 @@ module.exports = {
   renderEmailTemplateScheduledClass,
   renderEmailTemplatePostedClass,
 };
-
