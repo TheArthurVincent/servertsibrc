@@ -239,19 +239,18 @@ const student_login = async (req, res) => {
 };
 
 const loggedIn = async (req, res, next) => {
-  let token;
-  if (
-    req.headers.authorization &&
-    req.headers.authorization.startsWith("Bearer")
-  ) {
-    token = req.headers.authorization.split(" ")[1];
-  }
-  if (!token) {
+  let { authorization } = req.headers;
+  if (!authorization) {
     res.status(401).json({ erro: "NENHUM USUÁRIO LOGADO" });
   }
+  let freshUser;
   try {
-    const decoded = await promisify(jwt.verify)(token, "secretToken()");
-    const freshUser = await Student_Model.findById(decoded.id);
+    let decoded = await promisify(jwt.verify)(authorization, "secretToken()");
+    if (decoded) {
+      freshUser = await Student_Model.findById(decoded.id);
+    } else {
+      console.log("erro, não já decoded nem freshUser");
+    }
     if (!freshUser) {
       return res.status(500).json({
         error: "Este usuário já não existe mais",
@@ -261,12 +260,6 @@ const loggedIn = async (req, res, next) => {
         error: "Você recentemente mudou sua senha. Faça login novamente",
       });
     } else {
-      console.log(
-        token,
-        decoded,
-        freshUser,
-        freshUser.changedPasswordBeforeLogInAgain
-      );
       next();
     }
   } catch (error) {

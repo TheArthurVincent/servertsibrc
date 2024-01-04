@@ -117,7 +117,7 @@ app.put(
 app.delete(`${mainroute}/students/:id`, /*loggedIn,*/ student_deleteOne);
 
 // **BLOG POSTS**
-app.get(`${mainroute}/blogposts`, /*loggedIn,*/ blogPosts_getAll);
+app.get(`${mainroute}/blogposts`, loggedIn, blogPosts_getAll);
 app.get(`${mainroute}/blogpost/:id`, /*loggedIn,*/ blogPosts_getOne);
 app.post(`${mainroute}/blogposts`, /*loggedIn,*/ blogPosts_postOne);
 app.put(`${mainroute}/blogposts/:id`, /*loggedIn,*/ blogPosts_editOne);
