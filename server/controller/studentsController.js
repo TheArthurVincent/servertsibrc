@@ -240,6 +240,7 @@ const student_login = async (req, res) => {
 
 const loggedIn = async (req, res, next) => {
   let { authorization } = req.headers;
+
   if (!authorization) {
     res.status(401).json({ erro: "NENHUM USUÁRIO LOGADO" });
   }
@@ -258,6 +259,39 @@ const loggedIn = async (req, res, next) => {
     } else if (freshUser.changedPasswordBeforeLogInAgain) {
       return res.status(500).json({
         error: "Você recentemente mudou sua senha. Faça login novamente",
+      });
+    } else {
+      next();
+    }
+  } catch (error) {
+    res.status(500).json({
+      error:
+        "Você não está logado de maneira válida, portanto não pode executar esta rota",
+    });
+  }
+};
+
+const loggedInADM = async (req, res, next) => {
+  let { authorization } = req.headers;
+
+  if (!authorization) {
+    res.status(401).json({ erro: "NENHUM USUÁRIO LOGADO" });
+  }
+  let freshUser;
+  try {
+    let decoded = await promisify(jwt.verify)(authorization, "secretToken()");
+    if (decoded) {
+      freshUser = await Student_Model.findById(decoded.id);
+    } else {
+      console.log("erro, não já decoded nem freshUser");
+    }
+    if (!freshUser) {
+      return res.status(500).json({
+        error: "Este usuário já não existe mais",
+      });
+    } else if (freshUser.permissions !== "superadmin") {
+      return res.status(500).json({
+        error: "Você não é administrador!!",
       });
     } else {
       next();
@@ -420,9 +454,11 @@ const student_deleteOne = async (req, res) => {
 };
 
 module.exports = {
+  // Security
+  loggedIn,
+  loggedInADM,
   //C
   student_postOne,
-  loggedIn,
   signup,
   //R
   students_getAll,

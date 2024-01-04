@@ -13,6 +13,7 @@ const {
   student_editPermissions,
   student_login,
   loggedIn,
+  loggedInADM,
 } = require("./server/controller/studentsController");
 const {
   blogPosts_getAll,
@@ -41,7 +42,6 @@ const {
 } = require("./server/controller/nextEventsController");
 const {
   courses_postOneCourse,
-  courses_getAll,
   courses_getOne,
   courses_editOneCourse,
   courses_deleteOneCourse,
@@ -71,82 +71,96 @@ app.use(
 );
 
 // ** COURSES **
-app.get(`${mainroute}/courses`, courses_getCoursesTitles);
-app.get(`${mainroute}/course`, courses_getOneCourse);
-app.get(`${mainroute}/allcourseobjects`, courses_getAllObjects);
+app.get(`${mainroute}/courses`, loggedIn, courses_getCoursesTitles);
+app.get(`${mainroute}/course`, loggedIn, courses_getOneCourse);
+app.get(`${mainroute}/allcourseobjects`, loggedInADM, courses_getAllObjects);
+app.post(`${mainroute}/courses`, loggedInADM, courses_postOneCourse);
+app.put(`${mainroute}/courses/:id`, loggedInADM, courses_editOneCourse);
+app.delete(`${mainroute}/courses/:id`, loggedInADM, courses_deleteOneCourse);
 
-app.post(`${mainroute}/courses`, courses_postOneCourse);
-app.get(`${mainroute}/courses`, courses_getAll);
-app.put(`${mainroute}/courses/:id`, courses_editOneCourse);
-app.delete(`${mainroute}/courses/:id`, courses_deleteOneCourse);
-// * Modules *
-app.post(`${mainroute}/moduleforcourse/:id`, courses_postOneModule);
-app.get(`${mainroute}/moduleforcourse/:id`, courses_getModulesFromOneCourse);
-app.put(`${mainroute}/moduleforcourse/:id`, courses_editOneModule);
-app.delete(`${mainroute}/moduleforcourse/:id`, courses_deleteOneModule);
-// * classes *
-app.post(`${mainroute}/courseclass`, courses_postOneClass);
-app.put(`${mainroute}/courseclass/:id`, courses_editOneClass);
-app.get(`${mainroute}/courseclass/`, courses_getClassesFromOneModule);
-app.get(`${mainroute}/courseclass/:id`, courses_getOne);
-app.delete(`${mainroute}/courseclass/:id`, courses_deleteOneClass);
-//
-// app.delete(`${mainroute}/deleteallbut`, deleteAllBut);
-//
-
-// ** NEXT CLASSES **
-app.post(`${mainroute}/nexttutoring`, nextTutoring_editNext);
-app.get(`${mainroute}/nexttutoring`, nextTutoring_seeAllTutorings);
-app.get(`${mainroute}/nexttutoring/:id`, tutoring_getNext);
-
-// ** STUDENTS **
-app.post(`${mainroute}/students`, student_postOne);
-app.post(`${mainroute}/studentlogin/`, student_login);
-
-app.get(`${mainroute}/students`, /*loggedIn,*/ students_getAll);
-app.get(`${mainroute}/student/:id`, /*loggedIn,*/ students_getOne);
-
-app.put(`${mainroute}/students/:id`, /*loggedIn,*/ student_editGeneralData);
-app.put(`${mainroute}/studentpassword/:id`, /*loggedIn,*/ student_editPassword);
-app.put(
-  `${mainroute}/studentpermissions/:id`,
-  /*loggedIn,*/
-  student_editPermissions
-);
-
-app.delete(`${mainroute}/students/:id`, /*loggedIn,*/ student_deleteOne);
-
-// **BLOG POSTS**
-app.get(`${mainroute}/blogposts`, loggedIn, blogPosts_getAll);
-app.get(`${mainroute}/blogpost/:id`, /*loggedIn,*/ blogPosts_getOne);
-app.post(`${mainroute}/blogposts`, /*loggedIn,*/ blogPosts_postOne);
-app.put(`${mainroute}/blogposts/:id`, /*loggedIn,*/ blogPosts_editOne);
-app.delete(`${mainroute}/blogposts/:id`, /*loggedIn,*/ blogPosts_deleteOne);
-
-// ** TUTOTING - Aulas Particulares **
-app.post(`${mainroute}/tutoring`, /*loggedIn,*/ tutoring_postOne);
-app.delete(`${mainroute}/tutoring/:id`, /*loggedIn,*/ tutoring_deleteOne);
-app.get(`${mainroute}/tutoring`, /*loggedIn,*/ tutoring_getAll);
+// ** TUTORING - Aulas Particulares **
+app.get(`${mainroute}/tutoring`, loggedIn, tutoring_getAll);
 
 app.get(
   `${mainroute}/tutoring/:studentID`,
-  /*loggedIn,*/ tutoring_getAllFromParticularStudent
+  loggedIn,
+  tutoring_getAllFromParticularStudent
 );
 app.get(
   `${mainroute}/tutoringclassesofthemonth/`,
-  /*loggedIn,*/ tutoring_getAllFromParticularStudentInAParticularMonth
+  loggedIn,
+  tutoring_getAllFromParticularStudentInAParticularMonth
 );
 app.get(
   `${mainroute}/tutoringmonthyear/:studentID`,
-  /*loggedIn,*/ tutoring_getListOfAParticularMonthOfAStudent
+  loggedIn,
+  tutoring_getListOfAParticularMonthOfAStudent
 );
 
+app.delete(`${mainroute}/tutoring/:id`, loggedInADM, tutoring_deleteOne);
+app.post(`${mainroute}/tutoring`, loggedInADM, tutoring_postOne);
+
+// * Modules *
+app.post(
+  `${mainroute}/moduleforcourse/:id`,
+  loggedInADM,
+  courses_postOneModule
+);
+app.get(
+  `${mainroute}/moduleforcourse/:id`,
+  loggedIn,
+  courses_getModulesFromOneCourse
+);
+app.put(`${mainroute}/moduleforcourse/:id`, loggedInADM, courses_editOneModule);
+app.delete(
+  `${mainroute}/moduleforcourse/:id`,
+  loggedInADM,
+  courses_deleteOneModule
+);
+// * classes *
+app.post(`${mainroute}/courseclass`, loggedInADM, courses_postOneClass);
+app.put(`${mainroute}/courseclass/:id`, loggedInADM, courses_editOneClass);
+app.get(`${mainroute}/courseclass/`, loggedIn, courses_getClassesFromOneModule);
+app.get(`${mainroute}/courseclass/:id`, loggedIn, courses_getOne);
+app.delete(`${mainroute}/courseclass/:id`, loggedInADM, courses_deleteOneClass);
+//
+// app.delete(`${mainroute}/deleteallbut`, deleteAllBut);
+
+// ** NEXT CLASSES **
+app.get(`${mainroute}/nexttutoring`, loggedInADM, nextTutoring_seeAllTutorings);
+app.post(`${mainroute}/nexttutoring`, loggedInADM, nextTutoring_editNext);
+app.get(`${mainroute}/nexttutoring/:id`, loggedIn, tutoring_getNext);
+
+// ** STUDENTS **
+app.post(`${mainroute}/studentlogin/`, student_login);
+
+app.get(`${mainroute}/students`, loggedInADM, students_getAll);
+app.get(`${mainroute}/student/:id`, loggedIn, students_getOne);
+
+app.post(`${mainroute}/students`, loggedInADM, student_postOne);
+app.put(`${mainroute}/students/:id`, loggedInADM, student_editGeneralData);
+app.put(`${mainroute}/studentpassword/:id`, loggedInADM, student_editPassword);
+app.put(
+  `${mainroute}/studentpermissions/:id`,
+  loggedInADM,
+  student_editPermissions
+);
+
+app.delete(`${mainroute}/students/:id`, loggedInADM, student_deleteOne);
+
+// **BLOG POSTS**
+app.get(`${mainroute}/blogposts`, loggedIn, blogPosts_getAll);
+app.get(`${mainroute}/blogpost/:id`, loggedIn, blogPosts_getOne);
+app.post(`${mainroute}/blogposts`, loggedInADM, blogPosts_postOne);
+app.put(`${mainroute}/blogposts/:id`, loggedInADM, blogPosts_editOne);
+app.delete(`${mainroute}/blogposts/:id`, loggedInADM, blogPosts_deleteOne);
+
 // Talking Business
-app.get(`${mainroute}/tbblogposts`, /*loggedIn,*/ tbBlogPosts_getAll);
-app.get(`${mainroute}/tbblogpost/:id`, /*loggedIn,*/ tbBlogPosts_getOne);
-app.post(`${mainroute}/tbblogposts`, /*loggedIn,*/ tbBlogPosts_postOne);
-app.put(`${mainroute}/tbblogposts/:id`, /*loggedIn,*/ tbBlogPosts_editOne);
-app.delete(`${mainroute}/tbblogposts/:id`, /*loggedIn,*/ tbBlogPosts_deleteOne);
+app.get(`${mainroute}/tbblogposts`, loggedIn, tbBlogPosts_getAll);
+app.get(`${mainroute}/tbblogpost/:id`, loggedIn, tbBlogPosts_getOne);
+app.post(`${mainroute}/tbblogposts`, loggedInADM, tbBlogPosts_postOne);
+app.put(`${mainroute}/tbblogposts/:id`, loggedInADM, tbBlogPosts_editOne);
+app.delete(`${mainroute}/tbblogposts/:id`, loggedInADM, tbBlogPosts_deleteOne);
 
 // ** App rodando **
 app.listen(PORT, () => {
