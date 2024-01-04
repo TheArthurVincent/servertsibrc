@@ -69,7 +69,6 @@ app.get(`${mainroute}/allcourseobjects`, loggedInADM, courses_getAllObjects);
 
 // ** TUTORING - Aulas Particulares **
 app.get(`${mainroute}/tutoring`, loggedIn, tutoring_getAll);
-
 app.get(
   `${mainroute}/tutoring/:studentID`,
   loggedIn,
