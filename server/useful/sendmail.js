@@ -6,15 +6,16 @@ const emailConfig = {
   password: "bdiv cvpc kvrm gnsd",
 };
 const transporter = nodemailer.createTransport({
-  service: "gmail",
   host: "smtp.gmail.com",
-  port: 25,
+  port: 587,
   auth: {
     user: emailConfig.email,
     pass: emailConfig.password,
   },
-  secure: true,
-  connectionTimeout: 100000, // 100 seconds
+  secure: false,
+  tls: {
+    rejectUnauthorized: false,
+  },
 });
 
 // const transporter = nodemailer.createTransport({
@@ -28,7 +29,6 @@ const transporter = nodemailer.createTransport({
 //   secure: false,
 //   connectionTimeout: 100000, // 100 seconds
 // });
-
 
 const sendEmail = (to, subject, text) => {
   const mailOptions = {
