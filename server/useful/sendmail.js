@@ -3,23 +3,22 @@ const ejs = require("ejs");
 
 const emailConfig = {
   email: "arvinenglishschool@gmail.com",
-  password: "bdiv cvpc kvrm gnsd",
+  password: "gvdh ogoa mjup hnqi",
 };
-const transporter = nodemailer.createTransport({
+
+let transporter = nodemailer.createTransport({
   host: "smtp.gmail.com",
-  port: 587,
+  port: 465,
+  secure: true, 
   auth: {
     user: emailConfig.email,
     pass: emailConfig.password,
-  },
-  secure: false,
-  tls: {
-    rejectUnauthorized: false,
-  },
+  }
 });
 
+
 const sendEmail = (to, subject, text) => {
-  const mailOptions = {
+   const mailOptions = {
     from: emailConfig.email,
     to: [to, "arthurcardosocorp@gmail.com"],
     subject: subject,
@@ -85,3 +84,4 @@ module.exports = {
   renderEmailTemplateScheduledClass,
   renderEmailTemplatePostedClass,
 };
+
