@@ -41,14 +41,7 @@ const {
   nextTutoring_seeAllTutorings,
 } = require("./server/controller/nextEventsController");
 const {
-  courses_postOneCourse,
   courses_getOne,
-  courses_editOneCourse,
-  courses_deleteOneCourse,
-  courses_postOneModule,
-  courses_editOneModule,
-  courses_deleteOneModule,
-  courses_getModulesFromOneCourse,
   courses_postOneClass,
   courses_editOneClass,
   courses_getClassesFromOneModule,
@@ -73,9 +66,6 @@ app.use(
 app.get(`${mainroute}/courses`, loggedIn, courses_getCoursesTitles);
 app.get(`${mainroute}/course`, loggedIn, courses_getOneCourse);
 app.get(`${mainroute}/allcourseobjects`, loggedInADM, courses_getAllObjects);
-app.post(`${mainroute}/courses`, loggedInADM, courses_postOneCourse);
-app.put(`${mainroute}/courses/:id`, loggedInADM, courses_editOneCourse);
-app.delete(`${mainroute}/courses/:id`, loggedInADM, courses_deleteOneCourse);
 
 // ** TUTORING - Aulas Particulares **
 app.get(`${mainroute}/tutoring`, loggedIn, tutoring_getAll);
@@ -99,30 +89,12 @@ app.get(
 app.delete(`${mainroute}/tutoring/:id`, loggedInADM, tutoring_deleteOne);
 app.post(`${mainroute}/tutoring`, loggedInADM, tutoring_postOne);
 
-// * Modules *
-app.post(
-  `${mainroute}/moduleforcourse/:id`,
-  loggedInADM,
-  courses_postOneModule
-);
-app.get(
-  `${mainroute}/moduleforcourse/:id`,
-  loggedIn,
-  courses_getModulesFromOneCourse
-);
-app.put(`${mainroute}/moduleforcourse/:id`, loggedInADM, courses_editOneModule);
-app.delete(
-  `${mainroute}/moduleforcourse/:id`,
-  loggedInADM,
-  courses_deleteOneModule
-);
 // * classes *
 app.post(`${mainroute}/courseclass`, loggedInADM, courses_postOneClass);
 app.put(`${mainroute}/courseclass/:id`, loggedInADM, courses_editOneClass);
 app.get(`${mainroute}/courseclass/`, loggedIn, courses_getClassesFromOneModule);
 app.get(`${mainroute}/courseclass/:id`, loggedIn, courses_getOne);
 app.delete(`${mainroute}/courseclass/:id`, loggedInADM, courses_deleteOneClass);
-//
 
 // ** NEXT CLASSES **
 app.get(`${mainroute}/nexttutoring`, loggedInADM, nextTutoring_seeAllTutorings);
@@ -131,10 +103,8 @@ app.get(`${mainroute}/nexttutoring/:id`, loggedIn, tutoring_getNext);
 
 // ** STUDENTS **
 app.post(`${mainroute}/studentlogin/`, student_login);
-
 app.get(`${mainroute}/students`, loggedInADM, students_getAll);
 app.get(`${mainroute}/student/:id`, loggedIn, students_getOne);
-
 app.post(`${mainroute}/students`, loggedInADM, student_postOne);
 app.put(`${mainroute}/students/:id`, loggedInADM, student_editGeneralData);
 app.put(`${mainroute}/studentpassword/:id`, loggedInADM, student_editPassword);
@@ -143,7 +113,6 @@ app.put(
   loggedInADM,
   student_editPermissions
 );
-
 app.delete(`${mainroute}/students/:id`, loggedInADM, student_deleteOne);
 
 // **BLOG POSTS**
