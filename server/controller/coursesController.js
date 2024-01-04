@@ -428,34 +428,6 @@ const courses_deleteOneClass = async (req, res) => {
     });
   }
 };
-const deleteAllBut = async (req, res) => {
-  const { courseTitle } = req.query;
-
-  try {
-    // Find all classes whose courseTitle is not equal to the provided courseTitle
-    const classesToDelete = await Class_Model.find({
-      courseTitle: { $ne: courseTitle },
-    });
-
-    if (classesToDelete.length === 0) {
-      return res.status(400).json({ message: "No classes found for deletion" });
-    }
-
-    // Delete all classes found
-    await Class_Model.deleteMany({
-      _id: { $in: classesToDelete.map((cls) => cls._id) },
-    });
-
-    res.status(201).json({
-      status: "Classes successfully deleted",
-    });
-  } catch (error) {
-    console.error(error);
-    res.status(400).json({
-      status: "Error deleting classes",
-    });
-  }
-};
 
 module.exports = {
   courses_postOneCourse,

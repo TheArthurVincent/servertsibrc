@@ -55,7 +55,6 @@ const {
   courses_deleteOneClass,
   courses_getCoursesTitles,
   courses_getOneCourse,
-  deleteAllBut,
   courses_getAllObjects,
 } = require("./server/controller/coursesController");
 
@@ -124,7 +123,6 @@ app.get(`${mainroute}/courseclass/`, loggedIn, courses_getClassesFromOneModule);
 app.get(`${mainroute}/courseclass/:id`, loggedIn, courses_getOne);
 app.delete(`${mainroute}/courseclass/:id`, loggedInADM, courses_deleteOneClass);
 //
-// app.delete(`${mainroute}/deleteallbut`, deleteAllBut);
 
 // ** NEXT CLASSES **
 app.get(`${mainroute}/nexttutoring`, loggedInADM, nextTutoring_seeAllTutorings);
