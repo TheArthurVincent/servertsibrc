@@ -122,11 +122,14 @@ app.put(`${mainroute}/blogposts/:id`, loggedInADM, blogPosts_editOne);
 app.delete(`${mainroute}/blogposts/:id`, loggedInADM, blogPosts_deleteOne);
 
 // Talking Business
-app.get(`${mainroute}/tbblogposts`, loggedIn, tbBlogPosts_getAll);
-app.get(`${mainroute}/tbblogpost/:id`, loggedIn, tbBlogPosts_getOne);
-app.post(`${mainroute}/tbblogposts`, loggedInADM, tbBlogPosts_postOne);
-app.put(`${mainroute}/tbblogposts/:id`, loggedInADM, tbBlogPosts_editOne);
-app.delete(`${mainroute}/tbblogposts/:id`, loggedInADM, tbBlogPosts_deleteOne);
+app.get(`${mainroute}/tbblogposts` /*, loggedIn*/, tbBlogPosts_getAll);
+app.get(`${mainroute}/tbblogpost/:id` /*, loggedIn*/, tbBlogPosts_getOne);
+app.post(`${mainroute}/tbblogposts` /*, loggedInADM*/, tbBlogPosts_postOne);
+app.put(`${mainroute}/tbblogposts/:id` /*, loggedInADM*/, tbBlogPosts_editOne);
+app.delete(
+  `${mainroute}/tbblogposts/:id` /*, loggedInADM*/,
+  tbBlogPosts_deleteOne
+);
 
 // ** App rodando **
 app.listen(PORT, () => {
