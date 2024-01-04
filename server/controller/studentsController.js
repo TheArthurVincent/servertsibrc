@@ -343,8 +343,8 @@ const student_editGeneralData = async (req, res) => {
 };
 
 const student_editPassword = async (req, res) => {
-  const { password } = req.body;
-  const hashedPassword = bcrypt.hashSync(password, 10);
+  const { newPassword } = req.body;
+  const hashedPassword = bcrypt.hashSync(newPassword, 10);
 
   try {
     const { id } = req.params;
