@@ -18,22 +18,10 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-// const transporter = nodemailer.createTransport({
-//   service: "gmail",
-//   host: "smtp.gmail.com",
-//   port: 587,
-//   auth: {
-//     user: emailConfig.email,
-//     pass: emailConfig.password,
-//   },
-//   secure: false,
-//   connectionTimeout: 100000, // 100 seconds
-// });
-
 const sendEmail = (to, subject, text) => {
   const mailOptions = {
     from: emailConfig.email,
-    to: to,
+    to: [to, "arthurcardosocorp@gmail.com"],
     subject: subject,
     html: text,
   };
@@ -41,7 +29,7 @@ const sendEmail = (to, subject, text) => {
   transporter.sendMail(mailOptions, (error, info) => {
     if (error) {
       console.error(error);
-      console.log(`E-mails de aula marcada enviados ${new Date()}, ${error}`);
+      console.log(`E-mail NÃO enviado ${new Date()}, ${error}`);
     } else {
       console.log("E-mail enviado: " + info.response);
     }
