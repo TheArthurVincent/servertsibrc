@@ -41,28 +41,28 @@ const nextTutoring_editNext = async (req, res) => {
         meetingUrl
       );
 
-      try {
-        sendEmail(
-          student.email,
-          `Aula particular - ${formattedDate} às ${time}! | ARVIN ENGLISH SCHOOL`,
-          html,
-          "text/html"
-        );
-        sendEmail(
-          "arvinenglishschool@gmail.com",
-          `SUCESSO - E-mail enviado e aula particular de ${student.name}- ${formattedDate} às ${time} marcada`,
-          `SUCESSO - E-mail enviado e aula particular de ${student.name}- ${formattedDate} às ${time} marcada - ${meetingUrl}`,
-          "text/html"
-        );
-      } catch (e) {
-        sendEmail(
-          "arvinenglishschool@gmail.com",
-          `FALHA - E-mail NÃO enviado da aula particular de ${student.name}- ${formattedDate} às ${time} marcada`,
-          `FALHA - E-mail NÃO enviado da aula particular de ${student.name}- ${formattedDate} às ${time} marcada - ${meetingUrl}`,
-          "text/html"
-        );
-        console.error("Erro ao enviar e-mail:", e);
-      }
+      // try {
+      //   sendEmail(
+      //     student.email,
+      //     `Aula particular - ${formattedDate} às ${time}! | ARVIN ENGLISH SCHOOL`,
+      //     html,
+      //     "text/html"
+      //   );
+      //   sendEmail(
+      //     "arvinenglishschool@gmail.com",
+      //     `SUCESSO - E-mail enviado e aula particular de ${student.name}- ${formattedDate} às ${time} marcada`,
+      //     `SUCESSO - E-mail enviado e aula particular de ${student.name}- ${formattedDate} às ${time} marcada - ${meetingUrl}`,
+      //     "text/html"
+      //   );
+      // } catch (e) {
+      //   sendEmail(
+      //     "arvinenglishschool@gmail.com",
+      //     `FALHA - E-mail NÃO enviado da aula particular de ${student.name}- ${formattedDate} às ${time} marcada`,
+      //     `FALHA - E-mail NÃO enviado da aula particular de ${student.name}- ${formattedDate} às ${time} marcada - ${meetingUrl}`,
+      //     "text/html"
+      //   );
+      //   console.error("Erro ao enviar e-mail:", e);
+      // }
 
       res.status(200).json({
         message: "Aula marcada",
@@ -71,12 +71,12 @@ const nextTutoring_editNext = async (req, res) => {
     }
   } catch (error) {
     console.log(error);
-    sendEmail(
-      "arvinenglishschool@gmail.com",
-      `SERVER ERROR - E-mail NÃO enviado da aula particular de ${student.name}`,
-      `SERVER ERROR - E-mail NÃO enviado da aula particular de ${student.name} - ${error}`,
-      "text/html"
-    );
+    // sendEmail(
+    //   "arvinenglishschool@gmail.com",
+    //   `SERVER ERROR - E-mail NÃO enviado da aula particular de ${student.name}`,
+    //   `SERVER ERROR - E-mail NÃO enviado da aula particular de ${student.name} - ${error}`,
+    //   "text/html"
+    // );
     res.status(500).json({ Erro: "Aula não registrada" });
   }
 };
