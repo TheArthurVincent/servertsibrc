@@ -32,6 +32,7 @@
     "mongodb": "^6.1.0",
     "mongoose": "^7.5.0",
     "nodemailer": "^6.9.7",
+    "sendpulse-api": "^1.1.6",
     "validator": "^13.11.0"
   },
   "devDependencies": {
