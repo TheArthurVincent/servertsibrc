@@ -25,7 +25,7 @@ class mailSend {
       html: body,
       subject: subject,
       from: {
-        name: "Contato", //aqui é o nome que vai aparecer no email
+        name: "Arthur Vincent - Arvin English School", //aqui é o nome que vai aparecer no email
         email: "contato@digitalmoontech.com.br" //aqui é o email que vai aparecer no email (deve ser o mesmo configurado como remetente*)
       },
       to: [
