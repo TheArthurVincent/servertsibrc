@@ -23,6 +23,7 @@ const studentSchema = new Schema(
     ankiEmail: { type: String, required: false },
     ankiPassword: { type: String, required: false },
     googleDriveLink: { type: String, required: false },
+    picture: { type: String, required: false, default: "https://ik.imagekit.io/vjz75qw96/assets/arvin_visuals/profile.jpg?updatedAt=1705408334723" },
     language: { type: String, required: false, default: "pt" },
     changedPasswordBeforeLogInAgain: { type: Boolean, default: false }
   },

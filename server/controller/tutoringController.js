@@ -88,18 +88,15 @@ const tutoring_getAll = async (req, res) => {
     tutorings.forEach((tutoring) => {
       const studentID = tutoring.studentID;
 
-      // Verifica se o aluno com o ID existe
       const studentTheClassBelongsTo = students.find(
         (student) => student._id.toString() === studentID.toString()
       );
 
       if (!studentTheClassBelongsTo) {
-        // Se o aluno não existe, apaga a aula
         deleteTutoring(tutoring._id);
-        return; // Pula para a próxima iteração
+        return;
       }
 
-      // Verifica se o aluno já está no objeto
       if (!tutoringsByStudent[studentID]) {
         tutoringsByStudent[studentID] = {
           student: {
@@ -114,7 +111,6 @@ const tutoring_getAll = async (req, res) => {
         };
       }
 
-      // Adiciona a aula ao array correspondente ao aluno
       tutoringsByStudent[studentID].tutorings.push({
         id: tutoring._id,
         title: tutoring.title,
@@ -181,7 +177,6 @@ const tutoring_getAllFromParticularStudent = async (req, res) => {
       }
     );
 
-    // Sorting the array based on the 'date' property in ascending order
     formattedTutoringFromParticularStudent.sort((a, b) => {
       const dateA = new Date(a.date.split("/").reverse().join("-"));
       const dateB = new Date(b.date.split("/").reverse().join("-"));
