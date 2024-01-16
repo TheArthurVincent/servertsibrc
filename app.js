@@ -3,6 +3,9 @@ const app = express();
 const database = require("./db/conn");
 const PORT = 3502;
 const cors = require("cors");
+const multer = require('multer');
+const upload = multer({ dest: './uploads' });
+
 const {
   students_getAll,
   students_getOne,
@@ -14,6 +17,7 @@ const {
   student_login,
   loggedIn,
   loggedInADM,
+  students_postPicture,
 } = require("./server/controller/studentsController");
 const {
   blogPosts_getAll,
@@ -112,6 +116,7 @@ app.put(
   loggedInADM,
   student_editPermissions
 );
+app.post('/api/v1/studentpicture/:id', upload.single('image'), students_postPicture);
 app.delete(`${mainroute}/students/:id`, loggedInADM, student_deleteOne);
 
 // **BLOG POSTS**

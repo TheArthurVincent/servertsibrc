@@ -3,6 +3,35 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const { promisify } = require("util");
 const { NextTutoring_Model } = require("../models/NextEvents");
+const mongoose = require("mongoose");
+
+
+const ImageModel = mongoose.model('Image', {
+  imageData: Buffer,
+});
+
+const students_postPicture = async (req, res) => {
+  const { id } = req.params;
+  const student = await Student_Model.findById(id);
+
+  try {
+    if (!req.file) {
+      return res.status(400).json({ error: 'Nenhuma imagem recebida.' });
+    }
+
+    const imageData = req.file.buffer;
+    const image = new ImageModel({ imageData });
+    await image.save();
+
+    student.picture = image;
+    await student.save();
+
+    res.status(200).json({ message: 'Imagem salva com sucesso.' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Erro ao salvar a imagem.' });
+  }
+};
 
 const students_getAll = async (req, res) => {
   try {
@@ -24,6 +53,7 @@ const students_getAll = async (req, res) => {
         ankiEmail: student.ankiEmail,
         ankiPassword: student.ankiPassword,
         googleDriveLink: student.googleDriveLink,
+        picture: student.picture,
       };
     });
     formattedStudentsData.sort((a, b) => {
@@ -66,6 +96,7 @@ const students_getOne = async (req, res) => {
       permissions: student.permissions,
       doc: student.doc,
       phoneNumber: student.phoneNumber,
+      picture: student.picture,
     };
     res.status(200).json({
       status: "Aluno encontrado",
@@ -460,6 +491,7 @@ module.exports = {
   //C
   student_postOne,
   signup,
+  students_postPicture,
   //R
   students_getAll,
   students_getOne,
