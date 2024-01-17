@@ -2,10 +2,8 @@ const express = require("express");
 const app = express();
 const database = require("./db/conn");
 const PORT = 3502;
+const path = require("path")
 const cors = require("cors");
-const multer = require('multer');
-const upload = multer({ dest: './uploads' });
-
 const {
   students_getAll,
   students_getOne,
@@ -18,6 +16,7 @@ const {
   loggedIn,
   loggedInADM,
   students_postPicture,
+  student_getPicture,
 } = require("./server/controller/studentsController");
 const {
   blogPosts_getAll,
@@ -57,7 +56,7 @@ const {
 
 database();
 app.use(express.json());
-
+const upload = require("./db/multer")
 const mainroute = "/api/v1";
 
 app.use(
@@ -65,6 +64,8 @@ app.use(
     origin: "*",
   })
 );
+
+app.use('/uploads', express.static(path.resolve(__dirname, "upload")));
 
 // ** COURSES **
 app.get(`${mainroute}/courses`, loggedIn, courses_getCoursesTitles);
@@ -116,7 +117,9 @@ app.put(
   loggedInADM,
   student_editPermissions
 );
-app.post('/api/v1/studentpicture/:id', upload.single('image'), students_postPicture);
+app.post('/api/v1/studentpicture/:id', upload.single("file"), students_postPicture);
+app.get('/api/v1/studentpicture/:id', /*upload.single("file"),*/ student_getPicture);
+
 app.delete(`${mainroute}/students/:id`, loggedInADM, student_deleteOne);
 
 // **BLOG POSTS**

@@ -1,3 +1,5 @@
+const { Student_Model } = require("../models/Students");
+
 function formatDate(dataString) {
   const data = new Date(dataString);
   const dia = data.getDate();
@@ -8,4 +10,6 @@ function formatDate(dataString) {
   return `${diaFormatado}/${mesFormatado}/${ano}`;
 }
 
-module.exports = formatDate;
+const getStudent = async (id) => { await Student_Model.findById(id) };
+
+module.exports = { formatDate, getStudent };

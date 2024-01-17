@@ -3,35 +3,51 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const { promisify } = require("util");
 const { NextTutoring_Model } = require("../models/NextEvents");
-const mongoose = require("mongoose");
-
-
-const ImageModel = mongoose.model('Image', {
-  imageData: Buffer,
-});
+const { Picture_Model } = require("../models/Pictures");
+const path = require("path");
+const fs = require("fs")
 
 const students_postPicture = async (req, res) => {
-  const { id } = req.params;
-  const student = await Student_Model.findById(id);
-
   try {
-    if (!req.file) {
-      return res.status(400).json({ error: 'Nenhuma imagem recebida.' });
-    }
-
-    const imageData = req.file.buffer;
-    const image = new ImageModel({ imageData });
-    await image.save();
-
-    student.picture = image;
-    await student.save();
-
-    res.status(200).json({ message: 'Imagem salva com sucesso.' });
+    const { id } = req.params;
+    const student = await Student_Model.findById(id);
+    const { name, username, lastname } = student
+    const file = req.file
+    const pic = new Picture_Model({
+      name: `Profile Photo: ${username} ${name} ${lastname}`,
+      src: file.path,
+      studentID: id,
+    })
+    await pic.save()
+    res.status(200).json({
+      status: `Sucesso!`,
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Erro ao salvar a imagem.' });
   }
 };
+
+const student_getPicture = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const pic = await Picture_Model.findOne({ studentID: id });
+    const student = await Student_Model.findById(id);
+
+    if (!pic) {
+      return res.status(200).json({
+        status: `Sucesso!`,
+        pic: student.picture,
+      });
+    } else {
+      res.sendFile(path.resolve(pic.src))
+    }
+    console.log(pic)
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ error: 'Erro ao buscar a imagem.' });
+  }
+}
 
 const students_getAll = async (req, res) => {
   try {
@@ -492,6 +508,7 @@ module.exports = {
   student_postOne,
   signup,
   students_postPicture,
+  student_getPicture,
   //R
   students_getAll,
   students_getOne,
