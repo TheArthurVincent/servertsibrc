@@ -17,6 +17,9 @@ const {
   loggedInADM,
   students_postPicture,
   student_getPicture,
+  student_scoreUpdate,
+  student_seeScore,
+  student_resetMonth,
 } = require("./server/controller/studentsController");
 const {
   blogPosts_getAll,
@@ -119,6 +122,10 @@ app.put(
 );
 app.post('/api/v1/studentpicture/:id', upload.single("file"), students_postPicture);
 app.get('/api/v1/studentpicture/:id', /*upload.single("file"),*/ student_getPicture);
+app.get('/api/v1/score/:id', loggedIn, student_seeScore);
+app.put('/api/v1/score/:id',/* loggedIn,*/ student_scoreUpdate);
+app.put('/api/v1/resetmonth/',/* loggedIn, */student_resetMonth);
+
 
 app.delete(`${mainroute}/students/:id`, loggedInADM, student_deleteOne);
 

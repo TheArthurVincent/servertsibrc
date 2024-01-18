@@ -20,6 +20,8 @@ const studentSchema = new Schema(
     phoneNumber: { type: String, required: true },
     dateOfBirth: { type: String, required: true },
     permissions: { type: String, required: false, default: "student" },
+    totalScore: { type: Number, required: true, default: 0 },
+    monthlyScore: { type: Number, required: true, default: 0 },
     ankiEmail: { type: String, required: false },
     ankiPassword: { type: String, required: false },
     googleDriveLink: { type: String, required: false },

@@ -113,6 +113,8 @@ const students_getOne = async (req, res) => {
       doc: student.doc,
       phoneNumber: student.phoneNumber,
       picture: student.picture,
+      monthlyScore: student.monthlyScore,
+      totalScore: student.totalScore,
     };
     res.status(200).json({
       status: "Aluno encontrado",
@@ -252,11 +254,10 @@ const student_login = async (req, res) => {
       throw new Error("Senha incorreta");
 
     const token = jwt.sign({ id: student._id }, "secretToken()", {
-      expiresIn: "1d",
+      expiresIn: "30d",
     });
 
     student.changedPasswordBeforeLogInAgain = false;
-
     const nextTutoring = await NextTutoring_Model.findOne({
       studentID: student._id,
     });
@@ -268,6 +269,8 @@ const student_login = async (req, res) => {
       name: student.name,
       lastname: student.lastname,
       doc: student.doc,
+      totalScore: student.totalScore,
+      monthlyScore: student.monthlyScore,
       phoneNumber: student.phoneNumber,
       dateOfBirth: student.dateOfBirth,
       permissions: student.permissions,
@@ -283,6 +286,70 @@ const student_login = async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: error, e: "Ocorreu um erro ao fazer login" });
+  }
+};
+
+const student_seeScore = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const student = await Student_Model.findById(id);
+    if (!student) throw new Error("Usuário não encontrado");
+
+    const { totalScore, monthlyScore } = student;
+    res
+      .status(200)
+      .json({ totalScore, monthlyScore });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: error, e: "Ocorreu um erro ao ver a pontuação" });
+  }
+};
+
+const student_scoreUpdate = async (req, res) => {
+  const { id } = req.params;
+  const { score } = req.body;
+
+  theScore = new Number(score)
+
+  try {
+    const student = await Student_Model.findById(id);
+    if (!student) throw new Error("Usuário não encontrado");
+
+    newTotalScore = student.totalScore + theScore;
+    newMonthlyScore = student.monthlyScore + theScore;
+
+    student.totalScore = newTotalScore;
+    student.monthlyScore = newMonthlyScore;
+
+    student.save()
+
+    res
+      .status(200)
+      .json({ status: "success" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: error, e: "Ocorreu um erro ao atualizar a pontuação" });
+  }
+};
+const student_resetMonth = async (req, res) => {
+
+  try {
+    const students = await Student_Model.find();
+
+    students.map((student) => {
+      // student.monthlyScore = 0
+      student.totalScore = 1
+      student.monthlyScore = 1
+      student.save()
+    })
+
+    res
+      .status(200)
+      .json({ status: "success" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: error, e: "Ocorreu um erro ao atualizar a pontuação" });
   }
 };
 
@@ -514,6 +581,9 @@ module.exports = {
   students_getAll,
   students_getOne,
   student_login,
+  student_scoreUpdate,
+  student_seeScore,
+  student_resetMonth,
   //U
   student_editGeneralData,
   student_editPassword,
