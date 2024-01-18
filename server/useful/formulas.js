@@ -1,6 +1,6 @@
 const { Student_Model } = require("../models/Students");
 
-function formatDate(dataString) {
+const formatDate = (dataString) => {
   const data = new Date(dataString);
   const dia = data.getDate();
   const mes = data.getMonth() + 1;

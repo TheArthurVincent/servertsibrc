@@ -2,7 +2,6 @@ const { NextTutoring_Model } = require("../models/NextEvents");
 const { Student_Model } = require("../models/Students");
 const formatDate = require("../useful/formulas");
 const {
-  sendEmail,
   renderEmailTemplateScheduledClass,
 } = require("../useful/sendmail");
 
@@ -31,6 +30,16 @@ const nextTutoring_editNext = async (req, res) => {
       nextClass.date = date;
       nextClass.time = time;
 
+      const formatDate = (dataString) => {
+        const data = new Date(dataString);
+        const dia = data.getDate();
+        const mes = data.getMonth() + 1;
+        const ano = data.getFullYear();
+        const diaFormatado = dia < 10 ? `0${dia}` : dia;
+        const mesFormatado = mes < 10 ? `0${mes}` : mes;
+        return `${diaFormatado}/${mesFormatado}/${ano}`;
+      }
+
       await nextClass.save();
       const formattedDate = formatDate(date);
 
@@ -41,29 +50,6 @@ const nextTutoring_editNext = async (req, res) => {
         meetingUrl
       );
 
-      // try {
-      //   sendEmail(
-      //     student.email,
-      //     `Aula particular - ${formattedDate} às ${time}! | ARVIN ENGLISH SCHOOL`,
-      //     html,
-      //     "text/html"
-      //   );
-      //   sendEmail(
-      //     "arvinenglishschool@gmail.com",
-      //     `SUCESSO - E-mail enviado e aula particular de ${student.name}- ${formattedDate} às ${time} marcada`,
-      //     `SUCESSO - E-mail enviado e aula particular de ${student.name}- ${formattedDate} às ${time} marcada - ${meetingUrl}`,
-      //     "text/html"
-      //   );
-      // } catch (e) {
-      //   sendEmail(
-      //     "arvinenglishschool@gmail.com",
-      //     `FALHA - E-mail NÃO enviado da aula particular de ${student.name}- ${formattedDate} às ${time} marcada`,
-      //     `FALHA - E-mail NÃO enviado da aula particular de ${student.name}- ${formattedDate} às ${time} marcada - ${meetingUrl}`,
-      //     "text/html"
-      //   );
-      //   console.error("Erro ao enviar e-mail:", e);
-      // }
-
       res.status(200).json({
         message: "Aula marcada",
         tutoring: nextClass,
@@ -71,12 +57,6 @@ const nextTutoring_editNext = async (req, res) => {
     }
   } catch (error) {
     console.log(error);
-    // sendEmail(
-    //   "arvinenglishschool@gmail.com",
-    //   `SERVER ERROR - E-mail NÃO enviado da aula particular de ${student.name}`,
-    //   `SERVER ERROR - E-mail NÃO enviado da aula particular de ${student.name} - ${error}`,
-    //   "text/html"
-    // );
     res.status(500).json({ Erro: "Aula não registrada" });
   }
 };
@@ -84,11 +64,8 @@ const nextTutoring_editNext = async (req, res) => {
 const nextTutoring_seeAllTutorings = async (req, res) => {
   try {
     const tutorings = await NextTutoring_Model.find();
-
     const studentIDs = tutorings.map((tutoring) => tutoring.studentID);
-
     const students = await Student_Model.find({ _id: { $in: studentIDs } });
-
     const validTutorings = tutorings.filter((tutoring) =>
       students.some(
         (student) => student._id.toString() === tutoring.studentID.toString()
