@@ -271,6 +271,7 @@ const student_login = async (req, res) => {
       phoneNumber: student.phoneNumber,
       dateOfBirth: student.dateOfBirth,
       permissions: student.permissions,
+      picture: student.picture,
       ankiEmail: student.ankiEmail,
       ankiPassword: student.ankiPassword,
       googleDriveLink: student.googleDriveLink,
