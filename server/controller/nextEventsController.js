@@ -78,8 +78,6 @@ const nextTutoring_seeAllTutorings = async (req, res) => {
 
     validTutorings.forEach((tutoring) => {
       const tutoringDate = new Date(tutoring.date + " " + tutoring.time);
-
-      // Comparar com o horário atual
       if (tutoringDate < currentDate) {
         pastTutorings.push(tutoring);
       } else {
