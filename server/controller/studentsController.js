@@ -339,9 +339,7 @@ const student_resetMonth = async (req, res) => {
 
     students.map((student) => {
       student.monthlyScore = 0
-      //resetall
-      // student.totalScore = 1
-      // student.monthlyScore = 1
+      // student.totalScore = 0 // resetall
       student.save()
     })
 
