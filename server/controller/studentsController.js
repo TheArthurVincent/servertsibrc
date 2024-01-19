@@ -336,6 +336,7 @@ const student_resetMonth = async (req, res) => {
 
   try {
     const students = await Student_Model.find();
+    const master = await Student_Model.findById("651311fac3d58753aa9281c5");
 
     students.map((student) => {
       student.monthlyScore = 0
@@ -343,6 +344,8 @@ const student_resetMonth = async (req, res) => {
       student.save()
     })
 
+    master.totalScore = 2000000
+    master.save();
     res
       .status(200)
       .json({ status: "success" });
