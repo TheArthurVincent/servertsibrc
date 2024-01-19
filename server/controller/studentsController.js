@@ -49,6 +49,34 @@ const student_getPicture = async (req, res) => {
   }
 }
 
+
+const students_getAllScores = async (req, res) => {
+  try {
+    const students = await Student_Model.find();
+    const formattedStudentsData = students.map((student, index) => {
+      return {
+        username: student.username,
+        name: student.name,
+        lastname: student.lastname,
+        picture: student.picture,
+        monthlyScore: student.monthlyScore,
+        totalScore: student.totalScore,
+      };
+    });
+
+    // Ordena por ordem decrescente de totalScore
+    formattedStudentsData.sort((a, b) => b.totalScore - a.totalScore);
+
+    res.status(200).json({
+      listOfStudents: formattedStudentsData,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ erro: "Nenhum aluno / Erro no servidor", error });
+  }
+};
+
+
 const students_getAll = async (req, res) => {
   try {
     const students = await Student_Model.find();
@@ -581,6 +609,7 @@ module.exports = {
   student_getPicture,
   //R
   students_getAll,
+  students_getAllScores,
   students_getOne,
   student_login,
   student_scoreUpdate,
