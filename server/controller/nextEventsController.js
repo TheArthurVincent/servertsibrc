@@ -73,6 +73,8 @@ const nextTutoring_seeAllTutorings = async (req, res) => {
     );
 
     const currentDate = new Date();
+    currentDate.setHours(currentDate.getHours() - 3);
+
     let pastTutorings = [];
     let futureTutorings = [];
 
