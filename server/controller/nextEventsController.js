@@ -126,6 +126,7 @@ const nextTutoring_seeAllTutorings = async (req, res) => {
     });
 
     res.status(200).json({
+      currentDate,
       status: `Sucesso! Foram encontradas ${validTutorings.length} aulas.`,
       pastTutorings: formattedPastTutorings,
       futureTutorings: formattedFutureTutorings,
