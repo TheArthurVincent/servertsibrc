@@ -73,7 +73,7 @@ const nextTutoring_seeAllTutorings = async (req, res) => {
     );
 
     const currentDate = new Date();
-    currentDate.setHours(currentDate.getHours() - 3);
+    currentDate.setHours(currentDate.getHours() - 2);
 
     let pastTutorings = [];
     let futureTutorings = [];
@@ -87,7 +87,6 @@ const nextTutoring_seeAllTutorings = async (req, res) => {
       }
     });
 
-    // Organizar as listas por data
     pastTutorings.sort(
       (a, b) =>
         new Date(b.date + " " + b.time) - new Date(a.date + " " + a.time)
