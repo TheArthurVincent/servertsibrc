@@ -105,7 +105,7 @@ app.get(`${mainroute}/courseclass/:id`, loggedIn, courses_getOne);
 app.delete(`${mainroute}/courseclass/:id`, loggedInADM, courses_deleteOneClass);
 
 // ** NEXT CLASSES **
-app.get(`${mainroute}/nexttutoring`, loggedInADM, nextTutoring_seeAllTutorings);
+app.get(`${mainroute}/nexttutoring`, loggedIn, nextTutoring_seeAllTutorings);
 app.post(`${mainroute}/nexttutoring`, loggedInADM, nextTutoring_editNext);
 app.get(`${mainroute}/nexttutoring/:id`, loggedIn, tutoring_getNext);
 
