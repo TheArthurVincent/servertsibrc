@@ -1,4 +1,4 @@
-const { NextTutoring_Model } = require("../models/NextEvents");
+const { NextTutoring_Model, NextLiveClass_Model } = require("../models/NextEvents");
 const { Student_Model } = require("../models/Students");
 const formatDate = require("../useful/formulas");
 const {
@@ -138,9 +138,11 @@ const nextTutoring_seeAllTutorings = async (req, res) => {
   }
 };
 
-const nextLiveClass_editNext = async (req, res) => {
-  const { title, comments, studentID, meetingUrl, date, time } = req.body;
-
+const nextLiveClass_postNext = async (req, res) => {
+  const { title, meetingUrl, date, time } = req.body;
+  const nxtLive = new NextLiveClass_Model({ title, meetingUrl, date, time })
+  await nxtLive.save()
+  res.status(201).json({ msg: "Aula registrada" });
   try {
   } catch (error) {
     console.log(error);
@@ -148,10 +150,57 @@ const nextLiveClass_editNext = async (req, res) => {
   }
 };
 
+const nextLiveClass_getNext = async (req, res) => {
+  try {
+    const nxtLive = await NextLiveClass_Model.find();
+    const currentDate = new Date();
+    currentDate.setHours(currentDate.getHours() - 4);
+
+    let pastLives = [];
+    let futureLives = [];
+
+    nxtLive.forEach((live, index) => {
+      const liveDate = new Date(live.date + " " + live.time);
+
+      const liveDetails = {
+        position: index,
+        id: live._id,
+        title: live.title, // assuming 'title' is a property of 'live' object
+        dateTime: live.date + " " + live.time,
+        meetingUrl: live.meetingUrl,
+      };
+
+      if (liveDate < currentDate) {
+        pastLives.push(liveDetails);
+      } else {
+        futureLives.push(liveDetails);
+      }
+    });
+
+    pastLives.sort(
+      (a, b) =>
+        new Date(b.dateTime) - new Date(a.dateTime)
+    );
+    futureLives.sort(
+      (a, b) =>
+        new Date(a.dateTime) - new Date(b.dateTime)
+    );
+
+    res.status(201).json({
+      pastLiveClasses: pastLives,
+      futureLiveClasses: futureLives,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ Erro: "Erro ao obter informações das aulas" });
+  }
+};
+
 module.exports = {
   //C
   nextTutoring_editNext,
-  nextLiveClass_editNext,
+  nextLiveClass_postNext,
+  nextLiveClass_getNext,
   //R
   nextTutoring_seeAllTutorings,
   //U

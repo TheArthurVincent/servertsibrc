@@ -46,6 +46,8 @@ const {
 const {
   nextTutoring_editNext,
   nextTutoring_seeAllTutorings,
+  nextLiveClass_postNext,
+  nextLiveClass_getNext,
 } = require("./server/controller/nextEventsController");
 const {
   courses_getOne,
@@ -137,6 +139,12 @@ app.get(`${mainroute}/blogpost/:id`, loggedIn, blogPosts_getOne);
 app.post(`${mainroute}/blogposts`, loggedInADM, blogPosts_postOne);
 app.put(`${mainroute}/blogposts/:id`, loggedInADM, blogPosts_editOne);
 app.delete(`${mainroute}/blogposts/:id`, loggedInADM, blogPosts_deleteOne);
+
+
+// Live Classes
+app.post(`${mainroute}/liveclass`, nextLiveClass_postNext);
+app.get(`${mainroute}/liveclasses`, loggedIn, nextLiveClass_getNext);
+
 
 // Talking Business
 app.get(`${mainroute}/tbblogposts` /*, loggedIn*/, tbBlogPosts_getAll);

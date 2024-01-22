@@ -16,9 +16,7 @@ const nextLiveClass = new Schema(
     title: { type: String, required: true },
     date: { type: String, required: true },
     time: { type: String, required: true },
-    comments: { type: String, required: false },
     meetingUrl: { type: String, required: true },
-    password: { type: String, required: false },
   },
   { timestamps: true }
 );
