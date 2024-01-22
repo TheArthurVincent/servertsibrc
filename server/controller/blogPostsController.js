@@ -9,10 +9,17 @@ const blogPosts_getAll = async (req, res) => {
         message: "Nenhum post",
       });
     } else {
+      const listReverse = blogPosts.reverse();
+      const listOfPosts = [
+        listReverse[0],
+        listReverse[1],
+        listReverse[2],
+      ]
+
       res.status(200).json({
         status: "Blog Posts encontrados",
         numberOfPosts: blogPosts.length,
-        listOfPosts: blogPosts.reverse(),
+        listOfPosts,
       });
     }
   } catch (error) {
