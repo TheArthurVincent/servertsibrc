@@ -5,26 +5,26 @@ const { promisify } = require("util");
 const { NextTutoring_Model } = require("../models/NextEvents");
 const { Picture_Model } = require("../models/Pictures");
 const path = require("path");
-const fs = require("fs")
+const fs = require("fs");
 
 const students_postPicture = async (req, res) => {
   try {
     const { id } = req.params;
     const student = await Student_Model.findById(id);
-    const { name, username, lastname } = student
-    const file = req.file
+    const { name, username, lastname } = student;
+    const file = req.file;
     const pic = new Picture_Model({
       name: `Profile Photo: ${username} ${name} ${lastname}`,
       src: file.path,
       studentID: id,
-    })
-    await pic.save()
+    });
+    await pic.save();
     res.status(200).json({
       status: `Sucesso!`,
     });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: 'Erro ao salvar a imagem.' });
+    res.status(500).json({ error: "Erro ao salvar a imagem." });
   }
 };
 
@@ -40,21 +40,24 @@ const student_getPicture = async (req, res) => {
         pic: student.picture,
       });
     } else {
-      res.sendFile(path.resolve(pic.src))
+      res.sendFile(path.resolve(pic.src));
     }
-    console.log(pic)
+    console.log(pic);
   } catch (e) {
     console.error(e);
-    res.status(500).json({ error: 'Erro ao buscar a imagem.' });
+    res.status(500).json({ error: "Erro ao buscar a imagem." });
   }
-}
-
+};
 
 const students_getAllScores = async (req, res) => {
   try {
     const students = await Student_Model.find();
-
-    const filteredStudents = students.filter(student => student._id.toString() !== "651311fac3d58753aa9281c5");
+    const filteredStudents = students.filter(
+      (student) =>
+        student._id.toString() !== "651311fac3d58753aa9281c5" &&
+        student._id.toString() !== "658c9349adb27531cae962d3" &&
+        student._id.toString() !== "6586ed9f7c72f31329eca797"
+    );
 
     const formattedStudentsData = filteredStudents.map((student, index) => {
       return {
@@ -76,8 +79,6 @@ const students_getAllScores = async (req, res) => {
     res.status(500).json({ erro: "Nenhum aluno / Erro no servidor", error });
   }
 };
-
-
 
 const students_getAll = async (req, res) => {
   try {
@@ -327,12 +328,12 @@ const student_seeScore = async (req, res) => {
     if (!student) throw new Error("Usuário não encontrado");
 
     const { totalScore, monthlyScore } = student;
-    res
-      .status(200)
-      .json({ totalScore, monthlyScore });
+    res.status(200).json({ totalScore, monthlyScore });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: error, e: "Ocorreu um erro ao ver a pontuação" });
+    res
+      .status(500)
+      .json({ error: error, e: "Ocorreu um erro ao ver a pontuação" });
   }
 };
 
@@ -340,7 +341,7 @@ const student_scoreUpdate = async (req, res) => {
   const { id } = req.params;
   const { score } = req.body;
 
-  theScore = new Number(score)
+  theScore = new Number(score);
 
   try {
     const student = await Student_Model.findById(id);
@@ -352,37 +353,36 @@ const student_scoreUpdate = async (req, res) => {
     student.totalScore = newTotalScore;
     student.monthlyScore = newMonthlyScore;
 
-    student.save()
+    student.save();
 
-    res
-      .status(200)
-      .json({ status: "success" });
+    res.status(200).json({ status: "success" });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: error, e: "Ocorreu um erro ao atualizar a pontuação" });
+    res
+      .status(500)
+      .json({ error: error, e: "Ocorreu um erro ao atualizar a pontuação" });
   }
 };
 const student_resetMonth = async (req, res) => {
-
   try {
     const students = await Student_Model.find();
     const master = await Student_Model.findById("651311fac3d58753aa9281c5");
 
     students.map((student) => {
-      student.monthlyScore = 0
-      student.totalScore < 0 ? student.totalScore = 0 : null // resetall
+      student.monthlyScore = 0;
+      student.totalScore < 0 ? (student.totalScore = 0) : null; // resetall
       // student.totalScore = 0 // resetall
-      student.save()
-    })
+      student.save();
+    });
 
-    master.totalScore = 2000000
+    master.totalScore = 2000000;
     master.save();
-    res
-      .status(200)
-      .json({ status: "success" });
+    res.status(200).json({ status: "success" });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: error, e: "Ocorreu um erro ao atualizar a pontuação" });
+    res
+      .status(500)
+      .json({ error: error, e: "Ocorreu um erro ao atualizar a pontuação" });
   }
 };
 
