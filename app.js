@@ -2,7 +2,7 @@ const express = require("express");
 const app = express();
 const database = require("./db/conn");
 const PORT = 3502;
-const path = require("path")
+const path = require("path");
 const cors = require("cors");
 const {
   students_getAll,
@@ -62,7 +62,7 @@ const {
 
 database();
 app.use(express.json());
-const upload = require("./db/multer")
+const upload = require("./db/multer");
 const mainroute = "/api/v1";
 
 app.use(
@@ -71,7 +71,7 @@ app.use(
   })
 );
 
-app.use('/uploads', express.static(path.resolve(__dirname, "upload")));
+app.use("/uploads", express.static(path.resolve(__dirname, "upload")));
 
 // ** COURSES **
 app.get(`${mainroute}/courses`, loggedIn, courses_getCoursesTitles);
@@ -124,12 +124,18 @@ app.put(
   loggedInADM,
   student_editPermissions
 );
-app.post('/api/v1/studentpicture/:id', upload.single("file"), students_postPicture);
-app.get('/api/v1/studentpicture/:id', /*upload.single("file"),*/ student_getPicture);
-app.get('/api/v1/score/:id', loggedIn, student_seeScore);
-app.put('/api/v1/score/:id',/* loggedIn,*/ student_scoreUpdate);
-app.put('/api/v1/resetmonth/',/* loggedIn, */student_resetMonth);
-
+app.post(
+  "/api/v1/studentpicture/:id",
+  upload.single("file"),
+  students_postPicture
+);
+app.get(
+  "/api/v1/studentpicture/:id",
+  /*upload.single("file"),*/ student_getPicture
+);
+app.get("/api/v1/score/:id", loggedIn, student_seeScore);
+app.put("/api/v1/score/:id", /* loggedIn,*/ student_scoreUpdate);
+app.put("/api/v1/resetmonth/", /* loggedIn, */ student_resetMonth);
 
 app.delete(`${mainroute}/students/:id`, loggedInADM, student_deleteOne);
 
@@ -140,21 +146,16 @@ app.post(`${mainroute}/blogposts`, loggedInADM, blogPosts_postOne);
 app.put(`${mainroute}/blogposts/:id`, loggedInADM, blogPosts_editOne);
 app.delete(`${mainroute}/blogposts/:id`, loggedInADM, blogPosts_deleteOne);
 
-
 // Live Classes
 app.post(`${mainroute}/liveclass`, nextLiveClass_postNext);
 app.get(`${mainroute}/liveclasses`, loggedIn, nextLiveClass_getNext);
 
-
 // Talking Business
-app.get(`${mainroute}/tbblogposts` /*, loggedIn*/, tbBlogPosts_getAll);
-app.get(`${mainroute}/tbblogpost/:id` /*, loggedIn*/, tbBlogPosts_getOne);
-app.post(`${mainroute}/tbblogposts` /*, loggedInADM*/, tbBlogPosts_postOne);
-app.put(`${mainroute}/tbblogposts/:id` /*, loggedInADM*/, tbBlogPosts_editOne);
-app.delete(
-  `${mainroute}/tbblogposts/:id` /*, loggedInADM*/,
-  tbBlogPosts_deleteOne
-);
+app.get(`${mainroute}/tbblogposts`, tbBlogPosts_getAll);
+app.get(`${mainroute}/tbblogpost/:id`, tbBlogPosts_getOne);
+app.post(`${mainroute}/tbblogposts`, tbBlogPosts_postOne);
+app.put(`${mainroute}/tbblogposts/:id`, tbBlogPosts_editOne);
+app.delete(`${mainroute}/tbblogposts/:id`, tbBlogPosts_deleteOne);
 
 // ** App rodando **
 app.listen(PORT, () => {
