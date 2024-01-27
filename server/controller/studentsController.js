@@ -370,6 +370,7 @@ const student_resetMonth = async (req, res) => {
 
     students.map((student) => {
       student.monthlyScore = 0
+      student.totalScore < 0 ? student.totalScore = 0 : null // resetall
       // student.totalScore = 0 // resetall
       student.save()
     })
