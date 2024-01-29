@@ -337,9 +337,27 @@ const student_seeScore = async (req, res) => {
   }
 };
 
+const student_getScore = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const student = await Student_Model.findById(id);
+    if (!student) throw new Error("Usuário não encontrado");
+
+    const { totalScore, monthlyScore, scoreTimeline } = student;
+    scoreTimeline.reverse();
+    res.status(200).json({ totalScore, monthlyScore, scoreTimeline });
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .json({ error: error, e: "Ocorreu um erro ao ver a pontuação" });
+  }
+};
+
 const student_scoreUpdate = async (req, res) => {
   const { id } = req.params;
-  const { score } = req.body;
+  const { score, description, type } = req.body;
 
   theScore = new Number(score);
 
@@ -353,8 +371,16 @@ const student_scoreUpdate = async (req, res) => {
     student.totalScore = newTotalScore;
     student.monthlyScore = newMonthlyScore;
 
-    student.save();
+    const timeline = {
+      date: new Date(),
+      score,
+      description,
+      type,
+    };
 
+    student.scoreTimeline.push(timeline);
+
+    student.save();
     res.status(200).json({ status: "success" });
   } catch (error) {
     console.error(error);
@@ -363,6 +389,7 @@ const student_scoreUpdate = async (req, res) => {
       .json({ error: error, e: "Ocorreu um erro ao atualizar a pontuação" });
   }
 };
+
 const student_resetMonth = async (req, res) => {
   try {
     const students = await Student_Model.find();
@@ -617,6 +644,7 @@ module.exports = {
   student_login,
   student_scoreUpdate,
   student_seeScore,
+  student_getScore,
   student_resetMonth,
   //U
   student_editGeneralData,

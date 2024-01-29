@@ -18,6 +18,11 @@ const studentSchema = new Schema(
     lastname: { type: String, required: true },
     doc: { type: String, required: true },
     phoneNumber: { type: String, required: true },
+    scoreTimeline: {
+      type: Array,
+      default: [],
+      required: false,
+    },
     dateOfBirth: { type: String, required: true },
     permissions: { type: String, required: false, default: "student" },
     totalScore: { type: Number, required: true, default: 0 },
@@ -25,9 +30,14 @@ const studentSchema = new Schema(
     ankiEmail: { type: String, required: false },
     ankiPassword: { type: String, required: false },
     googleDriveLink: { type: String, required: false },
-    picture: { type: String, required: false, default: "https://ik.imagekit.io/vjz75qw96/assets/arvin_visuals/profile.jpg?updatedAt=1705408334723" },
+    picture: {
+      type: String,
+      required: false,
+      default:
+        "https://ik.imagekit.io/vjz75qw96/assets/arvin_visuals/profile.jpg?updatedAt=1705408334723",
+    },
     language: { type: String, required: false, default: "pt" },
-    changedPasswordBeforeLogInAgain: { type: Boolean, default: false }
+    changedPasswordBeforeLogInAgain: { type: Boolean, default: false },
   },
   { timestamps: true }
 );
