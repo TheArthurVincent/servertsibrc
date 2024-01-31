@@ -22,6 +22,7 @@ const {
   student_resetMonth,
   students_getAllScores,
   student_getScore,
+  students_getOneFullName,
 } = require("./server/controller/studentsController");
 const {
   blogPosts_getAll,
@@ -119,6 +120,8 @@ app.get(`${mainroute}/scoresranking`, loggedIn, students_getAllScores);
 app.get(`${mainroute}/score/:id`, loggedIn, student_getScore);
 
 app.get(`${mainroute}/student/:id`, loggedIn, students_getOne);
+app.get(`${mainroute}/studentname/:id`, loggedIn, students_getOneFullName);
+
 
 app.post(`${mainroute}/students`, loggedInADM, student_postOne);
 app.put(`${mainroute}/students/:id`, loggedInADM, student_editGeneralData);

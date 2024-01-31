@@ -157,6 +157,23 @@ const students_getOne = async (req, res) => {
   }
 };
 
+const students_getOneFullName = async (req, res) => {
+  try {
+    const student = await Student_Model.findById(req.params.id);
+    if (!student) {
+      return res.status(404).json({ message: "Aluno não encontrado" });
+    }
+    const name = student.name + " " + student.lastname;
+    res.status(200).json({
+      status: "Nome encontrado",
+      name,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ erro: "Nenhum aluno encontrado!", status: error });
+  }
+};
+
 const student_postOne = async (req, res) => {
   const {
     username,
@@ -639,6 +656,7 @@ module.exports = {
   student_getPicture,
   //R
   students_getAll,
+  students_getOneFullName,
   students_getAllScores,
   students_getOne,
   student_login,
