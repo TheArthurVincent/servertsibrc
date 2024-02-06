@@ -52,6 +52,7 @@ const student_getPicture = async (req, res) => {
 const students_getAllScores = async (req, res) => {
   try {
     const students = await Student_Model.find();
+    
     const filteredStudents = students.filter(
       (student) =>
         student._id.toString() !== "651311fac3d58753aa9281c5" &&

@@ -18,15 +18,19 @@ const studentSchema = new Schema(
     lastname: { type: String, required: true },
     doc: { type: String, required: true },
     phoneNumber: { type: String, required: true },
+
+    ///
     scoreTimeline: {
       type: Array,
       default: [],
       required: false,
     },
-    dateOfBirth: { type: String, required: true },
-    permissions: { type: String, required: false, default: "student" },
     totalScore: { type: Number, required: true, default: 0 },
     monthlyScore: { type: Number, required: true, default: 0 },
+    ///
+
+    dateOfBirth: { type: String, required: true },
+    permissions: { type: String, required: false, default: "student" },
     ankiEmail: { type: String, required: false },
     ankiPassword: { type: String, required: false },
     googleDriveLink: { type: String, required: false },

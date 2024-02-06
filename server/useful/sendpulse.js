@@ -9,7 +9,6 @@ API_SECRET = "cb960b298d6730d324f168455fe58fce";
 TOKEN_STORAGE = "/tmp/";
 
 class mailSend {
-
   //função para pegar a resposta do servidor de email
   async answerGetter(data) {
     console.log(data);
@@ -17,7 +16,6 @@ class mailSend {
 
   //função para enviar o email
   async sendMail(tomail, name, subject, body) {
-
     let answerGetter = this.answerGetter;
 
     //aqui é o corpo do email
@@ -25,38 +23,31 @@ class mailSend {
       html: body,
       subject: subject,
       from: {
-        name: "Arthur Vincent - Arvin English School", //aqui é o nome que vai aparecer no email
-        email: "contato@digitalmoontech.com.br" //aqui é o email que vai aparecer no email (deve ser o mesmo configurado como remetente*)
+        name: "Arthur Vincent | Arvin English School", //aqui é o nome que vai aparecer no email
+        email: "contato@arthurvincent.com.br", //aqui é o email que vai aparecer no email (deve ser o mesmo configurado como remetente)
       },
       to: [
         {
           name: name,
-          email: tomail
-        }
-      ]
-    }
+          email: tomail,
+        },
+      ],
+    };
 
     return sendpulse.init(API_USER_ID, API_SECRET, TOKEN_STORAGE, (token) => {
       console.log(token);
-
       sendpulse.smtpSendMail(answerGetter, emailData);
     });
-
-
-
   }
 
-  //função para enviar o sms (ainda não testado)
   async sendSMS(phone, text) {
-
     let answerGetter = this.answerGetter;
 
     return sendpulse.init(API_USER_ID, API_SECRET, TOKEN_STORAGE, (token) => {
       console.log(token);
 
-      sendpulse.smsSend(answerGetter, "Digitalmoon", [phone], text);
+      sendpulse.smsSend(answerGetter, "Arthur Vincent", [phone], text);
     });
-
   }
 }
 
