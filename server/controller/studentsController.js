@@ -64,6 +64,7 @@ const students_getAllScores = async (req, res) => {
       return {
         username: student.username,
         name: student.name,
+        id: student._id,
         lastname: student.lastname,
         picture: student.picture,
         monthlyScore: student.monthlyScore,
