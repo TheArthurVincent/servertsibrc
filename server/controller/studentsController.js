@@ -543,6 +543,44 @@ const student_editGeneralData = async (req, res) => {
   }
 };
 
+
+const student_editPersonalPassword = async (req, res) => {
+  const { newPassword } = req.body;
+  const hashedPassword = bcrypt.hashSync(newPassword, 10);
+
+  try {
+    const { id } = req.params;
+    const studentWhosePasswordYouWantToChange = await Student_Model.findById(
+      id
+    );
+
+    if (!studentWhosePasswordYouWantToChange) {
+      return res.status(404).json({ message: "Aluno não encontrado" });
+    } else if (!hashedPassword) {
+      return res.status(400).json({ message: "Escolha uma nova senha" });
+    } else if (
+      studentWhosePasswordYouWantToChange.password === hashedPassword
+    ) {
+      res.json({
+        message: `Escolha uma senha diferente para ${studentWhosePasswordYouWantToChange.username}`,
+      });
+    } else {
+      studentWhosePasswordYouWantToChange.password = hashedPassword;
+      await studentWhosePasswordYouWantToChange.save();
+
+      res.status(200).json({
+        message: "Senha edtada com sucesso",
+        updatedUser: studentWhosePasswordYouWantToChange,
+      });
+      console.error(studentWhosePasswordYouWantToChange);
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Erro ao editar aluno");
+  }
+};
+
+
 const student_editPassword = async (req, res) => {
   const { newPassword } = req.body;
   const hashedPassword = bcrypt.hashSync(newPassword, 10);
@@ -676,6 +714,7 @@ module.exports = {
   //U
   student_editGeneralData,
   student_editPassword,
+  student_editPersonalPassword,
   student_editPermissions,
   //D
   student_deleteOne,
