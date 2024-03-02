@@ -24,6 +24,7 @@ const {
   student_getScore,
   students_getOneFullName,
   student_editPersonalPassword,
+  deleteUnlinkedTutorings,
 } = require("./server/controller/studentsController");
 const {
   blogPosts_getAll,
@@ -152,6 +153,8 @@ app.get(
 app.put("/api/v1/resetmonth/", /* loggedIn, */ student_resetMonth);
 
 app.delete(`${mainroute}/students/:id`, loggedInADM, student_deleteOne);
+app.delete(`${mainroute}/studentsclassestutorings`,/* loggedInADM,*/deleteUnlinkedTutorings);
+
 
 // **BLOG POSTS**
 app.get(`${mainroute}/blogposts`, loggedIn, blogPosts_getAll);

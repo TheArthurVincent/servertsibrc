@@ -6,6 +6,7 @@ const { NextTutoring_Model } = require("../models/NextEvents");
 const { Picture_Model } = require("../models/Pictures");
 const path = require("path");
 const fs = require("fs");
+const { Tutoring_Model } = require("../models/Tutoring");
 
 const students_postPicture = async (req, res) => {
   try {
@@ -583,17 +584,41 @@ const student_deleteOne = async (req, res) => {
   try {
     const { id } = req.params;
     const student = await Student_Model.findById(id);
+    const tutorings = await Tutoring_Model.find({ studentID: id });
+    const nextTutoring = await NextTutoring_Model.findOne({ studentID: id });
 
     if (!student) {
       return res.status(404).json({ message: "Aluno não encontrado" });
     } else {
       await student.deleteOne();
+      if (!nextTutoring) {
+        await nextTutoring.deleteOne();
+      }
+      if (!tutorings) {
+        await Promise.all(
+          tutorings.map(async (tutoring) => {
+            await tutoring.deleteOne();
+          })
+        );
+      }
       res.status(200).json({
         status: "Aluno excluído com sucesso",
       });
     }
   } catch (error) {
     res.status(500).json({ erro: "Falha ao excluir aluno!", status: error });
+  }
+};
+const deleteUnlinkedTutorings = async () => {
+  try {
+    const studentIDs = await Student_Model.find({}, "_id");
+
+    await NextTutoring_Model.deleteMany({ studentID: { $nin: studentIDs } });
+    await Tutoring_Model.deleteMany({ studentID: { $nin: studentIDs } });
+
+    console.log("Tutorings sem link deletados com sucesso.");
+  } catch (error) {
+    console.error("Erro ao deletar tutorings sem link:", error);
   }
 };
 
@@ -717,4 +742,5 @@ module.exports = {
   student_editPermissions,
   //D
   student_deleteOne,
+  deleteUnlinkedTutorings,
 };
