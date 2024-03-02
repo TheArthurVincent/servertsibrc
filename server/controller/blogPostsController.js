@@ -10,11 +10,7 @@ const blogPosts_getAll = async (req, res) => {
       });
     } else {
       const listReverse = blogPosts.reverse();
-      const listOfPosts = [
-        listReverse[0],
-        listReverse[1],
-        listReverse[2],
-      ]
+      const listOfPosts = [listReverse[0], listReverse[1], listReverse[2]];
 
       res.status(200).json({
         status: "Blog Posts encontrados",
@@ -84,7 +80,7 @@ const blogPosts_postOne = async (req, res) => {
 };
 
 const blogPosts_editOne = async (req, res) => {
-  const { title, videoUrl, text } = req.body;
+  const { title, videoUrl, text, img } = req.body;
 
   try {
     const { id } = req.params;
@@ -96,7 +92,8 @@ const blogPosts_editOne = async (req, res) => {
     } else if (
       postToEdit.title === title &&
       postToEdit.videoUrl === videoUrl &&
-      postToEdit.text === text
+      postToEdit.text === text &&
+      postToEdit.img === img
     ) {
       res.json({
         message: `Nenhuma edição feita no post ${postToEdit.title}`,
@@ -105,6 +102,7 @@ const blogPosts_editOne = async (req, res) => {
       postToEdit.title = title;
       postToEdit.videoUrl = videoUrl;
       postToEdit.text = text;
+      postToEdit.img = img;
 
       await postToEdit.save();
 
