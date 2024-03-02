@@ -72,7 +72,7 @@ const students_getAllScores = async (req, res) => {
       };
     });
 
-    formattedStudentsData.sort((a, b) => b.totalScore - a.totalScore);
+    formattedStudentsData.sort((a, b) => b.monthlyScore - a.monthlyScore);
     res.status(200).json({
       listOfStudents: formattedStudentsData,
     });
@@ -543,7 +543,6 @@ const student_editGeneralData = async (req, res) => {
   }
 };
 
-
 const student_editPersonalPassword = async (req, res) => {
   const { newPassword } = req.body;
   const hashedPassword = bcrypt.hashSync(newPassword, 10);
@@ -579,7 +578,6 @@ const student_editPersonalPassword = async (req, res) => {
     res.status(500).send("Erro ao editar aluno");
   }
 };
-
 
 const student_editPassword = async (req, res) => {
   const { newPassword } = req.body;
