@@ -346,99 +346,6 @@ const student_login = async (req, res) => {
   }
 };
 
-const student_seeScore = async (req, res) => {
-  const { id } = req.params;
-
-  try {
-    const student = await Student_Model.findById(id);
-    if (!student) throw new Error("Usuário não encontrado");
-
-    const { totalScore, monthlyScore } = student;
-    res.status(200).json({ totalScore, monthlyScore });
-  } catch (error) {
-    console.error(error);
-    res
-      .status(500)
-      .json({ error: error, e: "Ocorreu um erro ao ver a pontuação" });
-  }
-};
-
-const student_getScore = async (req, res) => {
-  const { id } = req.params;
-
-  try {
-    const student = await Student_Model.findById(id);
-    if (!student) throw new Error("Usuário não encontrado");
-
-    const { totalScore, monthlyScore, scoreTimeline } = student;
-    scoreTimeline.reverse();
-    res.status(200).json({ totalScore, monthlyScore, scoreTimeline });
-  } catch (error) {
-    console.error(error);
-    res
-      .status(500)
-      .json({ error: error, e: "Ocorreu um erro ao ver a pontuação" });
-  }
-};
-
-const student_scoreUpdate = async (req, res) => {
-  const { id } = req.params;
-  const { score, description, type } = req.body;
-
-  theScore = new Number(score);
-
-  try {
-    const student = await Student_Model.findById(id);
-    if (!student) throw new Error("Usuário não encontrado");
-
-    newTotalScore = student.totalScore + theScore;
-    newMonthlyScore = student.monthlyScore + theScore;
-
-    student.totalScore = newTotalScore;
-    student.monthlyScore = newMonthlyScore;
-
-    const timeline = {
-      date: new Date(),
-      score,
-      description,
-      type,
-    };
-
-    student.scoreTimeline.push(timeline);
-
-    student.save();
-    res.status(200).json({ status: "success" });
-  } catch (error) {
-    console.error(error);
-    res
-      .status(500)
-      .json({ error: error, e: "Ocorreu um erro ao atualizar a pontuação" });
-  }
-};
-
-const student_resetMonth = async (req, res) => {
-  try {
-    const students = await Student_Model.find();
-    const master = await Student_Model.findById("651311fac3d58753aa9281c5");
-
-    students.map((student) => {
-      student.monthlyScore = 0;
-      student.totalScore < 0 ? (student.totalScore = 0) : null; // resetall
-      // student.totalScore = 0 // resetall
-      student.save();
-    });
-
-    master.totalScore = 2000000;
-    master.save();
-    res.status(200).json({ status: "success" });
-  } catch (error) {
-    console.error(error);
-    res
-      .status(500)
-      .json({ error: error, e: "Ocorreu um erro ao atualizar a pontuação" });
-  }
-};
-
 const loggedIn = async (req, res, next) => {
   let { authorization } = req.headers;
 
@@ -687,6 +594,100 @@ const student_deleteOne = async (req, res) => {
     }
   } catch (error) {
     res.status(500).json({ erro: "Falha ao excluir aluno!", status: error });
+  }
+};
+
+////////// Scores
+const student_seeScore = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const student = await Student_Model.findById(id);
+    if (!student) throw new Error("Usuário não encontrado");
+
+    const { totalScore, monthlyScore } = student;
+    res.status(200).json({ totalScore, monthlyScore });
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .json({ error: error, e: "Ocorreu um erro ao ver a pontuação" });
+  }
+};
+
+const student_getScore = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const student = await Student_Model.findById(id);
+    if (!student) throw new Error("Usuário não encontrado");
+
+    const { totalScore, monthlyScore, scoreTimeline } = student;
+    scoreTimeline.reverse();
+    res.status(200).json({ totalScore, monthlyScore, scoreTimeline });
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .json({ error: error, e: "Ocorreu um erro ao ver a pontuação" });
+  }
+};
+
+const student_scoreUpdate = async (req, res) => {
+  const { id } = req.params;
+  const { score, description, type } = req.body;
+
+  theScore = new Number(score);
+
+  try {
+    const student = await Student_Model.findById(id);
+    if (!student) throw new Error("Usuário não encontrado");
+
+    newTotalScore = student.totalScore + theScore;
+    newMonthlyScore = student.monthlyScore + theScore;
+
+    student.totalScore = newTotalScore;
+    student.monthlyScore = newMonthlyScore;
+
+    const timeline = {
+      date: new Date(),
+      score,
+      description,
+      type,
+    };
+
+    student.scoreTimeline.push(timeline);
+
+    student.save();
+    res.status(200).json({ status: "success" });
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .json({ error: error, e: "Ocorreu um erro ao atualizar a pontuação" });
+  }
+};
+
+const student_resetMonth = async (req, res) => {
+  try {
+    const students = await Student_Model.find();
+    const master = await Student_Model.findById("651311fac3d58753aa9281c5");
+
+    students.map((student) => {
+      student.monthlyScore = 0;
+      student.totalScore < 0 ? (student.totalScore = 0) : null; // resetall
+      // student.totalScore = 0 // resetall
+      student.save();
+    });
+
+    master.totalScore = 2000000;
+    master.save();
+    res.status(200).json({ status: "success" });
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .json({ error: error, e: "Ocorreu um erro ao atualizar a pontuação" });
   }
 };
 

@@ -117,8 +117,11 @@ app.get(`${mainroute}/nexttutoring/:id`, loggedIn, tutoring_getNext);
 // ** STUDENTS **
 app.post(`${mainroute}/studentlogin/`, student_login);
 app.get(`${mainroute}/students`, loggedInADM, students_getAll);
+
 app.get(`${mainroute}/scoresranking`, loggedIn, students_getAllScores);
 app.get(`${mainroute}/score/:id`, loggedIn, student_getScore);
+app.get(`${mainroute}/score/:id`, loggedIn, student_seeScore);
+app.put(`${mainroute}/score/:id`,/* loggedIn,*/ student_scoreUpdate);
 
 app.get(`${mainroute}/student/:id`, loggedIn, students_getOne);
 app.get(`${mainroute}/studentname/:id`, loggedIn, students_getOneFullName);
@@ -145,8 +148,7 @@ app.get(
   "/api/v1/studentpicture/:id",
   /*upload.single("file"),*/ student_getPicture
 );
-app.get("/api/v1/score/:id", loggedIn, student_seeScore);
-app.put("/api/v1/score/:id", /* loggedIn,*/ student_scoreUpdate);
+
 app.put("/api/v1/resetmonth/", /* loggedIn, */ student_resetMonth);
 
 app.delete(`${mainroute}/students/:id`, loggedInADM, student_deleteOne);
