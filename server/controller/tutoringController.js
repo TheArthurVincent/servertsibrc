@@ -7,59 +7,23 @@ const {
 } = require("../useful/sendmail");
 
 const tutoring_postOne = async (req, res) => {
-  const { title, date, comments, attachments, studentID, videoUrl } = req.body;
+  const { date, studentID, videoUrl } = req.body;
   const student = await Student_Model.findById(studentID);
 
-  const [day, month, year] = date.split("/");
-
   const newTutoring = new Tutoring_Model({
-    title,
     date,
-    monthYear: month + "/" + year,
-    comments,
     videoUrl,
-    attachments,
     studentID,
   });
 
-  const html = await renderEmailTemplatePostedClass(student.name, date, title);
-
   try {
     await newTutoring.save();
-    // try {
-    //   sendEmail(
-    //     student.email,
-    //     `Vídeo da aula particular do dia ${date} postado! | ARVIN ENGLISH SCHOOL`,
-    //     html,
-    //     "text/html"
-    //   );
-    //   sendEmail(
-    //     "arvinenglishschool@gmail.com",
-    //     `SUCESSO - Vídeo da aula de ${student.name}, do dia ${date} postada`,
-    //     `SUCESSO - Vídeo da aula de ${student.name}, do dia ${date} postada`,
-    //     "text/html"
-    //   );
-    // } catch (e) {
-    //   sendEmail(
-    //     "arvinenglishschool@gmail.com",
-    //     `FALHA - Vídeo da aula de ${student.name}, do dia ${date} não postada`,
-    //     `FALHA - Vídeo da aula de ${student.name}, do dia ${date} não postada`,
-    //     "text/html"
-    //   );
-    //   console.error("Erro ao enviar e-mail:", e);
-    // }
     res.status(201).json({
       status: "Aula particular salva",
       newTutoring,
     });
   } catch (error) {
     console.log(error);
-    // sendEmail(
-    //   "arvinenglishschool@gmail.com",
-    //   `SERVER ERROR - Vídeo da aula de ${student.name}, do dia ${date} não postada`,
-    //   `SERVER ERROR - Vídeo da aula de ${student.name}, do dia ${date} não postada: ${error}`,
-    //   "text/html"
-    // );
     res.status(500).json({ Erro: "Aula não registrada" });
   }
 };
