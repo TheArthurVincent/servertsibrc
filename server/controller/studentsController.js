@@ -730,5 +730,4 @@ module.exports = {
   student_editPermissions,
   //D
   student_deleteOne,
-  deleteUnlinkedTutorings,
 };
