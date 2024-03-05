@@ -1,4 +1,6 @@
 const { Class_Model } = require("../models/Course");
+const { Blog_Model } = require("../models/Posts");
+const { blogPosts_postOne } = require("./blogPostsController");
 
 const courses_getOne = async (req, res) => {
   const { id } = req.params;
@@ -36,7 +38,16 @@ const courses_postOneClass = async (req, res) => {
       courseTitle,
       partner,
       googleDriveLink,
+      createrAt: new Date(),
     });
+
+    const newBlogPost = await new Blog_Model({
+      title: classTitle,
+      videoUrl,
+      text: description,
+    });
+
+    await newBlogPost.save();
     await newClass.save();
     res.status(201).json({
       NewClass: newClass,
@@ -122,9 +133,8 @@ const courses_getCoursesTitles = async (req, res) => {
 
 const courses_getAllObjects = async (req, res) => {
   try {
-    const classes = await Class_Model.find();
-    (classes);
-    res.json(classes);
+    const classes = await Class_Model.find().sort({ createdAt: -1 });
+    res.json(classes.reverse());
   } catch (error) {
     console.error("Erro ao listar cursos:", error);
     res.status(500).json({ error: "Erro interno do servidor" });
