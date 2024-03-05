@@ -79,7 +79,7 @@ app.use("/uploads", express.static(path.resolve(__dirname, "upload")));
 // ** COURSES **
 app.get(`${mainroute}/courses`, loggedIn, courses_getCoursesTitles);
 app.get(`${mainroute}/course`, loggedIn, courses_getOneCourse);
-app.get(`${mainroute}/allcourseobjects`, loggedInADM, courses_getAllObjects);
+app.get(`${mainroute}/allcourseobjects`, loggedIn, courses_getAllObjects);
 
 // ** TUTORING - Aulas Particulares **
 app.get(`${mainroute}/tutoring`, loggedIn, tutoring_getAll);
