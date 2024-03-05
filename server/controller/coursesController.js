@@ -1,6 +1,5 @@
 const { Class_Model } = require("../models/Course");
 const { Blog_Model } = require("../models/Posts");
-const { blogPosts_postOne } = require("./blogPostsController");
 
 const courses_getOne = async (req, res) => {
   const { id } = req.params;
@@ -42,9 +41,9 @@ const courses_postOneClass = async (req, res) => {
     });
 
     const newBlogPost = await new Blog_Model({
-      title: classTitle,
+      title: `Group Class: ${classTitle}`,
       videoUrl,
-      text: description,
+      text:`Última aula em grupo ao vivo: ${description}`,
     });
 
     await newBlogPost.save();
