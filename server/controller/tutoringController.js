@@ -1,32 +1,38 @@
 const { NextTutoring_Model } = require("../models/NextEvents");
 const { Student_Model } = require("../models/Students");
 const { Tutoring_Model } = require("../models/Tutoring");
-const {
-  sendEmail,
-  renderEmailTemplatePostedClass,
-} = require("../useful/sendmail");
 
 const tutoring_postOne = async (req, res) => {
-  const { date, studentID, videoUrl } = req.body;
-  const student = await Student_Model.findById(studentID);
-
-  const newTutoring = new Tutoring_Model({
-    date,
-    videoUrl,
-    studentID,
-  });
-
+  const { tutorings } = req.body;
+  const savedTutorings = [];
   try {
-    await newTutoring.save();
+    for (const tutoring of tutorings) {
+      const { date, studentID, videoUrl } = tutoring;
+
+      const parsedDate = new Date(date);
+
+      const formattedDate = parsedDate.toLocaleDateString("pt-BR");
+
+      const newTutoring = new Tutoring_Model({
+        date: formattedDate,
+        videoUrl,
+        studentID,
+      });
+
+      await newTutoring.save();
+      savedTutorings.push(newTutoring);
+    }
+
     res.status(201).json({
       status: "Aula particular salva",
-      newTutoring,
+      savedTutorings,
     });
   } catch (error) {
     console.log(error);
     res.status(500).json({ Erro: "Aula não registrada" });
   }
 };
+
 const tutoring_deleteOne = async (req, res) => {
   const { id } = req.params;
 
