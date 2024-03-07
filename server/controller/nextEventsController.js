@@ -1,9 +1,10 @@
-const { NextTutoring_Model, NextLiveClass_Model } = require("../models/NextEvents");
+const {
+  NextTutoring_Model,
+  NextLiveClass_Model,
+} = require("../models/NextEvents");
 const { Student_Model } = require("../models/Students");
 const formatDate = require("../useful/formulas");
-const {
-  renderEmailTemplateScheduledClass,
-} = require("../useful/sendmail");
+const { renderEmailTemplateScheduledClass } = require("../useful/sendmail");
 
 const nextTutoring_editNext = async (req, res) => {
   const { studentID, meetingUrl, date, time } = req.body;
@@ -26,9 +27,9 @@ const nextTutoring_editNext = async (req, res) => {
         tutoring: newNextClass,
       });
     } else {
-      nextClass.meetingUrl = meetingUrl;
+      nextClass.meetingUrl = meetingUrl ? meetingUrl : nextClass.meetingUrl;
       nextClass.date = date;
-      nextClass.time = time;
+      nextClass.time = time ? time : nextClass.time;
 
       const formatDate = (dataString) => {
         const data = new Date(dataString);
@@ -38,17 +39,10 @@ const nextTutoring_editNext = async (req, res) => {
         const diaFormatado = dia < 10 ? `0${dia}` : dia;
         const mesFormatado = mes < 10 ? `0${mes}` : mes;
         return `${diaFormatado}/${mesFormatado}/${ano}`;
-      }
+      };
 
       await nextClass.save();
       const formattedDate = formatDate(date);
-
-      const html = await renderEmailTemplateScheduledClass(
-        student.name,
-        formattedDate,
-        time,
-        meetingUrl
-      );
 
       res.status(200).json({
         message: "Aula marcada",
@@ -140,8 +134,8 @@ const nextTutoring_seeAllTutorings = async (req, res) => {
 
 const nextLiveClass_postNext = async (req, res) => {
   const { title, meetingUrl, date, time } = req.body;
-  const nxtLive = new NextLiveClass_Model({ title, meetingUrl, date, time })
-  await nxtLive.save()
+  const nxtLive = new NextLiveClass_Model({ title, meetingUrl, date, time });
+  await nxtLive.save();
   res.status(201).json({ msg: "Aula registrada" });
   try {
   } catch (error) {
@@ -177,14 +171,8 @@ const nextLiveClass_getNext = async (req, res) => {
       }
     });
 
-    pastLives.sort(
-      (a, b) =>
-        new Date(b.dateTime) - new Date(a.dateTime)
-    );
-    futureLives.sort(
-      (a, b) =>
-        new Date(a.dateTime) - new Date(b.dateTime)
-    );
+    pastLives.sort((a, b) => new Date(b.dateTime) - new Date(a.dateTime));
+    futureLives.sort((a, b) => new Date(a.dateTime) - new Date(b.dateTime));
 
     res.status(201).json({
       pastLiveClasses: pastLives,
