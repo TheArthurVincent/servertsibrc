@@ -15,8 +15,6 @@ const {
   student_login,
   loggedIn,
   loggedInADM,
-  students_postPicture,
-  student_getPicture,
   student_scoreUpdate,
   student_seeScore,
   student_resetMonth,
@@ -65,7 +63,6 @@ const {
 
 database();
 app.use(express.json());
-const upload = require("./db/multer");
 const mainroute = "/api/v1";
 
 app.use(
@@ -121,7 +118,7 @@ app.get(`${mainroute}/students`, loggedInADM, students_getAll);
 app.get(`${mainroute}/scoresranking`, loggedIn, students_getAllScores);
 app.get(`${mainroute}/score/:id`, loggedIn, student_getScore);
 app.get(`${mainroute}/score/:id`, loggedIn, student_seeScore);
-app.put(`${mainroute}/score/:id`,/* loggedIn,*/ student_scoreUpdate);
+app.put(`${mainroute}/score/:id`, student_scoreUpdate);
 
 app.get(`${mainroute}/student/:id`, loggedIn, students_getOne);
 app.get(`${mainroute}/studentname/:id`, loggedIn, students_getOneFullName);
@@ -139,20 +136,10 @@ app.put(
   loggedInADM,
   student_editPermissions
 );
-app.post(
-  "/api/v1/studentpicture/:id",
-  upload.single("file"),
-  students_postPicture
-);
-app.get(
-  "/api/v1/studentpicture/:id",
-  /*upload.single("file"),*/ student_getPicture
-);
 
-app.put("/api/v1/resetmonth/", /* loggedIn, */ student_resetMonth);
+app.put("/api/v1/resetmonth/", loggedIn, student_resetMonth);
 
 app.delete(`${mainroute}/students/:id`, loggedInADM, student_deleteOne);
-
 
 // **BLOG POSTS**
 app.get(`${mainroute}/blogposts`, loggedIn, blogPosts_getAll);

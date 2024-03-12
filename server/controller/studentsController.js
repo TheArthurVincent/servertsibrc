@@ -3,52 +3,7 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const { promisify } = require("util");
 const { NextTutoring_Model } = require("../models/NextEvents");
-const { Picture_Model } = require("../models/Pictures");
-const path = require("path");
-const fs = require("fs");
 const { Tutoring_Model } = require("../models/Tutoring");
-
-const students_postPicture = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const student = await Student_Model.findById(id);
-    const { name, username, lastname } = student;
-    const file = req.file;
-    const pic = new Picture_Model({
-      name: `Profile Photo: ${username} ${name} ${lastname}`,
-      src: file.path,
-      studentID: id,
-    });
-    await pic.save();
-    res.status(200).json({
-      status: `Sucesso!`,
-    });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Erro ao salvar a imagem." });
-  }
-};
-
-const student_getPicture = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const pic = await Picture_Model.findOne({ studentID: id });
-    const student = await Student_Model.findById(id);
-
-    if (!pic) {
-      return res.status(200).json({
-        status: `Sucesso!`,
-        pic: student.picture,
-      });
-    } else {
-      res.sendFile(path.resolve(pic.src));
-    }
-    console.log(pic);
-  } catch (e) {
-    console.error(e);
-    res.status(500).json({ error: "Erro ao buscar a imagem." });
-  }
-};
 
 const students_getAllScores = async (req, res) => {
   try {
@@ -590,16 +545,6 @@ const student_deleteOne = async (req, res) => {
     } else {
       const tutorings = await Tutoring_Model.find({ studentID: id });
       const nextTutoring = await NextTutoring_Model.findOne({ studentID: id });
-      // if (!nextTutoring) {
-      //   await nextTutoring.deleteOne();
-      // }
-      // if (!tutorings) {
-      //   await Promise.all(
-      //     tutorings.map(async (tutoring) => {
-      //       await tutoring.deleteOne();
-      //     })
-      //   );
-      // }
       await student.deleteOne();
       res.status(200).json({
         status: "Aluno excluído com sucesso",
@@ -711,8 +656,6 @@ module.exports = {
   //C
   student_postOne,
   signup,
-  students_postPicture,
-  student_getPicture,
   //R
   students_getAll,
   students_getOneFullName,
