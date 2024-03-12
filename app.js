@@ -22,6 +22,7 @@ const {
   student_getScore,
   students_getOneFullName,
   student_editPersonalPassword,
+  students_getTotalAllScores,
 } = require("./server/controller/studentsController");
 const {
   blogPosts_getAll,
@@ -116,6 +117,11 @@ app.post(`${mainroute}/studentlogin/`, student_login);
 app.get(`${mainroute}/students`, loggedInADM, students_getAll);
 
 app.get(`${mainroute}/scoresranking`, loggedIn, students_getAllScores);
+app.get(
+  `${mainroute}/scorestotalranking`,
+  loggedIn,
+  students_getTotalAllScores
+);
 app.get(`${mainroute}/score/:id`, loggedIn, student_getScore);
 app.get(`${mainroute}/score/:id`, loggedIn, student_seeScore);
 app.put(`${mainroute}/score/:id`, student_scoreUpdate);
