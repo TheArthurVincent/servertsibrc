@@ -33,8 +33,13 @@ const studentSchema = new Schema(
     permissions: { type: String, required: false, default: "student" },
     ankiEmail: { type: String, required: false },
     ankiPassword: { type: String, required: false },
-    googleDriveLink: { type: String, required: false },
+    googleDriveLink: {
+      type: String,
+      required: false,
+      default: "https://portal.arthurvincent.com.br/message",
+    },
     address: { type: String, required: false },
+
     picture: {
       type: String,
       required: false,
