@@ -224,6 +224,59 @@ const student_postOne = async (req, res) => {
   }
 };
 
+const student_signUp = async (req, res) => {
+  const {
+    name,
+    lastname,
+    username,
+    phoneNumber,
+    email,
+    dateOfBirth,
+    doc,
+    address,
+    ankiEmail,
+    ankiPassword,
+    password,
+  } = req.body;
+
+  const hashedPassword = bcrypt.hashSync(password, 10);
+
+  try {
+    const existingStudent = await Student_Model.findOne({
+      $or: [{ email: email }, { doc: doc }, { username: username }],
+    });
+
+    if (existingStudent) {
+      return res
+        .status(400)
+        .json({ message: "Email, doc ou username já estão em uso" });
+    }
+
+    const newStudent = new Student_Model({
+      name,
+      lastname,
+      username,
+      phoneNumber,
+      email,
+      dateOfBirth,
+      doc,
+      address,
+      ankiEmail,
+      ankiPassword,
+      password: hashedPassword,
+    });
+
+    await newStudent.save();
+
+    res.status(201).json({
+      status: "Aluno registrado",
+      newStudent,
+    });
+  } catch (error) {
+    res.status(500).json({ Erro: "Aluno não registrado", error });
+  }
+};
+
 const signup = async (req, res) => {
   const {
     username,
@@ -689,6 +742,7 @@ module.exports = {
   loggedInADM,
   //C
   student_postOne,
+  student_signUp,
   signup,
   //R
   students_getAll,

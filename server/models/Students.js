@@ -34,6 +34,7 @@ const studentSchema = new Schema(
     ankiEmail: { type: String, required: false },
     ankiPassword: { type: String, required: false },
     googleDriveLink: { type: String, required: false },
+    address: { type: String, required: false },
     picture: {
       type: String,
       required: false,
