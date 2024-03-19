@@ -39,7 +39,6 @@ const studentSchema = new Schema(
       default: "https://portal.arthurvincent.com.br/message",
     },
     address: { type: String, required: false },
-
     picture: {
       type: String,
       required: false,
