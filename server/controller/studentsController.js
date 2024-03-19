@@ -456,7 +456,17 @@ const loggedInADM = async (req, res, next) => {
 };
 
 const student_editGeneralData = async (req, res) => {
-  const { username, email, name, lastname, phoneNumber } = req.body;
+  const {
+    name,
+    lastname,
+    username,
+    email,
+    ankiEmail,
+    ankiPassword,
+    googleDriveLink,
+    picture,
+    phoneNumber,
+  } = req.body;
   try {
     const { id } = req.params;
     const studentToEdit = await Student_Model.findById(id);
@@ -469,6 +479,10 @@ const student_editGeneralData = async (req, res) => {
       studentToEdit.lastname === lastname &&
       studentToEdit.username === username &&
       studentToEdit.email === email &&
+      studentToEdit.ankiEmail === ankiEmail &&
+      studentToEdit.ankiPassword === ankiPassword &&
+      studentToEdit.googleDriveLink === googleDriveLink &&
+      studentToEdit.picture === picture &&
       studentToEdit.phoneNumber === phoneNumber
     ) {
       res.json({
@@ -479,6 +493,10 @@ const student_editGeneralData = async (req, res) => {
       studentToEdit.lastname = lastname;
       studentToEdit.username = username;
       studentToEdit.email = email;
+      studentToEdit.ankiEmail = ankiEmail;
+      studentToEdit.ankiPassword = ankiPassword;
+      studentToEdit.googleDriveLink = googleDriveLink;
+      studentToEdit.picture = studentToEdit;
       studentToEdit.phoneNumber = phoneNumber;
 
       await studentToEdit.save();
