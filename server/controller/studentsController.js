@@ -650,7 +650,9 @@ const student_deleteOne = async (req, res) => {
     } else {
       const tutorings = await Tutoring_Model.find({ studentID: id });
       const nextTutoring = await NextTutoring_Model.findOne({ studentID: id });
+
       await student.deleteOne();
+
       res.status(200).json({
         status: "Aluno excluído com sucesso",
       });
@@ -738,7 +740,7 @@ const student_resetMonth = async (req, res) => {
 
     students.map((student) => {
       student.monthlyScore = 0;
-      student.totalScore < 0 ? (student.totalScore = 0) : null; 
+      student.totalScore < 0 ? (student.totalScore = 0) : null;
       student.save();
     });
 
