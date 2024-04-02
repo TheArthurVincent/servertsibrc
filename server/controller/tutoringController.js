@@ -7,7 +7,7 @@ const tutoring_postOne = async (req, res) => {
   const savedTutorings = [];
   try {
     for (const tutoring of tutorings) {
-      const { date, studentID, videoUrl } = tutoring;
+      const { date, studentID, videoUrl, attachments } = tutoring;
 
       const parsedDate = new Date(date);
 
@@ -17,6 +17,7 @@ const tutoring_postOne = async (req, res) => {
         date: formattedDate,
         videoUrl,
         studentID,
+        attachments,
       });
 
       await newTutoring.save();
@@ -86,7 +87,6 @@ const tutoring_getAll = async (req, res) => {
         title: tutoring.title,
         date: tutoring.date,
         videoUrl: tutoring.videoUrl,
-        comments: tutoring.comments,
         attachments: tutoring.attachments,
         createdAt: tutoring.createdAt,
         updatedAt: tutoring.updatedAt,
@@ -132,7 +132,6 @@ const tutoring_getAllFromParticularStudent = async (req, res) => {
           title: tutoring.title,
           date: tutoring.date,
           videoUrl: tutoring.videoUrl,
-          comments: tutoring.comments,
           attachments: tutoring.attachments,
           createdAt: tutoring.createdAt,
           updatedAt: tutoring.updatedAt,

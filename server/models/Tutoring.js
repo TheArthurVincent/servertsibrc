@@ -7,6 +7,7 @@ const tutoringSchema = new Schema(
     studentID: { type: String, required: true },
     date: { type: String, required: true },
     videoUrl: { type: String, required: false },
+    attachments: { type: String, required: false },
   },
   { timestamps: true }
 );
