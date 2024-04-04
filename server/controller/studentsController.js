@@ -539,7 +539,7 @@ const student_editPersonalPassword = async (req, res) => {
         message: "Senha edtada com sucesso",
         updatedUser: studentWhosePasswordYouWantToChange,
       });
-      console.error(studentWhosePasswordYouWantToChange);
+      console.log(studentWhosePasswordYouWantToChange);
     }
   } catch (error) {
     console.error(error);
