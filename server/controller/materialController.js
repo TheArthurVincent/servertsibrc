@@ -11,6 +11,7 @@ const material_getAll = async (req, res) => {
         title: material.title,
         link: material.link,
         img: material.img,
+        id: material._id,
       });
       return acc;
     }, {});
@@ -23,8 +24,18 @@ const material_getAll = async (req, res) => {
     };
 
     res.json(formattedMaterialData);
-  } catch {
+  } catch (error) {
     res.status(500).json({ Erro: "Material não registrado", error });
+  }
+};
+
+const material_getOne = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const material = await Material_Model.findById(id);
+    res.json(material);
+  } catch (error) {
+    res.status(500).json({ Erro: "Material não encontrado", error });
   }
 };
 
@@ -52,7 +63,7 @@ const material_postNew = async (req, res) => {
       category,
     });
     await newMaterial.save();
-  } catch {
+  } catch (error) {
     res.status(500).json({ Erro: "Material não registrado", error });
   }
 };
@@ -71,7 +82,7 @@ const material_deleteOne = async (req, res) => {
     }
 
     await materialToDelete.deleteOne();
-  } catch {
+  } catch (error) {
     res.status(500).json({ Erro: "Material não excluído", error });
   }
 };
@@ -95,7 +106,7 @@ const material_editOne = async (req, res) => {
     category && (materialToEdit.category = category);
 
     await materialToEdit.save();
-  } catch {
+  } catch (error) {
     res.status(500).json({ Erro: "Material não editado", error });
   }
 };
@@ -105,6 +116,7 @@ module.exports = {
   material_postNew,
   //R
   material_getAll,
+  material_getOne,
   //U
   material_editOne,
   //D

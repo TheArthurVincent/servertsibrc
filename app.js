@@ -67,6 +67,7 @@ const {
   material_deleteOne,
   material_editOne,
   material_getAll,
+  material_getOne,
 } = require("./server/controller/materialController");
 
 database();
@@ -158,15 +159,23 @@ app.delete(`${mainroute}/students/:id`, loggedInADM, student_deleteOne);
 
 // **Material**
 app.post(`${mainroute}/material`, /*loggedInADM,*/ material_postNew);
+
 app.delete(`${mainroute}/material/:id`, /*loggedInADM,*/ material_deleteOne);
+
 app.put(`${mainroute}/material/:id`, /*loggedInADM,*/ material_editOne);
+
 app.get(`${mainroute}/material/`, /*loggedIn,*/ material_getAll);
+app.get(`${mainroute}/material/:id`, /*loggedIn,*/ material_getOne);
+
 
 // **BLOG POSTS**
 app.get(`${mainroute}/blogposts`, loggedIn, blogPosts_getAll);
 app.get(`${mainroute}/blogpost/:id`, loggedIn, blogPosts_getOne);
+
 app.post(`${mainroute}/blogposts`, loggedInADM, blogPosts_postOne);
+
 app.put(`${mainroute}/blogposts/:id`, loggedInADM, blogPosts_editOne);
+
 app.delete(`${mainroute}/blogposts/:id`, loggedInADM, blogPosts_deleteOne);
 
 // Live Classes
