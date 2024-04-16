@@ -3,14 +3,11 @@ const {
   NextLiveClass_Model,
 } = require("../models/NextEvents");
 const { Student_Model } = require("../models/Students");
-const formatDate = require("../useful/formulas");
-const { renderEmailTemplateScheduledClass } = require("../useful/sendmail");
 
 const nextTutoring_editNext = async (req, res) => {
   const { studentID, meetingUrl, date, time } = req.body;
 
   const nextClass = await NextTutoring_Model.findOne({ studentID });
-  const student = await Student_Model.findById(studentID);
 
   try {
     if (!nextClass) {

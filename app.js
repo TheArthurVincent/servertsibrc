@@ -62,6 +62,12 @@ const {
   courses_getOneCourse,
   courses_getAllObjects,
 } = require("./server/controller/coursesController");
+const {
+  material_postNew,
+  material_deleteOne,
+  material_editOne,
+  material_getAll,
+} = require("./server/controller/materialController");
 
 database();
 app.use(express.json());
@@ -149,6 +155,12 @@ app.put(
 app.put("/api/v1/resetmonthscoresecurethepoints", student_resetMonth);
 
 app.delete(`${mainroute}/students/:id`, loggedInADM, student_deleteOne);
+
+// **Material**
+app.post(`${mainroute}/material`, /*loggedInADM,*/ material_postNew);
+app.delete(`${mainroute}/material/:id`, /*loggedInADM,*/ material_deleteOne);
+app.put(`${mainroute}/material/:id`, /*loggedInADM,*/ material_editOne);
+app.get(`${mainroute}/material/`, /*loggedIn,*/ material_getAll);
 
 // **BLOG POSTS**
 app.get(`${mainroute}/blogposts`, loggedIn, blogPosts_getAll);
