@@ -63,6 +63,10 @@ const material_postNew = async (req, res) => {
       category,
     });
     await newMaterial.save();
+
+    res.status(200).json({
+      status: "Material salvo",
+    });
   } catch (error) {
     res.status(500).json({ Erro: "Material não registrado", error });
   }
@@ -82,6 +86,10 @@ const material_deleteOne = async (req, res) => {
     }
 
     await materialToDelete.deleteOne();
+
+    res.status(200).json({
+      status: "Material excluído",
+    });
   } catch (error) {
     res.status(500).json({ Erro: "Material não excluído", error });
   }
@@ -106,6 +114,9 @@ const material_editOne = async (req, res) => {
     category && (materialToEdit.category = category);
 
     await materialToEdit.save();
+    res.status(200).json({
+      status: "Material editado",
+    });
   } catch (error) {
     res.status(500).json({ Erro: "Material não editado", error });
   }
