@@ -69,6 +69,7 @@ const {
   material_getAll,
   material_getOne,
 } = require("./server/controller/materialController");
+const { event_New, events_seeTutorings, events_seeGeneral } = require("./server/controller/eventsController");
 
 database();
 app.use(express.json());
@@ -107,6 +108,13 @@ app.get(
 
 app.delete(`${mainroute}/tutoring/:id`, loggedInADM, tutoring_deleteOne);
 app.post(`${mainroute}/tutoring`, loggedInADM, tutoring_postOne);
+
+// * events *
+app.post(`${mainroute}/event`,/* loggedInADM,*/ event_New);
+app.get(`${mainroute}/eventstutorings`,/* loggedInADM,*/ events_seeTutorings);
+app.get(`${mainroute}/eventsgeneral`,/* loggedInADM,*/ events_seeGeneral);
+
+
 
 // * classes *
 app.post(`${mainroute}/courseclass`, loggedInADM, courses_postOneClass);

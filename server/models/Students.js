@@ -18,9 +18,13 @@ const studentSchema = new Schema(
     lastname: { type: String, required: true },
     doc: { type: String, required: true },
     phoneNumber: { type: String, required: true },
-
     ///
     scoreTimeline: {
+      type: Array,
+      default: [],
+      required: false,
+    },
+    tutoringDays: {
       type: Array,
       default: [],
       required: false,
@@ -28,7 +32,6 @@ const studentSchema = new Schema(
     totalScore: { type: Number, required: true, default: 0 },
     monthlyScore: { type: Number, required: true, default: 0 },
     ///
-
     dateOfBirth: { type: String, required: true },
     permissions: { type: String, required: false, default: "student" },
     ankiEmail: { type: String, required: false },
