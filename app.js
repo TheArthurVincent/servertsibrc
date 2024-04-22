@@ -75,6 +75,11 @@ const {
   events_seeAll,
   events_seeOne,
   events_editOneStatus,
+  events_deleteOne,
+  events_seeAllTutorings,
+  events_editOneTutoring,
+  event_NewTutoring,
+  event_DeleteTutoring,
 } = require("./server/controller/eventsController");
 
 database();
@@ -117,11 +122,22 @@ app.post(`${mainroute}/tutoring`, loggedInADM, tutoring_postOne);
 
 // * events *
 app.post(`${mainroute}/event`, /* loggedInADM,*/ event_New);
+app.post(`${mainroute}/tutoringevent`, /* loggedInADM,*/ event_NewTutoring);
+app.delete(
+  `${mainroute}/tutoringevent`,
+  /* loggedInADM,*/ event_DeleteTutoring
+);
+
 app.put(`${mainroute}/event/:id`, /* loggedInADM,*/ events_editOne);
 app.put(`${mainroute}/eventstatus/:id`, /* loggedInADM,*/ events_editOneStatus);
-
+app.delete(`${mainroute}/event/:id`, /* loggedInADM,*/ events_deleteOne);
 app.get(`${mainroute}/event/:id`, /* loggedInADM,*/ events_seeOne);
 app.get(`${mainroute}/eventsgeneral`, /* loggedInADM,*/ events_seeAll);
+app.get(
+  `${mainroute}/tutoringsevents/:studentId`,
+  /* loggedInADM,*/ events_seeAllTutorings
+);
+app.put(`${mainroute}/tutoringevent`, /* loggedInADM,*/ events_editOneTutoring);
 
 // * classes *
 app.post(`${mainroute}/courseclass`, loggedInADM, courses_postOneClass);
