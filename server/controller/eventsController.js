@@ -66,10 +66,10 @@ const events_editOne = async (req, res) => {
     req.body;
   const { id } = req.params;
   const editedEvent = await Events_Model.findById(id);
-  const student = studentID ? await Student_Model.findById(studentID) : null
-  const studentName = studentID ? student.name + " " + student.lastname : null
+  const student = studentID ? await Student_Model.findById(studentID) : null;
+  const studentName = studentID ? student.name + " " + student.lastname : null;
   try {
-    if (!date || !link || !category || !description || !status || !editedEvent) {
+    if (!date || !link || !category || !status || !editedEvent) {
       res.status(500).json({ info: "informações faltantes" });
     } else {
       if (!editedEvent) {
@@ -81,7 +81,27 @@ const events_editOne = async (req, res) => {
         editedEvent.date = date;
         editedEvent.time = time;
         editedEvent.link = link;
-        editedEvent.description = description;
+        editedEvent.description = description ? description : "";
+        editedEvent.status = status;
+        editedEvent.save();
+        res.status(200).json({ message: "Success!", editedEvent });
+      }
+    }
+  } catch (error) {
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+const events_editOneStatus = async (req, res) => {
+  const { status } = req.body;
+  const { id } = req.params;
+  const editedEvent = await Events_Model.findById(id);
+  try {
+    if (!status) {
+      res.status(500).json({ info: "informações faltantes" });
+    } else {
+      if (!editedEvent) {
+        return res.status(500).json("Evento não encontado");
+      } else {
         editedEvent.status = status;
         editedEvent.save();
         res.status(200).json({ message: "Success!", editedEvent });
@@ -96,8 +116,9 @@ module.exports = {
   //C
   event_New,
   //R
-  events_seeAll, events_seeOne,
+  events_seeAll,
+  events_seeOne,
   //U
-  events_editOne,
+  events_editOne, events_editOneStatus
   //D
 };

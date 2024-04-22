@@ -74,6 +74,7 @@ const {
   events_editOne,
   events_seeAll,
   events_seeOne,
+  events_editOneStatus,
 } = require("./server/controller/eventsController");
 
 database();
@@ -117,6 +118,8 @@ app.post(`${mainroute}/tutoring`, loggedInADM, tutoring_postOne);
 // * events *
 app.post(`${mainroute}/event`, /* loggedInADM,*/ event_New);
 app.put(`${mainroute}/event/:id`, /* loggedInADM,*/ events_editOne);
+app.put(`${mainroute}/eventstatus/:id`, /* loggedInADM,*/ events_editOneStatus);
+
 app.get(`${mainroute}/event/:id`, /* loggedInADM,*/ events_seeOne);
 app.get(`${mainroute}/eventsgeneral`, /* loggedInADM,*/ events_seeAll);
 
