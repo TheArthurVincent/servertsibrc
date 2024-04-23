@@ -126,6 +126,98 @@ const events_editOneStatus = async (req, res) => {
   }
 };
 //////////////////// tutorings
+const event_NewTutoring = async (req, res) => {
+  const { day, time, link, studentID } = req.body;
+  try {
+    if (!day || !time || !link || !studentID) {
+      return res.status(400).json({ message: "Informações faltantes" });
+    }
+
+    const formatTime = (timeStr) => {
+      const [hours, minutes] = timeStr.split(":");
+      return `${hours.padStart(2, "0")}:${minutes.padStart(2, "0")}`;
+    };
+    const student = await Student_Model.findById(studentID);
+    if (!student) {
+      return res.status(404).json({ message: "Aluno não encontrado" });
+    }
+
+    const newTutoring = {
+      day,
+      time: formatTime(time),
+      link,
+      edited: false,
+      student: studentID,
+      id: new mongoose.Types.ObjectId(),
+    };
+
+    student.tutoringDays.push(newTutoring);
+    await student.save();
+
+    const getNextDayOfWeek = (dayOfWeek, fromDate) => {
+      const daysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+      const targetDay = daysOfWeek.indexOf(dayOfWeek);
+      const currentDay = fromDate.getDay();
+      const daysUntilTarget = targetDay - currentDay;
+      const nextDate = new Date(fromDate);
+      nextDate.setDate(fromDate.getDate() + daysUntilTarget);
+      return nextDate;
+    };
+
+    const today = new Date();
+    const nextWeekDay = getNextDayOfWeek(day, today);
+
+    const nextFewWeeks = [];
+    for (let i = 0; i < 3; i++) {
+      const nextWeek = new Date(
+        nextWeekDay.getTime() + 7 * 24 * 60 * 60 * 1000 * i
+      );
+      nextFewWeeks.push(nextWeek);
+    }
+
+    const eventsPromises = nextFewWeeks.map(async (nextWeek) => {
+      const daysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+      const nextWeekDaySameDay = new Date(nextWeek);
+
+      nextWeekDaySameDay.setDate(
+        nextWeekDaySameDay.getDate() +
+          ((daysOfWeek.indexOf(day) + 7 - nextWeekDaySameDay.getDay()) % 7)
+      );
+
+      const eventDate = new Date(
+        nextWeekDaySameDay.getFullYear(),
+        nextWeekDaySameDay.getMonth(),
+        nextWeekDaySameDay.getDate(),
+        time.split(":")[0],
+        time.split(":")[1]
+      );
+      const formatTime = (timeStr) => {
+        const [hours, minutes] = timeStr.split(":");
+        return `${hours.padStart(2, "0")}:${minutes.padStart(2, "0")}`;
+      };
+
+      const newEvents = await Events_Model({
+        studentID,
+        student: student.name + " " + student.lastname,
+        description: null,
+        edited: false,
+        link,
+        date: eventDate.toISOString().slice(0, 10),
+        time: formatTime(time),
+        category: "Tutoring",
+        tutoringID: newTutoring.id,
+      });
+
+      await newEvents.save();
+      return newEvents;
+    });
+    /////////
+    return res.status(200).json({ message: "Success", student });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: "Internal Server Error" });
+  }
+};
 const events_seeAllTutoringsFromOneStudent = async (req, res) => {
   const { studentId } = req.params;
   try {
@@ -233,99 +325,6 @@ const events_editOneTutoring = async (req, res) => {
       });
     }
     return res.status(200).json({ student });
-  } catch (error) {
-    console.error(error);
-    return res.status(500).json({ error: "Internal Server Error" });
-  }
-};
-
-const event_NewTutoring = async (req, res) => {
-  const { day, time, link, studentID } = req.body;
-  try {
-    if (!day || !time || !link || !studentID) {
-      return res.status(400).json({ message: "Informações faltantes" });
-    }
-
-    const formatTime = (timeStr) => {
-      const [hours, minutes] = timeStr.split(":");
-      return `${hours.padStart(2, "0")}:${minutes.padStart(2, "0")}`;
-    };
-    const student = await Student_Model.findById(studentID);
-    if (!student) {
-      return res.status(404).json({ message: "Aluno não encontrado" });
-    }
-
-    const newTutoring = {
-      day,
-      time: formatTime(time),
-      link,
-      edited: false,
-      student: studentID,
-      id: new mongoose.Types.ObjectId(),
-    };
-
-    student.tutoringDays.push(newTutoring);
-    await student.save();
-
-    const getNextDayOfWeek = (dayOfWeek, fromDate) => {
-      const daysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-      const targetDay = daysOfWeek.indexOf(dayOfWeek);
-      const currentDay = fromDate.getDay();
-      const daysUntilTarget = targetDay - currentDay;
-      const nextDate = new Date(fromDate);
-      nextDate.setDate(fromDate.getDate() + daysUntilTarget);
-      return nextDate;
-    };
-
-    const today = new Date();
-    const nextWeekDay = getNextDayOfWeek(day, today);
-
-    const nextFewWeeks = [];
-    for (let i = 0; i < 3; i++) {
-      const nextWeek = new Date(
-        nextWeekDay.getTime() + 7 * 24 * 60 * 60 * 1000 * i
-      );
-      nextFewWeeks.push(nextWeek);
-    }
-
-    const eventsPromises = nextFewWeeks.map(async (nextWeek) => {
-      const daysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-      const nextWeekDaySameDay = new Date(nextWeek);
-
-      nextWeekDaySameDay.setDate(
-        nextWeekDaySameDay.getDate() +
-          ((daysOfWeek.indexOf(day) + 7 - nextWeekDaySameDay.getDay()) % 7)
-      );
-
-      const eventDate = new Date(
-        nextWeekDaySameDay.getFullYear(),
-        nextWeekDaySameDay.getMonth(),
-        nextWeekDaySameDay.getDate(),
-        time.split(":")[0],
-        time.split(":")[1]
-      );
-      const formatTime = (timeStr) => {
-        const [hours, minutes] = timeStr.split(":");
-        return `${hours.padStart(2, "0")}:${minutes.padStart(2, "0")}`;
-      };
-
-      const newEvents = await Events_Model({
-        studentID,
-        student: student.name + " " + student.lastname,
-        description: null,
-        edited: false,
-        link,
-        date: eventDate.toISOString().slice(0, 10),
-        time: formatTime(time),
-        category: "Tutoring",
-        tutoringID: newTutoring.id,
-      });
-
-      await newEvents.save();
-      return newEvents;
-    });
-    /////////
-    return res.status(200).json({ message: "Success", student });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ error: "Internal Server Error" });
