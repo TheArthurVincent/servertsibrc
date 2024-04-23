@@ -78,7 +78,6 @@ const events_seeAll = async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
-
 const events_seeOne = async (req, res) => {
   const { id } = req.params;
   try {
@@ -154,7 +153,7 @@ const events_editOneStatus = async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
-//////////////////// tutorings
+/// tutorings
 const event_NewTutoring = async (req, res) => {
   const { day, time, link, studentID } = req.body;
   try {
