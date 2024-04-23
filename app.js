@@ -76,7 +76,7 @@ const {
   events_seeOne,
   events_editOneStatus,
   events_deleteOne,
-  events_seeAllTutorings,
+  events_seeAllTutoringsFromOneStudent,
   events_editOneTutoring,
   event_NewTutoring,
   event_DeleteTutoring,
@@ -135,7 +135,7 @@ app.get(`${mainroute}/event/:id`, /* loggedInADM,*/ events_seeOne);
 app.get(`${mainroute}/eventsgeneral`, /* loggedInADM,*/ events_seeAll);
 app.get(
   `${mainroute}/tutoringsevents/:studentId`,
-  /* loggedInADM,*/ events_seeAllTutorings
+  /* loggedInADM,*/ events_seeAllTutoringsFromOneStudent
 );
 app.put(`${mainroute}/tutoringevent`, /* loggedInADM,*/ events_editOneTutoring);
 

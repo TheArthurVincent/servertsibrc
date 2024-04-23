@@ -5,6 +5,8 @@ const { Schema } = mongoose;
 const eventsSchema = new Schema(
   {
     studentID: { type: String, required: false, unique: false },
+    tutoringID: { type: String, required: false, unique: false },
+    edited: { type: Boolean, required: false, unique: false, default: false },
     student: { type: String, required: false, unique: false },
     status: { type: String, required: true, unique: false, default: "marcado" },
     link: { type: String, required: true, unique: false },
