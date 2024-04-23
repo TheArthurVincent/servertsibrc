@@ -121,23 +121,16 @@ app.delete(`${mainroute}/tutoring/:id`, loggedInADM, tutoring_deleteOne);
 app.post(`${mainroute}/tutoring`, loggedInADM, tutoring_postOne);
 
 // * events *
-app.post(`${mainroute}/event`, /* loggedInADM,*/ event_New);
-app.post(`${mainroute}/tutoringevent`, /* loggedInADM,*/ event_NewTutoring);
-app.delete(
-  `${mainroute}/tutoringevent`,
-  /* loggedInADM,*/ event_DeleteTutoring
-);
-
-app.put(`${mainroute}/event/:id`, /* loggedInADM,*/ events_editOne);
-app.put(`${mainroute}/eventstatus/:id`, /* loggedInADM,*/ events_editOneStatus);
-app.delete(`${mainroute}/event/:id`, /* loggedInADM,*/ events_deleteOne);
-app.get(`${mainroute}/event/:id`, /* loggedInADM,*/ events_seeOne);
-app.get(`${mainroute}/eventsgeneral`, /* loggedInADM,*/ events_seeAll);
-app.get(
-  `${mainroute}/tutoringsevents/:studentId`,
-  /* loggedInADM,*/ events_seeAllTutoringsFromOneStudent
-);
-app.put(`${mainroute}/tutoringevent`, /* loggedInADM,*/ events_editOneTutoring);
+app.get(`${mainroute}/eventsgeneral/:id`, loggedIn, events_seeAll);
+app.post(`${mainroute}/event`,  event_New);
+app.post(`${mainroute}/tutoringevent`, event_NewTutoring);
+app.delete(`${mainroute}/tutoringevent`, event_DeleteTutoring);
+app.put(`${mainroute}/event/:id`,  events_editOne);
+app.put(`${mainroute}/eventstatus/:id`,  events_editOneStatus);
+app.delete(`${mainroute}/event/:id`,  events_deleteOne);
+app.get(`${mainroute}/event/:id`,  events_seeOne);
+app.get(`${mainroute}/tutoringsevents/:studentId`, events_seeAllTutoringsFromOneStudent);
+app.put(`${mainroute}/tutoringevent`, events_editOneTutoring);
 
 // * classes *
 app.post(`${mainroute}/courseclass`, loggedInADM, courses_postOneClass);
@@ -154,49 +147,28 @@ app.get(`${mainroute}/nexttutoring/:id`, loggedIn, tutoring_getNext);
 // ** STUDENTS **
 app.post(`${mainroute}/studentlogin/`, student_login);
 app.get(`${mainroute}/students`, loggedInADM, students_getAll);
-
 app.get(`${mainroute}/scoresranking`, loggedIn, students_getAllScores);
-app.get(
-  `${mainroute}/scorestotalranking`,
-  loggedIn,
-  students_getTotalAllScores
-);
+app.get(`${mainroute}/scorestotalranking`, loggedIn, students_getTotalAllScores);
 app.get(`${mainroute}/score/:id`, loggedIn, student_getScore);
 app.get(`${mainroute}/score/:id`, loggedIn, student_seeScore);
 app.put(`${mainroute}/score/:id`, student_scoreUpdate);
-
 app.get(`${mainroute}/student/:id`, loggedIn, students_getOne);
 app.get(`${mainroute}/studentname/:id`, loggedIn, students_getOneFullName);
-
 app.post(`${mainroute}/students`, loggedInADM, student_postOne);
 app.post(`${mainroute}/signupstudent`, student_signUp);
-
 app.put(`${mainroute}/students/:id`, loggedInADM, student_editGeneralData);
 app.put(`${mainroute}/studentpassword/:id`, loggedInADM, student_editPassword);
-app.put(
-  `${mainroute}/studentperspassword/:id`,
-  loggedIn,
-  student_editPersonalPassword
-);
-app.put(
-  `${mainroute}/studentpermissions/:id`,
-  loggedInADM,
-  student_editPermissions
-);
-
+app.put(`${mainroute}/studentperspassword/:id`, loggedIn, student_editPersonalPassword);
+app.put(`${mainroute}/studentpermissions/:id`, loggedInADM, student_editPermissions);
 app.put("/api/v1/resetmonthscoresecurethepoints", student_resetMonth);
-
 app.delete(`${mainroute}/students/:id`, loggedInADM, student_deleteOne);
 
 // **Material**
-app.post(`${mainroute}/material`, /*loggedInADM,*/ material_postNew);
-
-app.delete(`${mainroute}/material/:id`, /*loggedInADM,*/ material_deleteOne);
-
-app.put(`${mainroute}/material/:id`, /*loggedInADM,*/ material_editOne);
-
-app.get(`${mainroute}/material/`, /*loggedIn,*/ material_getAll);
-app.get(`${mainroute}/material/:id`, /*loggedIn,*/ material_getOne);
+app.post(`${mainroute}/material`, loggedInADM, material_postNew);
+app.delete(`${mainroute}/material/:id`, loggedInADM, material_deleteOne);
+app.put(`${mainroute}/material/:id`, loggedInADM, material_editOne);
+app.get(`${mainroute}/material/`, loggedIn, material_getAll);
+app.get(`${mainroute}/material/:id`, loggedIn, material_getOne);
 
 // **BLOG POSTS**
 app.get(`${mainroute}/blogposts`, loggedIn, blogPosts_getAll);

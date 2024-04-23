@@ -36,20 +36,49 @@ const event_New = async (req, res) => {
   }
 };
 const events_seeAll = async (req, res) => {
+  const { id } = req.params;
+
   try {
-    const events = await Events_Model.find();
+    const student = await Student_Model.findById(id);
 
-    const eventsList = events.map((event) => {
-      const dateObject = new Date(event.date);
-      event.date = dateObject;
-      return event;
-    });
+    if (!student) {
+      return res.status(404).json({ error: "Student not found" });
+    }
 
-    res.status(200).json({ eventsList });
+    if (student.permissions === "superadmin") {
+      const events = await Events_Model.find();
+      const eventsList = events.map((event) => {
+        const dateObject = new Date(event.date);
+        event.date = dateObject;
+        return event;
+      });
+      return res.status(200).json({ eventsList });
+    } else {
+
+      const events = await Events_Model.find({
+        $or: [
+          { category: "Group Class" },
+          {
+            $and: [
+              { studentID: id },
+              { category: { $in: ["Tutoring", "Rep", "Prize Class"] } },
+            ],
+          },
+        ],
+      });
+      const eventsList = events.map((event) => {
+        const dateObject = new Date(event.date);
+        event.date = dateObject;
+        return event;
+      });
+      return res.status(200).json({ eventsList });
+    }
   } catch (error) {
+    console.error("Error fetching events:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
+
 const events_seeOne = async (req, res) => {
   const { id } = req.params;
   try {
@@ -168,7 +197,7 @@ const event_NewTutoring = async (req, res) => {
     const nextWeekDay = getNextDayOfWeek(day, today);
 
     const nextFewWeeks = [];
-    for (let i = 0; i < 3; i++) {
+    for (let i = 0; i < 42; i++) {
       const nextWeek = new Date(
         nextWeekDay.getTime() + 7 * 24 * 60 * 60 * 1000 * i
       );
@@ -181,7 +210,7 @@ const event_NewTutoring = async (req, res) => {
 
       nextWeekDaySameDay.setDate(
         nextWeekDaySameDay.getDate() +
-          ((daysOfWeek.indexOf(day) + 7 - nextWeekDaySameDay.getDay()) % 7)
+        ((daysOfWeek.indexOf(day) + 7 - nextWeekDaySameDay.getDay()) % 7)
       );
 
       const eventDate = new Date(
@@ -280,7 +309,7 @@ const events_editOneTutoring = async (req, res) => {
       const nextWeekDay = getNextDayOfWeek(day, today);
 
       const nextFewWeeks = [];
-      for (let i = 0; i < 3; i++) {
+      for (let i = 0; i < 42; i++) {
         const nextWeek = new Date(
           nextWeekDay.getTime() + 7 * 24 * 60 * 60 * 1000 * i
         );
@@ -293,7 +322,7 @@ const events_editOneTutoring = async (req, res) => {
 
         nextWeekDaySameDay.setDate(
           nextWeekDaySameDay.getDate() +
-            ((daysOfWeek.indexOf(day) + 7 - nextWeekDaySameDay.getDay()) % 7)
+          ((daysOfWeek.indexOf(day) + 7 - nextWeekDaySameDay.getDay()) % 7)
         );
 
         const eventDate = new Date(
