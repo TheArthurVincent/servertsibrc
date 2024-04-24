@@ -80,6 +80,7 @@ const {
   events_editOneTutoring,
   event_NewTutoring,
   event_DeleteTutoring,
+  events_seeNext,
 } = require("./server/controller/eventsController");
 
 database();
@@ -122,13 +123,14 @@ app.post(`${mainroute}/tutoring`, loggedInADM, tutoring_postOne);
 
 // * events *
 app.get(`${mainroute}/eventsgeneral/:id`, loggedIn, events_seeAll);
-app.post(`${mainroute}/event`,  event_New);
+app.get(`${mainroute}/eventseenextttoring/:id`, loggedIn, events_seeNext);
+app.post(`${mainroute}/event`, event_New);
 app.post(`${mainroute}/tutoringevent`, event_NewTutoring);
 app.delete(`${mainroute}/tutoringevent`, event_DeleteTutoring);
-app.put(`${mainroute}/event/:id`,  events_editOne);
-app.put(`${mainroute}/eventstatus/:id`,  events_editOneStatus);
-app.delete(`${mainroute}/event/:id`,  events_deleteOne);
-app.get(`${mainroute}/event/:id`,  events_seeOne);
+app.put(`${mainroute}/event/:id`, events_editOne);
+app.put(`${mainroute}/eventstatus/:id`, events_editOneStatus);
+app.delete(`${mainroute}/event/:id`, events_deleteOne);
+app.get(`${mainroute}/event/:id`, events_seeOne);
 app.get(`${mainroute}/tutoringsevents/:studentId`, events_seeAllTutoringsFromOneStudent);
 app.put(`${mainroute}/tutoringevent`, events_editOneTutoring);
 

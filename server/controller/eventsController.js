@@ -38,6 +38,19 @@ const event_New = async (req, res) => {
 const events_seeAll = async (req, res) => {
   const { id } = req.params;
 
+  const filtrarEventos = (eventsList) => {
+    var hoje = new Date();
+    var ontem = (hoje.getDate() - 1);
+    var limite = new Date();
+    limite.setDate(hoje.getDate() + 15);
+
+    var eventosFiltrados = eventsList.filter(function (evento) {
+      var dataEvento = new Date(evento.date);
+      return dataEvento >= ontem && dataEvento <= limite;
+    });
+
+    return eventosFiltrados;
+  }
   try {
     const student = await Student_Model.findById(id);
 
@@ -52,9 +65,11 @@ const events_seeAll = async (req, res) => {
         event.date = dateObject;
         return event;
       });
-      return res.status(200).json({ eventsList });
-    } else {
 
+
+      const events31 = filtrarEventos(eventsList);
+      return res.status(200).json({ eventsList: events31 });
+    } else {
       const events = await Events_Model.find({
         $or: [
           { category: "Group Class" },
@@ -71,13 +86,60 @@ const events_seeAll = async (req, res) => {
         event.date = dateObject;
         return event;
       });
-      return res.status(200).json({ eventsList });
+      const events31 = filtrarEventos(eventsList);
+      return res.status(200).json({ eventsList: events31 });
     }
   } catch (error) {
     console.error("Error fetching events:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
+
+const events_seeNext = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const student = await Student_Model.findById(id);
+
+    if (!student) {
+      return res.status(404).json({ error: "Student not found" });
+    }
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // Define a hora para 00:00:00
+
+    const events = await Events_Model.find({
+      studentID: id,
+    }).sort({ date: 1 }); // Ordena os eventos por data em ordem crescente
+
+    let nextEvent = null;
+
+    for (const event of events) {
+      const eventDate = new Date(event.date);
+      if (eventDate.getTime() === today.getTime()) {
+        // Se a data do evento for hoje, atribua o evento a nextEvent e saia do loop
+        nextEvent = event;
+        break;
+      } else if (eventDate > today) {
+        // Se a data do evento for após hoje, atribua o evento a nextEvent e saia do loop
+        nextEvent = event;
+        break;
+      }
+    }
+
+    console.log(nextEvent);
+
+    return res.status(200).json({ event: nextEvent });
+  } catch (error) {
+    console.error("Error fetching events:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+
+
+
+
 const events_seeOne = async (req, res) => {
   const { id } = req.params;
   try {
@@ -388,13 +450,14 @@ const event_DeleteTutoring = async (req, res) => {
 };
 
 module.exports = {
+
   //C
   event_New,
   event_NewTutoring,
   //R
   events_seeAll,
   events_seeAllTutoringsFromOneStudent,
-  events_seeOne,
+  events_seeOne, events_seeNext,
   //U
   events_editOne,
   events_editOneStatus,
