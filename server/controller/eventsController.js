@@ -36,7 +36,6 @@ const event_New = async (req, res) => {
   }
 };
 
-
 const events_seeAll = async (req, res) => {
   const { id } = req.params;
 
