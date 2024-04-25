@@ -94,7 +94,6 @@ const events_seeAll = async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
-
 const events_seeNext = async (req, res) => {
   const { id } = req.params;
 
@@ -135,11 +134,6 @@ const events_seeNext = async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
-
-
-
-
-
 const events_seeOne = async (req, res) => {
   const { id } = req.params;
   try {
@@ -215,6 +209,7 @@ const events_editOneStatus = async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
+
 /// tutorings
 const event_NewTutoring = async (req, res) => {
   const { day, time, link, studentID } = req.body;
@@ -226,12 +221,12 @@ const event_NewTutoring = async (req, res) => {
     const formatTime = (timeStr) => {
       const [hours, minutes] = timeStr.split(":");
       return `${hours.padStart(2, "0")}:${minutes.padStart(2, "0")}`;
-    };
+    }; 
+
     const student = await Student_Model.findById(studentID);
     if (!student) {
       return res.status(404).json({ message: "Aluno não encontrado" });
     }
-
     const newTutoring = {
       day,
       time: formatTime(time),
@@ -449,8 +444,8 @@ const event_DeleteTutoring = async (req, res) => {
   }
 };
 
-module.exports = {
 
+module.exports = {
   //C
   event_New,
   event_NewTutoring,
