@@ -29,9 +29,7 @@ const students_getAllScores = async (req, res) => {
     });
 
     formattedStudentsData.sort((a, b) => b.monthlyScore - a.monthlyScore);
-    res.status(200).json({
-      listOfStudents: formattedStudentsData,
-    });
+    res.status(200).json({ listOfStudents: formattedStudentsData });
   } catch (error) {
     console.error(error);
     res.status(500).json({ erro: "Nenhum aluno / Erro no servidor", error });
@@ -63,9 +61,7 @@ const students_getTotalAllScores = async (req, res) => {
     });
 
     formattedStudentsData.sort((a, b) => b.totalScore - a.totalScore);
-    res.status(200).json({
-      listOfStudents: formattedStudentsData,
-    });
+    res.status(200).json({ listOfStudents: formattedStudentsData });
   } catch (error) {
     console.error(error);
     res.status(500).json({ erro: "Nenhum aluno / Erro no servidor", error });
@@ -238,7 +234,6 @@ const student_signUp = async (req, res) => {
     ankiPassword,
     password,
   } = req.body;
-
   const hashedPassword = bcrypt.hashSync(password, 10);
 
   try {
@@ -265,7 +260,6 @@ const student_signUp = async (req, res) => {
       ankiPassword,
       password: hashedPassword,
     });
-
     await newStudent.save();
 
     res.status(201).json({
@@ -357,7 +351,6 @@ const student_login = async (req, res) => {
       expiresIn: "30d",
     });
 
-    student.changedPasswordBeforeLogInAgain = false;
     const nextTutoring = await NextTutoring_Model.findOne({
       studentID: student._id,
     });

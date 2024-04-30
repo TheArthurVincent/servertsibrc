@@ -35,6 +35,7 @@ const event_New = async (req, res) => {
     res.status(500).json({ Erro: "Evento não registrado" });
   }
 };
+
 const events_seeAll = async (req, res) => {
   const { id } = req.params;
 
