@@ -357,7 +357,6 @@ const student_login = async (req, res) => {
       expiresIn: "30d",
     });
 
-    student.changedPasswordBeforeLogInAgain = false;
     const nextTutoring = await NextTutoring_Model.findOne({
       studentID: student._id,
     });
