@@ -78,6 +78,7 @@ const {
   events_seeNext,
 } = require("./server/controller/eventsController");
 
+
 database();
 app.use(express.json());
 const mainroute = "/api/v1";
