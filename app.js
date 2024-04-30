@@ -31,11 +31,6 @@ const {
   blogPosts_getOne,
   blogPosts_postOne,
   blogPosts_deleteOne,
-  tbBlogPosts_getAll,
-  tbBlogPosts_postOne,
-  tbBlogPosts_editOne,
-  tbBlogPosts_deleteOne,
-  tbBlogPosts_getOne,
 } = require("./server/controller/blogPostsController");
 const {
   tutoring_postOne,
@@ -131,7 +126,10 @@ app.put(`${mainroute}/event/:id`, events_editOne);
 app.put(`${mainroute}/eventstatus/:id`, events_editOneStatus);
 app.delete(`${mainroute}/event/:id`, events_deleteOne);
 app.get(`${mainroute}/event/:id`, events_seeOne);
-app.get(`${mainroute}/tutoringsevents/:studentId`, events_seeAllTutoringsFromOneStudent);
+app.get(
+  `${mainroute}/tutoringsevents/:studentId`,
+  events_seeAllTutoringsFromOneStudent
+);
 app.put(`${mainroute}/tutoringevent`, events_editOneTutoring);
 
 // * classes *
@@ -150,7 +148,11 @@ app.get(`${mainroute}/nexttutoring/:id`, loggedIn, tutoring_getNext);
 app.post(`${mainroute}/studentlogin/`, student_login);
 app.get(`${mainroute}/students`, loggedInADM, students_getAll);
 app.get(`${mainroute}/scoresranking`, loggedIn, students_getAllScores);
-app.get(`${mainroute}/scorestotalranking`, loggedIn, students_getTotalAllScores);
+app.get(
+  `${mainroute}/scorestotalranking`,
+  loggedIn,
+  students_getTotalAllScores
+);
 app.get(`${mainroute}/score/:id`, loggedIn, student_getScore);
 app.get(`${mainroute}/score/:id`, loggedIn, student_seeScore);
 app.put(`${mainroute}/score/:id`, student_scoreUpdate);
@@ -160,8 +162,16 @@ app.post(`${mainroute}/students`, loggedInADM, student_postOne);
 app.post(`${mainroute}/signupstudent`, student_signUp);
 app.put(`${mainroute}/students/:id`, loggedInADM, student_editGeneralData);
 app.put(`${mainroute}/studentpassword/:id`, loggedInADM, student_editPassword);
-app.put(`${mainroute}/studentperspassword/:id`, loggedIn, student_editPersonalPassword);
-app.put(`${mainroute}/studentpermissions/:id`, loggedInADM, student_editPermissions);
+app.put(
+  `${mainroute}/studentperspassword/:id`,
+  loggedIn,
+  student_editPersonalPassword
+);
+app.put(
+  `${mainroute}/studentpermissions/:id`,
+  loggedInADM,
+  student_editPermissions
+);
 app.put("/api/v1/resetmonthscoresecurethepoints", student_resetMonth);
 app.delete(`${mainroute}/students/:id`, loggedInADM, student_deleteOne);
 
@@ -175,23 +185,13 @@ app.get(`${mainroute}/material/:id`, loggedIn, material_getOne);
 // **BLOG POSTS**
 app.get(`${mainroute}/blogposts`, loggedIn, blogPosts_getAll);
 app.get(`${mainroute}/blogpost/:id`, loggedIn, blogPosts_getOne);
-
 app.post(`${mainroute}/blogposts`, loggedInADM, blogPosts_postOne);
-
 app.put(`${mainroute}/blogposts/:id`, loggedInADM, blogPosts_editOne);
-
 app.delete(`${mainroute}/blogposts/:id`, loggedInADM, blogPosts_deleteOne);
 
 // Live Classes
 app.post(`${mainroute}/liveclass`, nextLiveClass_postNext);
 app.get(`${mainroute}/liveclasses`, loggedIn, nextLiveClass_getNext);
-
-// Talking Business
-app.get(`${mainroute}/tbblogposts`, tbBlogPosts_getAll);
-app.get(`${mainroute}/tbblogpost/:id`, tbBlogPosts_getOne);
-app.post(`${mainroute}/tbblogposts`, tbBlogPosts_postOne);
-app.put(`${mainroute}/tbblogposts/:id`, tbBlogPosts_editOne);
-app.delete(`${mainroute}/tbblogposts/:id`, tbBlogPosts_deleteOne);
 
 // ** App rodando **
 app.listen(PORT, () => {

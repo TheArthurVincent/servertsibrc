@@ -1,8 +1,12 @@
-const { Blog_Model } = require("../models/Posts");
+import { Request, Response } from "express";
+import { Blog_ModelTS } from "../models/Posts";
 
-const blogPosts_getAll = async (req, res) => {
+const blogPosts_getAll_TS = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
   try {
-    const blogPosts = await Blog_Model.find();
+    const blogPosts = await Blog_ModelTS.find();
 
     if (blogPosts.length === 0) {
       res.status(200).json({
@@ -10,7 +14,12 @@ const blogPosts_getAll = async (req, res) => {
       });
     } else {
       const listReverse = blogPosts.reverse();
-      const listOfPosts = [listReverse[0], listReverse[1], listReverse[2]];
+      const listOfPosts = [
+        listReverse[0],
+        listReverse[1],
+        listReverse[2],
+        listReverse[3],
+      ];
 
       res.status(200).json({
         status: "Blog Posts encontrados",
@@ -24,9 +33,9 @@ const blogPosts_getAll = async (req, res) => {
   }
 };
 
-const blogPosts_getOne = async (req, res) => {
-  const blogPost = await Blog_Model.findById(req.params.id);
+export const blogPosts_getOne = async (req: Request, res: Response) => {
   try {
+    const blogPost = await Blog_ModelTS.findById(req.params.id);
     if (!blogPost) {
       return res.status(404).json({ message: "Post não encontrado" });
     }
@@ -46,13 +55,11 @@ const blogPosts_getOne = async (req, res) => {
   }
 };
 
-const blogPosts_postOne = async (req, res) => {
+export const blogPosts_postOne = async (req: Request, res: Response) => {
   const { title, videoUrl, text, img } = req.body;
 
   try {
-    const existingTitle = await Blog_Model.findOne({
-      title: title,
-    });
+    const existingTitle = await Blog_ModelTS.findOne({ title: title });
     if (!title || !text) {
       res.status(400).json({ message: "Informações faltantes" });
     } else if (existingTitle) {
@@ -60,14 +67,13 @@ const blogPosts_postOne = async (req, res) => {
         .status(400)
         .json({ message: "Escolha outro título, este já existe." });
     } else {
-      const newBlogPost = await new Blog_Model({
+      const newBlogPost = await Blog_ModelTS.create({
         title,
         videoUrl,
         text,
         img,
       });
 
-      await newBlogPost.save();
       res.status(201).json({
         status: "Post criado!",
         newBlogPost,
@@ -79,12 +85,12 @@ const blogPosts_postOne = async (req, res) => {
   }
 };
 
-const blogPosts_editOne = async (req, res) => {
+export const blogPosts_editOne = async (req: Request, res: Response) => {
   const { title, videoUrl, text, img } = req.body;
 
   try {
     const { id } = req.params;
-    const postToEdit = await Blog_Model.findById(id);
+    const postToEdit = await Blog_ModelTS.findById(id);
     if (!postToEdit) {
       return res.status(404).json({ message: "Post não encontrado" });
     } else if (!title || !text) {
@@ -99,12 +105,12 @@ const blogPosts_editOne = async (req, res) => {
         message: `Nenhuma edição feita no post ${postToEdit.title}`,
       });
     } else {
-      postToEdit.title = title;
-      postToEdit.videoUrl = videoUrl;
-      postToEdit.text = text;
-      postToEdit.img = img;
-
-      await postToEdit.save();
+      await postToEdit.updateOne({
+        title,
+        videoUrl,
+        text,
+        img,
+      });
 
       res.status(200).json({
         message: "Post editado com sucesso",
@@ -117,10 +123,9 @@ const blogPosts_editOne = async (req, res) => {
   }
 };
 
-const blogPosts_deleteOne = async (req, res) => {
-  const blogPost = await Blog_Model.findById(req.params.id);
-
+export const blogPosts_deleteOne = async (req: Request, res: Response) => {
   try {
+    const blogPost = await Blog_ModelTS.findById(req.params.id);
     if (!blogPost) {
       return res.status(404).json({ message: "Post não existe" });
     } else {
@@ -134,10 +139,4 @@ const blogPosts_deleteOne = async (req, res) => {
   }
 };
 
-module.exports = {
-  blogPosts_getAll,
-  blogPosts_editOne,
-  blogPosts_getOne,
-  blogPosts_postOne,
-  blogPosts_deleteOne,
-};
+export { blogPosts_getAll_TS };
