@@ -41,7 +41,7 @@ const events_seeAll = async (req, res) => {
   const hoje = new Date(today);
 
   const limit = new Date(hoje);
-  limit.setDate(limit.getDate() + 30);
+  limit.setDate(limit.getDate() + 10);
 
   const yesterday = new Date(hoje);
   yesterday.setDate(yesterday.getDate() - 1);
