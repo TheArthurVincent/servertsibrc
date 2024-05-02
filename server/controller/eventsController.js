@@ -35,23 +35,25 @@ const event_New = async (req, res) => {
     res.status(500).json({ Erro: "Evento não registrado" });
   }
 };
-
 const events_seeAll = async (req, res) => {
   const { id } = req.params;
+  const { today } = req.query;
+  const hoje = new Date(today);
+
+  const limit = new Date(hoje);
+  limit.setDate(limit.getDate() + 30);
+
+  const yesterday = new Date(hoje);
+  yesterday.setDate(yesterday.getDate() - 1);
 
   const filtrarEventos = (eventsList) => {
-    var hoje = new Date();
-    var ontem = (hoje.getDate() - 1);
-    var limite = new Date();
-    limite.setDate(hoje.getDate() + 15);
-
-    var eventosFiltrados = eventsList.filter(function (evento) {
-      var dataEvento = new Date(evento.date);
-      return dataEvento >= ontem && dataEvento <= limite;
+    const eventosFiltrados = eventsList.filter(function (evento) {
+      const dataEvento = new Date(evento.date);
+      return dataEvento >= yesterday && dataEvento <= limit;
     });
-
     return eventosFiltrados;
-  }
+  };
+
   try {
     const student = await Student_Model.findById(id);
 
@@ -59,19 +61,11 @@ const events_seeAll = async (req, res) => {
       return res.status(404).json({ error: "Student not found" });
     }
 
+    let events;
     if (student.permissions === "superadmin") {
-      const events = await Events_Model.find();
-      const eventsList = events.map((event) => {
-        const dateObject = new Date(event.date);
-        event.date = dateObject;
-        return event;
-      });
-
-
-      const events31 = filtrarEventos(eventsList);
-      return res.status(200).json({ eventsList: events31 });
+      events = await Events_Model.find();
     } else {
-      const events = await Events_Model.find({
+      events = await Events_Model.find({
         $or: [
           { category: "Group Class" },
           {
@@ -82,19 +76,23 @@ const events_seeAll = async (req, res) => {
           },
         ],
       });
-      const eventsList = events.map((event) => {
-        const dateObject = new Date(event.date);
-        event.date = dateObject;
-        return event;
-      });
-      const events31 = filtrarEventos(eventsList);
-      return res.status(200).json({ eventsList: events31 });
     }
+
+    const eventsList = events.map((event) => {
+      const dateObject = new Date(event.date);
+      event.date = dateObject;
+      return event;
+    });
+
+    const eventsFiltered = filtrarEventos(eventsList);
+
+    return res.status(200).json({ eventsList: eventsFiltered });
   } catch (error) {
     console.error("Error fetching events:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
+
 const events_seeNext = async (req, res) => {
   const { id } = req.params;
 
@@ -222,7 +220,7 @@ const event_NewTutoring = async (req, res) => {
     const formatTime = (timeStr) => {
       const [hours, minutes] = timeStr.split(":");
       return `${hours.padStart(2, "0")}:${minutes.padStart(2, "0")}`;
-    }; 
+    };
 
     const student = await Student_Model.findById(studentID);
     if (!student) {
@@ -267,7 +265,7 @@ const event_NewTutoring = async (req, res) => {
 
       nextWeekDaySameDay.setDate(
         nextWeekDaySameDay.getDate() +
-        ((daysOfWeek.indexOf(day) + 7 - nextWeekDaySameDay.getDay()) % 7)
+          ((daysOfWeek.indexOf(day) + 7 - nextWeekDaySameDay.getDay()) % 7)
       );
 
       const eventDate = new Date(
@@ -379,7 +377,7 @@ const events_editOneTutoring = async (req, res) => {
 
         nextWeekDaySameDay.setDate(
           nextWeekDaySameDay.getDate() +
-          ((daysOfWeek.indexOf(day) + 7 - nextWeekDaySameDay.getDay()) % 7)
+            ((daysOfWeek.indexOf(day) + 7 - nextWeekDaySameDay.getDay()) % 7)
         );
 
         const eventDate = new Date(
@@ -445,7 +443,6 @@ const event_DeleteTutoring = async (req, res) => {
   }
 };
 
-
 module.exports = {
   //C
   event_New,
@@ -453,7 +450,8 @@ module.exports = {
   //R
   events_seeAll,
   events_seeAllTutoringsFromOneStudent,
-  events_seeOne, events_seeNext,
+  events_seeOne,
+  events_seeNext,
   //U
   events_editOne,
   events_editOneStatus,
