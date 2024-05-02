@@ -35,12 +35,12 @@ const event_New = async (req, res) => {
     res.status(500).json({ Erro: "Evento não registrado" });
   }
 };
-
 const events_seeAll = async (req, res) => {
   const { id } = req.params;
-
+  const { today } = req.query;
+  const hoje = new Date(today)
   const filtrarEventos = (eventsList) => {
-    var hoje = new Date();
+    // var hoje = new Date();
     var ontem = (hoje.getDate() - 1);
     var limite = new Date();
     limite.setDate(hoje.getDate() + 15);
@@ -222,7 +222,7 @@ const event_NewTutoring = async (req, res) => {
     const formatTime = (timeStr) => {
       const [hours, minutes] = timeStr.split(":");
       return `${hours.padStart(2, "0")}:${minutes.padStart(2, "0")}`;
-    }; 
+    };
 
     const student = await Student_Model.findById(studentID);
     if (!student) {
