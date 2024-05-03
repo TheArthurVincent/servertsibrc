@@ -41,10 +41,10 @@ const events_seeAll = async (req, res) => {
   const hoje = new Date(today);
 
   const limit = new Date(hoje);
-  limit.setDate(limit.getDate() + 10);
+  limit.setDate(limit.getDate() + 11);
 
   const yesterday = new Date(hoje);
-  yesterday.setDate(yesterday.getDate() - 1);
+  yesterday.setDate(yesterday.getDate() - 3);
 
   const filtrarEventos = (eventsList) => {
     const eventosFiltrados = eventsList.filter(function (evento) {
@@ -104,22 +104,20 @@ const events_seeNext = async (req, res) => {
     }
 
     const today = new Date();
-    today.setHours(0, 0, 0, 0); // Define a hora para 00:00:00
+    today.setHours(0, 0, 0, 0); 
 
     const events = await Events_Model.find({
       studentID: id,
-    }).sort({ date: 1 }); // Ordena os eventos por data em ordem crescente
+    }).sort({ date: 1 }); 
 
     let nextEvent = null;
 
     for (const event of events) {
       const eventDate = new Date(event.date);
       if (eventDate.getTime() === today.getTime()) {
-        // Se a data do evento for hoje, atribua o evento a nextEvent e saia do loop
         nextEvent = event;
         break;
       } else if (eventDate > today) {
-        // Se a data do evento for após hoje, atribua o evento a nextEvent e saia do loop
         nextEvent = event;
         break;
       }
