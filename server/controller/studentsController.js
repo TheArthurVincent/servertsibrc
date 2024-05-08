@@ -78,6 +78,7 @@ const students_getAll = async (req, res) => {
         username: student.username,
         email: student.email,
         name: student.name,
+        address: student.address,
         lastname: student.lastname,
         password: student.password,
         dateOfBirth: student.dateOfBirth,
@@ -130,10 +131,14 @@ const students_getOne = async (req, res) => {
       fullname: student.name + " " + student.lastname,
       permissions: student.permissions,
       doc: student.doc,
+      address: student.address,
       phoneNumber: student.phoneNumber,
       picture: student.picture,
       monthlyScore: student.monthlyScore,
+      googleDriveLink: student.googleDriveLink,
       totalScore: student.totalScore,
+      ankiEmail: student.ankiEmail,
+      ankiPassword: student.ankiPassword,
     };
     res.status(200).json({
       status: "Aluno encontrado",
@@ -455,6 +460,7 @@ const student_editGeneralData = async (req, res) => {
     username,
     email,
     ankiEmail,
+    address,
     ankiPassword,
     googleDriveLink,
     picture,
@@ -474,8 +480,9 @@ const student_editGeneralData = async (req, res) => {
       studentToEdit.email === email &&
       studentToEdit.ankiEmail === ankiEmail &&
       studentToEdit.ankiPassword === ankiPassword &&
-      studentToEdit.googleDriveLink === googleDriveLink &&
       studentToEdit.picture === picture &&
+      studentToEdit.address === address &&
+      studentToEdit.googleDriveLink === googleDriveLink &&
       studentToEdit.phoneNumber === phoneNumber
     ) {
       res.json({
@@ -489,7 +496,8 @@ const student_editGeneralData = async (req, res) => {
       studentToEdit.ankiEmail = ankiEmail;
       studentToEdit.ankiPassword = ankiPassword;
       studentToEdit.googleDriveLink = googleDriveLink;
-      studentToEdit.picture = studentToEdit;
+      studentToEdit.picture = picture;
+      studentToEdit.address = address;
       studentToEdit.phoneNumber = phoneNumber;
 
       await studentToEdit.save();
