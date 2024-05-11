@@ -36,6 +36,7 @@ const studentSchema = new Schema(
     permissions: { type: String, required: false, default: "student" },
     ankiEmail: { type: String, required: false },
     ankiPassword: { type: String, required: false },
+    fee: { type: Number, required: false, default: 300 },
     googleDriveLink: {
       type: String,
       required: false,
