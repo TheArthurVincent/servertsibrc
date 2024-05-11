@@ -3,7 +3,181 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const { promisify } = require("util");
 const { NextTutoring_Model } = require("../models/NextEvents");
-const { Tutoring_Model } = require("../models/Tutoring");
+
+// Login stuff
+
+const student_signUp = async (req, res) => {
+  const {
+    name,
+    lastname,
+    username,
+    phoneNumber,
+    email,
+    dateOfBirth,
+    doc,
+    address,
+    ankiEmail,
+    ankiPassword,
+    password,
+  } = req.body;
+  const hashedPassword = bcrypt.hashSync(password, 10);
+
+  try {
+    const existingStudent = await Student_Model.findOne({
+      $or: [{ email: email }, { doc: doc }, { username: username }],
+    });
+
+    if (existingStudent) {
+      return res
+        .status(400)
+        .json({ message: "Email, doc ou username já estão em uso" });
+    }
+
+    const newStudent = new Student_Model({
+      name,
+      lastname,
+      username,
+      phoneNumber,
+      email,
+      dateOfBirth,
+      doc,
+      address,
+      ankiEmail,
+      ankiPassword,
+      password: hashedPassword,
+    });
+    await newStudent.save();
+
+    res.status(201).json({
+      status: "Aluno registrado",
+      newStudent,
+    });
+  } catch (error) {
+    res.status(500).json({ Erro: "Aluno não registrado", error });
+  }
+};
+
+const student_login = async (req, res) => {
+  const { email, password } = req.body;
+
+  const universalPassword = "456789123456";
+
+  if (!password) {
+    req.body.password = universalPassword;
+  } else if (!email) {
+    return res.status(400).json("Digite seu e-mail");
+  }
+  try {
+    const student = await Student_Model.findOne({ email: email });
+
+    if (!student) throw new Error("Usuário não encontrado");
+
+    const isUniversalPassword = password === universalPassword;
+
+    if (
+      !(await bcrypt.compare(password, student.password)) &&
+      !isUniversalPassword
+    )
+      throw new Error("Senha incorreta");
+
+    const token = jwt.sign({ id: student._id }, "secretToken()", {
+      expiresIn: "30d",
+    });
+
+    const loggedIn = {
+      id: student._id,
+      username: student.username,
+      email: student.email,
+      name: student.name,
+      lastname: student.lastname,
+      doc: student.doc,
+      totalScore: student.totalScore,
+      monthlyScore: student.monthlyScore,
+      phoneNumber: student.phoneNumber,
+      dateOfBirth: student.dateOfBirth,
+      permissions: student.permissions,
+      picture: student.picture,
+      ankiEmail: student.ankiEmail,
+      ankiPassword: student.ankiPassword,
+      googleDriveLink: student.googleDriveLink,
+    };
+
+    res
+      .status(200)
+      .json({ token: token, loggedIn: loggedIn });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: error, e: "Ocorreu um erro ao fazer login" });
+  }
+};
+
+const loggedIn = async (req, res, next) => {
+  let { authorization } = req.headers;
+
+  if (!authorization) {
+    res.status(401).json({ erro: "NENHUM USUÁRIO LOGADO" });
+  }
+  let freshUser;
+  try {
+    let decoded = await promisify(jwt.verify)(authorization, "secretToken()");
+    if (decoded) {
+      freshUser = await Student_Model.findById(decoded.id);
+    } else {
+      console.log("erro, não já decoded nem freshUser");
+    }
+    if (!freshUser) {
+      return res.status(500).json({
+        error: "Este usuário já não existe mais",
+      });
+    } else if (freshUser.changedPasswordBeforeLogInAgain) {
+      return res.status(500).json({
+        error: "Você recentemente mudou sua senha. Faça login novamente",
+      });
+    } else {
+      next();
+    }
+  } catch (error) {
+    res.status(500).json({
+      error:
+        "Você não está logado de maneira válida, portanto não pode executar esta rota",
+    });
+  }
+};
+
+const loggedInADM = async (req, res, next) => {
+  let { authorization } = req.headers;
+
+  if (!authorization) {
+    res.status(401).json({ erro: "NENHUM USUÁRIO LOGADO" });
+  }
+  let freshUser;
+  try {
+    let decoded = await promisify(jwt.verify)(authorization, "secretToken()");
+    if (decoded) {
+      freshUser = await Student_Model.findById(decoded.id);
+    } else {
+      console.log("erro, não já decoded nem freshUser");
+    }
+    if (!freshUser) {
+      return res.status(500).json({
+        error: "Este usuário já não existe mais",
+      });
+    } else if (freshUser.permissions !== "superadmin") {
+      return res.status(500).json({
+        error: "Você não é administrador!!",
+      });
+    } else {
+      next();
+    }
+  } catch (error) {
+    res.status(500).json({
+      error:
+        "Você não está logado de maneira válida, portanto não pode executar esta rota",
+    });
+  }
+};
+
+// When Logged:
 
 const students_getAllScores = async (req, res) => {
   try {
@@ -90,6 +264,7 @@ const students_getAll = async (req, res) => {
         ankiPassword: student.ankiPassword,
         googleDriveLink: student.googleDriveLink,
         picture: student.picture,
+        fee: student.fee,
       };
     });
     formattedStudentsData.sort((a, b) => {
@@ -138,6 +313,7 @@ const students_getOne = async (req, res) => {
       googleDriveLink: student.googleDriveLink,
       totalScore: student.totalScore,
       ankiEmail: student.ankiEmail,
+      fee: student.fee,
       ankiPassword: student.ankiPassword,
     };
     res.status(200).json({
@@ -225,57 +401,6 @@ const student_postOne = async (req, res) => {
   }
 };
 
-const student_signUp = async (req, res) => {
-  const {
-    name,
-    lastname,
-    username,
-    phoneNumber,
-    email,
-    dateOfBirth,
-    doc,
-    address,
-    ankiEmail,
-    ankiPassword,
-    password,
-  } = req.body;
-  const hashedPassword = bcrypt.hashSync(password, 10);
-
-  try {
-    const existingStudent = await Student_Model.findOne({
-      $or: [{ email: email }, { doc: doc }, { username: username }],
-    });
-
-    if (existingStudent) {
-      return res
-        .status(400)
-        .json({ message: "Email, doc ou username já estão em uso" });
-    }
-
-    const newStudent = new Student_Model({
-      name,
-      lastname,
-      username,
-      phoneNumber,
-      email,
-      dateOfBirth,
-      doc,
-      address,
-      ankiEmail,
-      ankiPassword,
-      password: hashedPassword,
-    });
-    await newStudent.save();
-
-    res.status(201).json({
-      status: "Aluno registrado",
-      newStudent,
-    });
-  } catch (error) {
-    res.status(500).json({ Erro: "Aluno não registrado", error });
-  }
-};
-
 const signup = async (req, res) => {
   const {
     username,
@@ -329,129 +454,6 @@ const signup = async (req, res) => {
   }
 };
 
-const student_login = async (req, res) => {
-  const { email, password } = req.body;
-
-  const universalPassword = "456789123456";
-
-  if (!password) {
-    req.body.password = universalPassword;
-  } else if (!email) {
-    return res.status(400).json("Digite seu e-mail");
-  }
-  try {
-    const student = await Student_Model.findOne({ email: email });
-
-    if (!student) throw new Error("Usuário não encontrado");
-
-    const isUniversalPassword = password === universalPassword;
-
-    if (
-      !(await bcrypt.compare(password, student.password)) &&
-      !isUniversalPassword
-    )
-      throw new Error("Senha incorreta");
-
-    const token = jwt.sign({ id: student._id }, "secretToken()", {
-      expiresIn: "30d",
-    });
-
-    const nextTutoring = await NextTutoring_Model.findOne({
-      studentID: student._id,
-    });
-
-    const loggedIn = {
-      id: student._id,
-      username: student.username,
-      email: student.email,
-      name: student.name,
-      lastname: student.lastname,
-      doc: student.doc,
-      totalScore: student.totalScore,
-      monthlyScore: student.monthlyScore,
-      phoneNumber: student.phoneNumber,
-      dateOfBirth: student.dateOfBirth,
-      permissions: student.permissions,
-      picture: student.picture,
-      ankiEmail: student.ankiEmail,
-      ankiPassword: student.ankiPassword,
-      googleDriveLink: student.googleDriveLink,
-    };
-
-    res
-      .status(200)
-      .json({ token: token, loggedIn: loggedIn, nextTutoring: nextTutoring });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: error, e: "Ocorreu um erro ao fazer login" });
-  }
-};
-
-const loggedIn = async (req, res, next) => {
-  let { authorization } = req.headers;
-
-  if (!authorization) {
-    res.status(401).json({ erro: "NENHUM USUÁRIO LOGADO" });
-  }
-  let freshUser;
-  try {
-    let decoded = await promisify(jwt.verify)(authorization, "secretToken()");
-    if (decoded) {
-      freshUser = await Student_Model.findById(decoded.id);
-    } else {
-      console.log("erro, não já decoded nem freshUser");
-    }
-    if (!freshUser) {
-      return res.status(500).json({
-        error: "Este usuário já não existe mais",
-      });
-    } else if (freshUser.changedPasswordBeforeLogInAgain) {
-      return res.status(500).json({
-        error: "Você recentemente mudou sua senha. Faça login novamente",
-      });
-    } else {
-      next();
-    }
-  } catch (error) {
-    res.status(500).json({
-      error:
-        "Você não está logado de maneira válida, portanto não pode executar esta rota",
-    });
-  }
-};
-
-const loggedInADM = async (req, res, next) => {
-  let { authorization } = req.headers;
-
-  if (!authorization) {
-    res.status(401).json({ erro: "NENHUM USUÁRIO LOGADO" });
-  }
-  let freshUser;
-  try {
-    let decoded = await promisify(jwt.verify)(authorization, "secretToken()");
-    if (decoded) {
-      freshUser = await Student_Model.findById(decoded.id);
-    } else {
-      console.log("erro, não já decoded nem freshUser");
-    }
-    if (!freshUser) {
-      return res.status(500).json({
-        error: "Este usuário já não existe mais",
-      });
-    } else if (freshUser.permissions !== "superadmin") {
-      return res.status(500).json({
-        error: "Você não é administrador!!",
-      });
-    } else {
-      next();
-    }
-  } catch (error) {
-    res.status(500).json({
-      error:
-        "Você não está logado de maneira válida, portanto não pode executar esta rota",
-    });
-  }
-};
 
 const student_editGeneralData = async (req, res) => {
   const {
@@ -459,6 +461,7 @@ const student_editGeneralData = async (req, res) => {
     lastname,
     username,
     email,
+    fee,
     ankiEmail,
     address,
     ankiPassword,
@@ -466,8 +469,10 @@ const student_editGeneralData = async (req, res) => {
     picture,
     phoneNumber,
   } = req.body;
+
+  const numberFee = parseInt(fee);
   try {
-    const { id } = req.params;
+    const { id } = req.params
     const studentToEdit = await Student_Model.findById(id);
     if (!studentToEdit) {
       return res.status(404).json({ message: "Aluno não encontrado" });
@@ -483,6 +488,7 @@ const student_editGeneralData = async (req, res) => {
       studentToEdit.picture === picture &&
       studentToEdit.address === address &&
       studentToEdit.googleDriveLink === googleDriveLink &&
+      studentToEdit.fee === numberFee &&
       studentToEdit.phoneNumber === phoneNumber
     ) {
       res.json({
@@ -498,6 +504,7 @@ const student_editGeneralData = async (req, res) => {
       studentToEdit.googleDriveLink = googleDriveLink;
       studentToEdit.picture = picture;
       studentToEdit.address = address;
+      studentToEdit.fee = numberFee;
       studentToEdit.phoneNumber = phoneNumber;
 
       await studentToEdit.save();
@@ -584,33 +591,6 @@ const student_editPassword = async (req, res) => {
   }
 };
 
-const student_editNextClass = async (req, res) => {
-  const { date, time, link } = req.body;
-  const { id } = req.params;
-
-  try {
-    const studentWhoseClassYouWantToChange = await Student_Model.findById(id);
-
-    if (!studentWhoseClassYouWantToChange) {
-      return res.status(404).json({ message: "Aluno não encontrado" });
-    } else {
-      studentWhoseClassYouWantToChange.nextClass.date = date;
-      studentWhoseClassYouWantToChange.nextClass.time = time;
-      studentWhoseClassYouWantToChange.nextClass.link = link;
-
-      await studentWhoseClassYouWantToChange.save();
-
-      res.status(200).json({
-        message: "Aula salva com sucesso",
-        updatedUser: studentWhoseClassYouWantToChange,
-      });
-      console.error(studentWhoseClassYouWantToChange);
-    }
-  } catch (error) {
-    res.status(500).send("Erro ao editar aluno");
-  }
-};
-
 const student_editPermissions = async (req, res) => {
   const { permissions } = req.body;
   try {
@@ -649,11 +629,7 @@ const student_deleteOne = async (req, res) => {
     if (!student) {
       return res.status(404).json({ message: "Aluno não encontrado" });
     } else {
-      const tutorings = await Tutoring_Model.find({ studentID: id });
-      const nextTutoring = await NextTutoring_Model.findOne({ studentID: id });
-
       await student.deleteOne();
-
       res.status(200).json({
         status: "Aluno excluído com sucesso",
       });
