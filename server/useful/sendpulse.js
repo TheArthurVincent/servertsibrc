@@ -1,54 +1,37 @@
-const sendpulse = require("sendpulse-api");
+const sendpulse = require('sendpulse-api');
 
-let API_USER_ID, API_SECRET, TOKEN_STORAGE;
+// Substitua pelos valores das suas credenciais do SendPulse
+const API_USER_ID = 'seu_api_user_id';
+const API_SECRET = 'seu_api_secret';
+const TOKEN_STORAGE = '/tmp/';
 
-//aqui deve subistituir com suas credenciais
-API_USER_ID = "b8faa40b161548cf666b5a2a275cb78b";
-API_SECRET = "cb960b298d6730d324f168455fe58fce";
-//essa sera uma pasta temporaria para armazenar o token
-TOKEN_STORAGE = "/tmp/";
+// Inicializa a API do SendPulse
+sendpulse.init(API_USER_ID, API_SECRET, TOKEN_STORAGE, (token) => {
+  console.log('SendPulse token:', token);
+});
 
-class mailSend {
-  //função para pegar a resposta do servidor de email
-  async answerGetter(data) {
-    console.log(data);
-  }
+// Função para enviar um email
+function sendEmail() {
+  const email = {
+    html: "<h1>Olá!</h1><p>Este é um email de teste.</p>",
+    text: "Este é um email de teste.",
+    subject: "Testando SendPulse",
+    from: {
+      name: "Seu Nome",
+      email: "seu_email@dominio.com"
+    },
+    to: [
+      {
+        name: "Nome do Destinatário",
+        email: "destinatario@dominio.com"
+      }
+    ]
+  };
 
-  //função para enviar o email
-  async sendMail(tomail, name, subject, body) {
-    let answerGetter = this.answerGetter;
-
-    //aqui é o corpo do email
-    let emailData = {
-      html: body,
-      subject: subject,
-      from: {
-        name: "Arthur Vincent | Arvin English School", //aqui é o nome que vai aparecer no email
-        email: "contato@arthurvincent.com.br", //aqui é o email que vai aparecer no email (deve ser o mesmo configurado como remetente)
-      },
-      to: [
-        {
-          name: name,
-          email: tomail,
-        },
-      ],
-    };
-
-    return sendpulse.init(API_USER_ID, API_SECRET, TOKEN_STORAGE, (token) => {
-      console.log(token);
-      sendpulse.smtpSendMail(answerGetter, emailData);
-    });
-  }
-
-  async sendSMS(phone, text) {
-    let answerGetter = this.answerGetter;
-
-    return sendpulse.init(API_USER_ID, API_SECRET, TOKEN_STORAGE, (token) => {
-      console.log(token);
-
-      sendpulse.smsSend(answerGetter, "Arthur Vincent", [phone], text);
-    });
-  }
+  sendpulse.smtpSendMail((response) => {
+    console.log(response);
+  }, email);
 }
 
-module.exports = mailSend;
+// Chama a função para enviar o email
+sendEmail();
