@@ -1,37 +1,51 @@
-const sendpulse = require('sendpulse-api');
+const sendpulse = require("sendpulse-api");
 
 // Substitua pelos valores das suas credenciais do SendPulse
-const API_USER_ID = 'seu_api_user_id';
-const API_SECRET = 'seu_api_secret';
-const TOKEN_STORAGE = '/tmp/';
+const API_USER_ID = "30c7d52e21fce403e9fc12506a0f0978";
+const API_SECRET = "bbc35d9aab689ddbee8541250880504b";
+const TOKEN_STORAGE = "/tmp/";
 
 // Inicializa a API do SendPulse
 sendpulse.init(API_USER_ID, API_SECRET, TOKEN_STORAGE, (token) => {
-  console.log('SendPulse token:', token);
+  if (token) {
+    console.log("SendPulse token o ar!");
+  } else {
+    console.error("Falha ao inicializar o SendPulse. Verifique suas credenciais.");
+  }
 });
 
 // Função para enviar um email
-function sendEmail() {
+function sendEmail(
+  htmlMessage,
+  text,
+  subject,
+  nameTo,
+  emailTo
+) {
   const email = {
-    html: "<h1>Olá!</h1><p>Este é um email de teste.</p>",
-    text: "Este é um email de teste.",
-    subject: "Testando SendPulse",
+    html: htmlMessage,
+    text: text,
+    subject: subject,
     from: {
-      name: "Seu Nome",
-      email: "seu_email@dominio.com"
+      name: "Arthur Vincent",
+      email: "contato@arthurvincent.com.br",
     },
     to: [
       {
-        name: "Nome do Destinatário",
-        email: "destinatario@dominio.com"
-      }
-    ]
+        name: nameTo,
+        email: emailTo,
+      },
+    ],
   };
 
   sendpulse.smtpSendMail((response) => {
-    console.log(response);
+    if (response.result) {
+      console.log("Email enviado com sucesso:", response);
+    } else {
+      console.error("Erro ao enviar email:", response);
+    }
   }, email);
 }
 
-// Chama a função para enviar o email
-sendEmail();
+// Exporte a função para uso em outros módulos
+module.exports = { sendEmail };
