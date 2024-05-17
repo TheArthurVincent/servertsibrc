@@ -1,54 +1,51 @@
 const sendpulse = require("sendpulse-api");
 
-let API_USER_ID, API_SECRET, TOKEN_STORAGE;
+// Substitua pelos valores das suas credenciais do SendPulse
+const API_USER_ID = "30c7d52e21fce403e9fc12506a0f0978";
+const API_SECRET = "bbc35d9aab689ddbee8541250880504b";
+const TOKEN_STORAGE = "/tmp/";
 
-//aqui deve subistituir com suas credenciais
-API_USER_ID = "b8faa40b161548cf666b5a2a275cb78b";
-API_SECRET = "cb960b298d6730d324f168455fe58fce";
-//essa sera uma pasta temporaria para armazenar o token
-TOKEN_STORAGE = "/tmp/";
-
-class mailSend {
-  //função para pegar a resposta do servidor de email
-  async answerGetter(data) {
-    console.log(data);
+// Inicializa a API do SendPulse
+sendpulse.init(API_USER_ID, API_SECRET, TOKEN_STORAGE, (token) => {
+  if (token) {
+    console.log("SendPulse token o ar!");
+  } else {
+    console.error("Falha ao inicializar o SendPulse. Verifique suas credenciais.");
   }
+});
 
-  //função para enviar o email
-  async sendMail(tomail, name, subject, body) {
-    let answerGetter = this.answerGetter;
-
-    //aqui é o corpo do email
-    let emailData = {
-      html: body,
-      subject: subject,
-      from: {
-        name: "Arthur Vincent | Arvin English School", //aqui é o nome que vai aparecer no email
-        email: "contato@arthurvincent.com.br", //aqui é o email que vai aparecer no email (deve ser o mesmo configurado como remetente)
+// Função para enviar um email
+function sendEmail(
+  htmlMessage,
+  text,
+  subject,
+  nameTo,
+  emailTo
+) {
+  const email = {
+    html: htmlMessage,
+    text: text,
+    subject: subject,
+    from: {
+      name: "Arthur Vincent",
+      email: "contato@arthurvincent.com.br",
+    },
+    to: [
+      {
+        name: nameTo,
+        email: emailTo,
       },
-      to: [
-        {
-          name: name,
-          email: tomail,
-        },
-      ],
-    };
+    ],
+  };
 
-    return sendpulse.init(API_USER_ID, API_SECRET, TOKEN_STORAGE, (token) => {
-      console.log(token);
-      sendpulse.smtpSendMail(answerGetter, emailData);
-    });
-  }
-
-  async sendSMS(phone, text) {
-    let answerGetter = this.answerGetter;
-
-    return sendpulse.init(API_USER_ID, API_SECRET, TOKEN_STORAGE, (token) => {
-      console.log(token);
-
-      sendpulse.smsSend(answerGetter, "Arthur Vincent", [phone], text);
-    });
-  }
+  sendpulse.smtpSendMail((response) => {
+    if (response.result) {
+      console.log("Email enviado com sucesso:", response);
+    } else {
+      console.error("Erro ao enviar email:", response);
+    }
+  }, email);
 }
 
-module.exports = mailSend;
+// Exporte a função para uso em outros módulos
+module.exports = { sendEmail };

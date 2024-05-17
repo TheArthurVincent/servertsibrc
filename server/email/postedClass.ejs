@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Aula postada</title>
+    <style>
+        @import url("https://fonts.googleapis.com/css2?family=Athiti:wght@400;700&family=Lato:wght@400;700&display=swap");
+
+        body {
+            font-family: "Lato", sans-serif;
+            color: #111;
+        }
+
+        h1,
+        h2 {
+            font-family: "Athiti", sans-serif;
+            color: #5AC116;
+        }
+
+        .logo {
+            width: 200px;
+            height: auto;
+            display: block;
+            margin: 0 auto 20px;
+        }
+
+        .eagle {
+            width: 30px;
+            height: auto;
+            display: inline;
+            margin: 0 auto 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <img class="eagle" src="https://ik.imagekit.io/vjz75qw96/assets/icons/Updates.png?updatedAt=1715454551664"
+        alt="eagle">
+    <h1>
+        Última aula disponível, <%= name %>!
+    </h1>
+    <p>
+        Olá, <%= name %>! Se quiser reassistir a aula do dia <%= formattedDate %>,
+                ela está disponível no portal!
+    </p>
+    <p>
+        Clique
+        <a href="https://portal.arthurvincent.com.br/my-classes" target="_blank">aqui</a> para
+        acessar a aula pelo portal!
+    </p>
+    <p>
+        Lembre-se do seu Homework, revise o Anki e, precisando, reveja a aula!
+    </p>
+    <p>Teacher Arthur!</p>
+    <img class="eagle" src="https://ik.imagekit.io/vjz75qw96/assets/icons/Updates.png?updatedAt=1715454551664"
+        alt="eagle">
+    <h1>
+        Last class available, <%= name %>!
+    </h1>
+    <p>
+        Hello, <%= name %>! If you want to rewatch the class of the day <%= formattedDate %>, it is available on the
+                portal!
+    </p>
+    <p>
+        Click
+        <a href="https://portal.arthurvincent.com.br/my-classes" target="_blank">here</a> to
+        access the class via the portal!
+    </p>
+    <p>
+        Remember your Homework, review Anki and, if necessary, review the class!
+    </p>
+    <p>Teacher Arthur!</p>
+    <img class="logo" src="https://ik.imagekit.io/vjz75qw96/assets/mylogotransp.png?updatedAt=1715968430436"
+        alt="arvinlogo" />
+</body>
+
+</html>

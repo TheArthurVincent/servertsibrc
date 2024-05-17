@@ -1,6 +1,9 @@
 const { NextTutoring_Model } = require("../models/NextEvents");
 const { Student_Model } = require("../models/Students");
 const { Tutoring_Model } = require("../models/Tutoring");
+const { sendEmail } = require("../useful/sendpulse");
+const ejs = require("ejs");
+const path = require("path");
 
 const tutoring_postOne = async (req, res) => {
   const { tutorings } = req.body;
@@ -10,7 +13,6 @@ const tutoring_postOne = async (req, res) => {
       const { date, studentID, videoUrl, attachments } = tutoring;
 
       const parsedDate = new Date(date);
-
       const formattedDate = parsedDate.toLocaleDateString("pt-BR");
 
       const newTutoring = new Tutoring_Model({
@@ -20,6 +22,35 @@ const tutoring_postOne = async (req, res) => {
         attachments,
       });
 
+      // Recuperar informações do aluno
+      const student = await Student_Model.findById(studentID);
+      const { name, lastname, email } = student;
+
+      // Renderizar o template EJS
+      const templatePath = path.join(
+        __dirname,
+        "../email/postedClass.ejs"
+      );
+      ejs.renderFile(
+        templatePath,
+        { name, formattedDate },
+        (err, htmlMessage) => {
+          if (err) {
+            console.error("Erro ao renderizar o template:", err);
+            return;
+          }
+
+          const text = `Aula particular do dia ${formattedDate} postada no portal!`;
+          const subject = `Aula particular do dia ${formattedDate} postada no portal!`;
+          const nameTo = name + " " + lastname;
+          const emailTo = email;
+
+          // Enviar o email
+          sendEmail(htmlMessage, text, subject, nameTo, emailTo);
+        }
+      );
+
+      // Salvar a tutoria
       await newTutoring.save();
       savedTutorings.push(newTutoring);
     }
