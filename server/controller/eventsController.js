@@ -1,6 +1,64 @@
 const { default: mongoose } = require("mongoose");
 const { Events_Model } = require("../models/Events");
 const { Student_Model } = require("../models/Students");
+const ejs = require("ejs");
+const path = require("path");
+const { sendEmail } = require("../useful/sendpulse");
+
+const event_reminderEvent = async (req, res) => {
+  const { id } = req.params;
+  const event = await Events_Model.findById(id);
+  if (!event) {
+    return res.status(404).json({ error: "Event not found" });
+  }
+
+  const { studentID, date, time, description, link } = event;
+  const student = await Student_Model.findById(studentID);
+
+  if (!student) {
+    return res.status(404).json({ error: "Student not found" });
+  }
+
+  const { name, email } = student;
+
+  const splitDate = date.split("-");
+  const formatDate = `${splitDate[2]}/${splitDate[1]}/${splitDate[0]}`;
+
+  try {
+    const templatePath = path.join(__dirname, "../email/reminderClass.ejs");
+    ejs.renderFile(
+      templatePath,
+      { name, date: formatDate, time, description, link },
+      async (err, htmlMessage) => {
+        if (err) {
+          console.error("Erro ao renderizar o template:", err);
+          return res
+            .status(500)
+            .json({ error: "Erro ao renderizar o template" });
+        }
+
+        const text = `Lembrete da aula particular do dia ${formatDate}, às ${time}!`;
+        const subject = `Lembrete da aula particular do dia ${formatDate}, às ${time}!`;
+
+        try {
+          sendEmail(htmlMessage, text, subject, name, email);
+          console.log("Email enviado com sucesso");
+          res.status(200).json({ message: "Email enviado com sucesso" });
+
+          // Atualizar evento
+          event.emailSent = true;
+          await event.save();
+        } catch (emailError) {
+          console.error("Erro ao enviar o email:", emailError);
+          res.status(500).json({ error: "Erro ao enviar o email" });
+        }
+      }
+    );
+  } catch (error) {
+    console.error("Erro ao processar o pedido:", error);
+    res.status(500).json({ error: "Erro ao processar o pedido" });
+  }
+};
 
 const event_New = async (req, res) => {
   const { studentID, link, date, time, category, description } = req.body;
@@ -104,11 +162,11 @@ const events_seeNext = async (req, res) => {
     }
 
     const today = new Date();
-    today.setHours(0, 0, 0, 0); 
+    today.setHours(0, 0, 0, 0);
 
     const events = await Events_Model.find({
       studentID: id,
-    }).sort({ date: 1 }); 
+    }).sort({ date: 1 });
 
     let nextEvent = null;
 
@@ -445,6 +503,7 @@ module.exports = {
   //C
   event_New,
   event_NewTutoring,
+  event_reminderEvent,
   //R
   events_seeAll,
   events_seeAllTutoringsFromOneStudent,

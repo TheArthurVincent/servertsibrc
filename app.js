@@ -76,6 +76,7 @@ const {
   event_NewTutoring,
   event_DeleteTutoring,
   events_seeNext,
+  event_reminderEvent
 } = require("./server/controller/eventsController");
 
 
@@ -126,6 +127,8 @@ app.delete(`${mainroute}/tutoringevent`, event_DeleteTutoring);
 app.put(`${mainroute}/event/:id`, events_editOne);
 app.put(`${mainroute}/eventstatus/:id`, events_editOneStatus);
 app.delete(`${mainroute}/event/:id`, events_deleteOne);
+app.post(`${mainroute}/eventreminder/:id`, event_reminderEvent);
+
 app.get(`${mainroute}/event/:id`, events_seeOne);
 app.get(
   `${mainroute}/tutoringsevents/:studentId`,
