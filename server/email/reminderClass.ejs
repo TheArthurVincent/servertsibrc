@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Aula marcada</title>
+  <style>
+    @import url("https://fonts.googleapis.com/css2?family=Athiti:wght@200;300;400;500;600;700&family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap");
+    @import url("https://fonts.googleapis.com/css2?family=Archivo:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Athiti:wght@200;300;400;500;600;700&family=Electrolize&family=Fira+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Gotu&family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,900&family=PT+Sans+Narrow:wght@400;700&display=swap");
+    @import url("https://fonts.googleapis.com/css2?family=Archivo:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Athiti:wght@200;300;400;500;600;700&family=Electrolize&family=Fira+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Gotu&family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,900&family=PT+Sans+Narrow:wght@400;700&display=swap");
+
+    p {
+      font-family: "Lato", sans-serif;
+      color: #111;
+    }
+
+    a:hover {
+      color: #5ac116;
+    }
+
+    h1 {
+      font-family: "Athiti", sans-serif;
+      color: #5ac116;
+      position: relative;
+      -webkit-text-stroke: 1px black;
+      display: inline-block;
+    }
+
+    h2 {
+      font-family: "Athiti", sans-serif;
+      color: #5ac116;
+    }
+
+    .logo {
+      width: 200px;
+      height: auto;
+      display: block;
+      margin: 0 auto 20px;
+    }
+
+    .eagle {
+      width: 30px;
+      height: auto;
+      display: inline;
+      margin: 0 auto 20px;
+    }
+
+    .box-comment {
+      background-color: #ddd;
+      font-style: italic;
+      border-radius: 1rem;
+      text-align: center;
+      padding: 1rem;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>
+    Lembre-se da sua aula no dia <%= date %> às <%= time %>, <%= name %>!
+  </h1>
+  <p>
+    Sua aula de inglês está marcada para <%= date %> às <%= time %>! Lembre-se
+        de fazer seu homework e chegar na aula com o Anki vazio, pois tudo vale
+        pontos!
+  </p>
+  <h2>Comentários do Professor:</h2>
+  <div class="box-comment">
+    <p>
+      <%= description %>
+    </p>
+  </div>
+  <p>
+    Clique
+    <a href="<%=link %>" target="_blank">aqui</a>
+    para acessar a aula!
+  </p>
+  <p>Te vejo na aula!</p>
+  <p>Teacher Arthur!</p>
+
+  <h1>Remember your class on <%= date %>, <%= name %>!</h1>
+  <p>
+    Your English class is scheduled for <%= date %> at <%= time %>! Remember
+        to do your homework and get to class with Anki empty, because everything
+        is worth points!
+  </p>
+  <h2>Teacher's Comments:</h2>
+  <div class="box-comment">
+    <p>
+      <%= description %>
+    </p>
+  </div>
+  <p>
+    Click
+    <a href="<%=link %>" target="_blank">here</a>
+    to access the class!
+  </p>
+  <p>See you in class!</p>
+  <p>Teacher Arthur!</p>
+  <img class="logo" src="https://ik.imagekit.io/vjz75qw96/assets/mylogotransp.png?updatedAt=1715968430436"
+    alt="arvinlogo" />
+</body>
+
+</html>

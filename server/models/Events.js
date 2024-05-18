@@ -14,6 +14,7 @@ const eventsSchema = new Schema(
     category: { type: String, required: true, unique: false },
     date: { type: String, required: true, unique: false },
     time: { type: String, required: true, unique: false },
+    emailSent: { type: Boolean, required: true, unique: false, default: false }
   },
   { timestamps: true }
 );
