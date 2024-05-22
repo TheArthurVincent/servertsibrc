@@ -43,9 +43,9 @@ const event_reminderEvent = async (req, res) => {
         try {
           sendEmail(htmlMessage, text, subject, name, email);
           sendEmail(
-            `Lembrete de aula do(a) aluno(a) ${name} enviado.${htmlMessage}`,
-            `Lembrete de aula do(a) aluno(a) ${name} enviado`,
-            `Lembrete de aula do(a) aluno(a) ${name} enviado`,
+            `Lembrete de aula do(a) aluno(a) ${name} enviado. ${formatDate}`,
+            `Lembrete de aula do(a) aluno(a) ${name} enviado. ${formatDate}`,
+            `Lembrete de aula do(a) aluno(a) ${name} enviado. ${formatDate}`,
             "Arthur",
             "arthurcardosocorp@gmail.com"
           );
