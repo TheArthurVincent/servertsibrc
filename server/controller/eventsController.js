@@ -42,10 +42,16 @@ const event_reminderEvent = async (req, res) => {
 
         try {
           sendEmail(htmlMessage, text, subject, name, email);
+          sendEmail(
+            `Lembrete de aula do(a) aluno(a) ${name} enviado.${htmlMessage}`,
+            `Lembrete de aula do(a) aluno(a) ${name} enviado`,
+            `Lembrete de aula do(a) aluno(a) ${name} enviado`,
+            "Arthur",
+            "arthurcardosocorp@gmail.com"
+          );
           console.log("Email enviado com sucesso");
           res.status(200).json({ message: "Email enviado com sucesso" });
 
-          // Atualizar evento
           event.emailSent = true;
           await event.save();
         } catch (emailError) {
@@ -321,7 +327,7 @@ const event_NewTutoring = async (req, res) => {
 
       nextWeekDaySameDay.setDate(
         nextWeekDaySameDay.getDate() +
-          ((daysOfWeek.indexOf(day) + 7 - nextWeekDaySameDay.getDay()) % 7)
+        ((daysOfWeek.indexOf(day) + 7 - nextWeekDaySameDay.getDay()) % 7)
       );
 
       const eventDate = new Date(
@@ -433,7 +439,7 @@ const events_editOneTutoring = async (req, res) => {
 
         nextWeekDaySameDay.setDate(
           nextWeekDaySameDay.getDate() +
-            ((daysOfWeek.indexOf(day) + 7 - nextWeekDaySameDay.getDay()) % 7)
+          ((daysOfWeek.indexOf(day) + 7 - nextWeekDaySameDay.getDay()) % 7)
         );
 
         const eventDate = new Date(

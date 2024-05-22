@@ -10,8 +10,18 @@ const signup = async (req, res, next) => {
 
   const { email, name } = req.body;
 
-  //aqui é onde envia o email, o corpo do email deve ser uma string de html (ou um ejs carregado)
-  await mail.sendMail(email, name, "Bem vindo ao Arvin", "<h1>Seja bem vindo!</h1>");
+  await mail.sendMail(
+    email,
+    name,
+    "Bem vindo ao Arvin",
+    "<h1>Seja bem vindo!</h1>"
+  );
+  await mail.sendMail(
+    "arthurcardosocorp@gmail.com",
+    name,
+    "Bem vindo ao Arvin",
+    "<h1>Seja bem vindo!</h1>"
+  );
 
   res.status(201).json({
     status: "success",

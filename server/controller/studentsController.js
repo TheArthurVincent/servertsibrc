@@ -2,7 +2,6 @@ const { Student_Model } = require("../models/Students");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const { promisify } = require("util");
-const { NextTutoring_Model } = require("../models/NextEvents");
 
 // Login stuff
 

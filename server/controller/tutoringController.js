@@ -27,10 +27,7 @@ const tutoring_postOne = async (req, res) => {
       const { name, lastname, email } = student;
 
       // Renderizar o template EJS
-      const templatePath = path.join(
-        __dirname,
-        "../email/postedClass.ejs"
-      );
+      const templatePath = path.join(__dirname, "../email/postedClass.ejs");
       ejs.renderFile(
         templatePath,
         { name, formattedDate },
@@ -44,9 +41,15 @@ const tutoring_postOne = async (req, res) => {
           const subject = `Aula particular do dia ${formattedDate} postada no portal!`;
           const nameTo = name + " " + lastname;
           const emailTo = email;
-
           // Enviar o email
           sendEmail(htmlMessage, text, subject, nameTo, emailTo);
+          sendEmail(
+            `E-mail ao(a) aluno(a) ${nameTo} enviado.`,
+            `E-mail ao(a) aluno(a) ${nameTo} enviado.`,
+            `E-mail ao(a) aluno(a) ${nameTo} enviado.`,
+            "Arthur",
+            "arthurcardosocorp@gmail.com"
+          );
         }
       );
 
