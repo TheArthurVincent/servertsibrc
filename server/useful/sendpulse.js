@@ -36,13 +36,19 @@ function sendEmail(
     ],
   };
 
-  sendpulse.smtpSendMail((response) => {
-    if (response.result) {
-      console.log("Email enviado com sucesso:", response);
-    } else {
-      console.error("Erro ao enviar email:", response);
-    }
-  }, email);
+  return new Promise( (resolve, reject) => {
+    
+    sendpulse.smtpSendMail((response) => {
+      if (response.result) {
+        console.log("Email enviado com sucesso:", response);
+        resolve(true);
+      } else {
+        console.error("Erro ao enviar email:", response);
+        reject(response);
+      }
+    }, email);
+
+  })
 }
 
 module.exports = { sendEmail };

@@ -78,6 +78,7 @@ const {
   events_seeNext,
   event_reminderEvent
 } = require("./server/controller/eventsController");
+const { sendEmail } = require("./server/useful/sendpulse");
 
 
 database();
@@ -196,6 +197,19 @@ app.delete(`${mainroute}/blogposts/:id`, loggedInADM, blogPosts_deleteOne);
 // Live Classes
 app.post(`${mainroute}/liveclass`, nextLiveClass_postNext);
 app.get(`${mainroute}/liveclasses`, loggedIn, nextLiveClass_getNext);
+app.get(`${mainroute}/testeemail`, async (req, res, next) => {
+
+  let html = "<h1>Hello</h1>"
+  , text = "Hello world"
+  , suject = "teste"
+  , name  = "Nik"
+  , email = "_nikmoliveira@gmail.com"
+
+  await sendEmail(html, text, suject, name, email)
+
+  res.send(200).end();
+
+});
 
 // ** App rodando **
 app.listen(PORT, () => {
