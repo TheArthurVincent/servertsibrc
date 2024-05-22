@@ -1,11 +1,9 @@
 const sendpulse = require("sendpulse-api");
 
-// Substitua pelos valores das suas credenciais do SendPulse
 const API_USER_ID = "30c7d52e21fce403e9fc12506a0f0978";
 const API_SECRET = "bbc35d9aab689ddbee8541250880504b";
 const TOKEN_STORAGE = "/tmp/";
 
-// Inicializa a API do SendPulse
 sendpulse.init(API_USER_ID, API_SECRET, TOKEN_STORAGE, (token) => {
   if (token) {
     console.log("SendPulse token o ar!");
@@ -47,5 +45,4 @@ function sendEmail(
   }, email);
 }
 
-// Exporte a função para uso em outros módulos
 module.exports = { sendEmail };
