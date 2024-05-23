@@ -76,7 +76,8 @@ const {
   event_NewTutoring,
   event_DeleteTutoring,
   events_seeNext,
-  event_reminderEvent
+  event_reminderEvent,
+  event_reminderEventAutomatic
 } = require("./server/controller/eventsController");
 const { sendEmail } = require("./server/useful/sendpulse");
 
@@ -197,7 +198,9 @@ app.delete(`${mainroute}/blogposts/:id`, loggedInADM, blogPosts_deleteOne);
 // Live Classes
 app.post(`${mainroute}/liveclass`, nextLiveClass_postNext);
 app.get(`${mainroute}/liveclasses`, loggedIn, nextLiveClass_getNext);
-app.get(`${mainroute}/testeemail`, async (req, res, next) => {
+app.get(`${mainroute}/sendnotificationemail`, event_reminderEventAutomatic);
+
+  app.get(`${mainroute}/testeemail`, async (req, res, next) => {
 
   let html = "<h1>Hello</h1>"
   , text = "Hello world"

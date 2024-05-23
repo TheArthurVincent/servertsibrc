@@ -66,6 +66,66 @@ const event_reminderEvent = async (req, res) => {
   }
 };
 
+const event_reminderEventAutomatic = async (req, res) => {
+  const { id } = req.params;
+  const now = new Date();
+  const events = await Events_Model.find({date: HOJE, time: now.getHours() + 1});
+
+  if (events.length == 0) {
+    return res.status(404).json({ error: "Event not found" });
+  }
+
+  for(let event of events)  {
+    const { studentID, date, time, description, link } = event;
+    const student = await Student_Model.findById(studentID);
+
+    if (!student) {
+      continue;
+    }
+
+    const { name, email } = student;
+
+    const splitDate = date.split("-");
+    const formatDate = `${splitDate[2]}/${splitDate[1]}/${splitDate[0]}`;
+
+    try {
+      const templatePath = path.join(__dirname, "../email/reminderClass.ejs");
+      ejs.renderFile(
+        templatePath,
+        { name, date: formatDate, time, description, link },
+        async (err, htmlMessage) => {
+          if (err) {
+            console.error("Erro ao renderizar o template:", err);
+            return res
+              .status(500)
+              .json({ error: "Erro ao renderizar o template" });
+          }
+
+          const text = `Lembrete da aula particular do dia ${formatDate}, às ${time}!`;
+          const subject = `Lembrete da aula particular do dia ${formatDate}, às ${time}!`;
+
+          try {
+            sendEmail(htmlMessage, text, subject, name, email);
+            console.log("Email enviado com sucesso");
+            res.status(200).json({ message: "Email enviado com sucesso" });
+
+            // Atualizar evento
+            event.emailSent = true;
+            await event.save();
+          } catch (emailError) {
+            console.error("Erro ao enviar o email:", emailError);
+            res.status(500).json({ error: "Erro ao enviar o email" });
+          }
+        }
+      );
+    } catch (error) {
+      console.error("Erro ao processar o pedido:", error);
+      res.status(500).json({ error: "Erro ao processar o pedido" });
+    }
+  }
+};
+
+
 const event_New = async (req, res) => {
   const { studentID, link, date, time, category, description } = req.body;
 
@@ -522,4 +582,7 @@ module.exports = {
   //D
   events_deleteOne,
   event_DeleteTutoring,
+
+  //#
+  event_reminderEventAutomatic
 };
