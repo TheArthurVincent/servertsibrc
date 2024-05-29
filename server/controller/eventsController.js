@@ -75,7 +75,12 @@ const event_reminderEventAutomatic = async (req, res) => {
     return finalResult;
   }
 
-  const convertDate = now.getFullYear() + "-" + get2last(now.getMonth() + 1) + "-" + get2last(now.getDate())
+  const convertDate =
+    now.getFullYear() +
+    "-" +
+    get2last(now.getMonth() + 1) +
+    "-" +
+    get2last(now.getDate());
 
   // Comma / Predict / equals / Colon : / Semi-colon ;
 
@@ -120,7 +125,13 @@ const event_reminderEventAutomatic = async (req, res) => {
 
           try {
             sendEmail(htmlMessage, text, subject, name, email);
-            sendEmail(`Aula de ${name} em 1h`, `Aula de ${name} em 1h`, `Aula de ${name} em 1h`, name, "arthurcardosocorp@gmail.com");
+            sendEmail(
+              `Aula de ${name} às ${formatDate} às ${time}. E-mail enviado`,
+              `${text} - ${name} às ${formatDate} às ${time}. E-mail enviado`,
+              `${subject} - ${name}, ${formatDate}, ${time}.`,
+              name,
+              "arthurcardosocorp@gmail.com"
+            );
             console.log("Email enviado com sucesso");
             res.status(200).json({ message: "Email enviado com sucesso" });
 
@@ -138,7 +149,6 @@ const event_reminderEventAutomatic = async (req, res) => {
     }
   }
 };
-
 
 const event_New = async (req, res) => {
   const { studentID, link, date, time, category, description } = req.body;
@@ -598,5 +608,5 @@ module.exports = {
   event_DeleteTutoring,
 
   //#
-  event_reminderEventAutomatic
+  event_reminderEventAutomatic,
 };
