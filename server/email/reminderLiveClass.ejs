@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Aula Em Grupo Já Já!</title>
+  <style>
+    @import url("https://fonts.googleapis.com/css2?family=Athiti:wght@200;300;400;500;600;700&family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap");
+    @import url("https://fonts.googleapis.com/css2?family=Archivo:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Athiti:wght@200;300;400;500;600;700&family=Electrolize&family=Fira+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Gotu&family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,900&family=PT+Sans+Narrow:wght@400;700&display=swap");
+    @import url("https://fonts.googleapis.com/css2?family=Archivo:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Athiti:wght@200;300;400;500;600;700&family=Electrolize&family=Fira+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Gotu&family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,900&family=PT+Sans+Narrow:wght@400;700&display=swap");
+
+    p {
+      font-family: "Lato", sans-serif;
+      color: #111;
+    }
+
+    a:hover {
+      color: #5ac116;
+    }
+
+    h1 {
+      font-family: "Athiti", sans-serif;
+      color: #5ac116;
+      position: relative;
+      -webkit-text-stroke: 1px black;
+      display: inline-block;
+    }
+
+    h2 {
+      font-family: "Athiti", sans-serif;
+      color: #5ac116;
+    }
+
+    .logo {
+      width: 200px;
+      height: auto;
+      display: block;
+      margin: 0 auto 20px;
+    }
+
+    .eagle {
+      width: 30px;
+      height: auto;
+      display: inline;
+      margin: 0 auto 20px;
+    }
+
+    .box-comment {
+      background-color: #ddd;
+      font-style: italic;
+      border-radius: 1rem;
+      text-align: center;
+      padding: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <h1>
+    Esta noite, dia <%= date %> às <%= time %> teremos aula em grupo!
+  </h1>
+  <p>
+    Lembre-se, <%= name %>! Esta noite, dia <%= date %> às <%= time %> temos aula em grupo! Participe para praticar conversação em grupo!
+  </p>
+  <h2>Comentários do Professor:</h2>
+  <div class="box-comment">
+    <p>
+      <%= description %>
+    </p>
+  </div>
+  <p>
+    Clique
+    <a href="<%=link %>" target="_blank">aqui</a>
+    para acessar a aula!
+  </p>
+  <p>Te vejo na aula!</p>
+  <p>Teacher Arthur!</p>
+
+  <h1>
+    Tonight, <%= date %> at <%= time %> we'll be having a group class!
+  </h1>
+  <p>
+    Remember, <%= name %>! Tonight, on <%= date %> at <%= time %> we have a group class! Join to practice group conversation!
+  </p>
+  <h2>Teacher's Comments:</h2>
+  <div class="box-comment">
+    <p>
+      <%= description %>
+    </p>
+  </div>
+  <p>
+    Click
+    <a href="<%=link %>" target="_blank">here</a>
+    to access the class!
+  </p>
+  <p>See you in class!</p>
+  <p>Teacher Arthur!</p>
+  <img class="logo" src="https://ik.imagekit.io/vjz75qw96/assets/mylogotransp.png?updatedAt=1715968430436"
+    alt="arvinlogo" />
+</body>
+
+</html>

@@ -82,8 +82,6 @@ const event_reminderEventAutomatic = async (req, res) => {
     "-" +
     get2last(now.getDate());
 
-  // Comma / Predict / equals / Colon : / Semi-colon ;
-
   const events = await Events_Model.find({ date: convertDate });
 
   if (events.length == 0) {
@@ -132,7 +130,7 @@ const event_reminderEventAutomatic = async (req, res) => {
               name,
               "arthurcardosocorp@gmail.com"
             );
-            console.log("Email enviado com sucesso");
+            console.log(`Email de ${name} enviado com sucesso`);
             res.status(200).json({ message: "Email enviado com sucesso" });
 
             event.emailSent = true;
@@ -147,6 +145,97 @@ const event_reminderEventAutomatic = async (req, res) => {
       console.error("Erro ao processar o pedido:", error);
       res.status(500).json({ error: "Erro ao processar o pedido" });
     }
+  }
+};
+
+const event_reminderGroupClassAutomatic = async (req, res) => {
+  const now = new Date();
+
+  function get2last(numberString) {
+    numberString = "0" + numberString;
+    const finalResult = numberString.substring(numberString.length - 2);
+    return finalResult;
+  }
+
+  const convertDate =
+    now.getFullYear() +
+    "-" +
+    get2last(now.getMonth() + 1) +
+    "-" +
+    get2last(now.getDate());
+
+  const events = await Events_Model.find({
+    date: convertDate,
+    category: "Group Class",
+  });
+
+  if (events.length == 0) {
+    return res.status(404).json({ error: "Event not found" });
+  }
+
+  try {
+    for (let event of events) {
+      const { date, time, description, link } = event;
+      const [eventHour] = time.split(":").map(Number);
+      // if (now.getHours() + 3 !== eventHour) { continue }
+      const students = await Student_Model.find();
+
+      const emailPromises = students.map((student) => {
+        const { name, email } = student;
+        const splitDate = date.split("-");
+        const formatDate = `${splitDate[2]}/${splitDate[1]}/${splitDate[0]}`;
+        const templatePath = path.join(
+          __dirname,
+          "../email/reminderLiveClass.ejs"
+        );
+
+        return new Promise((resolve, reject) => {
+          ejs.renderFile(
+            templatePath,
+            { name, date: formatDate, time, description, link },
+            async (err, htmlMessage) => {
+              if (err) {
+                console.error("Erro ao renderizar o template:", err);
+                return reject(new Error("Erro ao renderizar o template"));
+              }
+              const text = `Lembrete da aula particular do dia ${formatDate}, às ${time}!`;
+              const subject = `Lembrete da aula particular do dia ${formatDate}, às ${time}!`;
+              try {
+                await sendEmail(
+                  htmlMessage,
+                  text,
+                  subject,
+                  name,
+                  email
+                );
+                console.log(`Email de ${name} enviado com sucesso`);
+                resolve();
+              } catch (emailError) {
+                console.error(`Erro ao enviar o email: ${name}`, emailError);
+                reject(new Error(`Erro ao enviar o email: ${name}`));
+              }
+            }
+          );
+        });
+      });
+
+      await Promise.all(emailPromises);
+    }
+
+    // Enviar email de confirmação ao professor após todos os emails serem enviados
+    await sendEmail(
+      "Email do group Class",
+      "text",
+      "Group Class Sent",
+      'Teacher Arthur',
+      "arthurcardosocorp@gmail.com"
+    );
+
+    res.status(200).json({ message: "Emails da aula em grupo enviados com sucesso" });
+
+  } catch (error) {
+    console.error("Erro ao enviar os emails:", error);
+    res.status(500).json({ error: "Erro ao enviar os emails" });
   }
 };
 
@@ -609,4 +698,5 @@ module.exports = {
 
   //#
   event_reminderEventAutomatic,
+  event_reminderGroupClassAutomatic,
 };
