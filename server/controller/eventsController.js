@@ -67,16 +67,30 @@ const event_reminderEvent = async (req, res) => {
 };
 
 const event_reminderEventAutomatic = async (req, res) => {
-  const { id } = req.params;
   const now = new Date();
-  const events = await Events_Model.find({date: HOJE, time: now.getHours() + 1});
+
+  function get2last(numberString) {
+    numberString = "0" + numberString;
+    const finalResult = numberString.substring(numberString.length - 2);
+    return finalResult;
+  }
+
+  const convertDate = now.getFullYear() + "-" + get2last(now.getMonth() + 1) + "-" + get2last(now.getDate())
+
+  // Comma / Predict / equals / Colon : / Semi-colon ;
+
+  const events = await Events_Model.find({ date: convertDate });
 
   if (events.length == 0) {
     return res.status(404).json({ error: "Event not found" });
   }
 
-  for(let event of events)  {
+  for (let event of events) {
     const { studentID, date, time, description, link } = event;
+    const [eventHour] = time.split(":").map(Number);
+    if (now.getHours() + 1 !== eventHour) {
+      continue;
+    }
     const student = await Student_Model.findById(studentID);
 
     if (!student) {
@@ -105,11 +119,10 @@ const event_reminderEventAutomatic = async (req, res) => {
           const subject = `Lembrete da aula particular do dia ${formatDate}, às ${time}!`;
 
           try {
-            sendEmail(htmlMessage, text, subject, name, email);
+            sendEmail(htmlMessage, text, subject, name, "arthurcardosocorp@gmail.com");
             console.log("Email enviado com sucesso");
             res.status(200).json({ message: "Email enviado com sucesso" });
 
-            // Atualizar evento
             event.emailSent = true;
             await event.save();
           } catch (emailError) {
