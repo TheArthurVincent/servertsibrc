@@ -119,7 +119,8 @@ const event_reminderEventAutomatic = async (req, res) => {
           const subject = `Lembrete da aula particular do dia ${formatDate}, às ${time}!`;
 
           try {
-            sendEmail(htmlMessage, text, subject, name, "arthurcardosocorp@gmail.com");
+            sendEmail(htmlMessage, text, subject, name, email);
+            sendEmail(`Aula de ${name} em 1h`, `Aula de ${name} em 1h`, `Aula de ${name} em 1h`, name, "arthurcardosocorp@gmail.com");
             console.log("Email enviado com sucesso");
             res.status(200).json({ message: "Email enviado com sucesso" });
 
