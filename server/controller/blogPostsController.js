@@ -62,7 +62,7 @@ const blogPosts_postOne = async (req, res) => {
         .status(400)
         .json({ message: "Escolha outro título, este já existe." });
     } else {
-      const newBlogPost = await new Blog_Model({
+      const newBlogPost = new Blog_Model({
         title,
         videoUrl,
         text,
