@@ -1,4 +1,5 @@
 const { Blog_Model } = require("../models/Posts");
+const { sendEmail } = require("../useful/sendpulse");
 
 const blogPosts_getAll = async (req, res) => {
   try {
@@ -47,6 +48,7 @@ const blogPosts_getOne = async (req, res) => {
 };
 
 const blogPosts_postOne = async (req, res) => {
+  
   const { title, videoUrl, text, img } = req.body;
 
   try {
@@ -66,6 +68,13 @@ const blogPosts_postOne = async (req, res) => {
         text,
         img,
       });
+
+      try {
+        sendEmail(text, title, title, "Arthur", "arthurcardosocorp@gmail.com");
+        console.log("Email enviado com sucesso");
+      } catch (emailError) {
+        console.error("Erro ao enviar o email:", emailError);
+      }
 
       await newBlogPost.save();
       res.status(201).json({
