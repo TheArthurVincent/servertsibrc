@@ -78,10 +78,10 @@ const {
   events_seeNext,
   event_reminderEvent,
   event_reminderEventAutomatic,
-  event_reminderGroupClassAutomatic
+  event_reminderGroupClassAutomatic,
 } = require("./server/controller/eventsController");
 const { sendEmail } = require("./server/useful/sendpulse");
-
+const { Student_Model } = require("./server/models/Students");
 
 database();
 app.use(express.json());
@@ -180,6 +180,22 @@ app.put(
   student_editPermissions
 );
 app.put("/api/v1/resetmonthscoresecurethepoints", student_resetMonth);
+// app.put("/api/v1/setweeklyclasses", async (req, res) => {
+//   try {
+//     const students = await Student_Model.find();
+//     students.map((student) => {
+//       student.weeklyClasses = 1;
+//       student.save();
+//     });
+//     res.status(200).json({ students, status: "success" });
+//   } catch (error) {
+//     console.error(error);
+//     res
+//       .status(500)
+//       .json({ error: error, e: "Ocorreu um erro ao atualizar as aulas" });
+//   }
+// });
+
 app.delete(`${mainroute}/students/:id`, loggedInADM, student_deleteOne);
 
 // **Material**
@@ -202,18 +218,16 @@ app.get(`${mainroute}/liveclasses`, loggedIn, nextLiveClass_getNext);
 app.get(`${mainroute}/sendnotificationemail`, event_reminderEventAutomatic);
 // app.get(`${mainroute}/sendgroupclassnotificationemail`, event_reminderGroupClassAutomatic);
 
-  app.get(`${mainroute}/testeemail`, async (req, res, next) => {
+app.get(`${mainroute}/testeemail`, async (req, res, next) => {
+  let html = "<h1>Hello</h1>",
+    text = "Hello world",
+    suject = "teste",
+    name = "Nik",
+    email = "_nikmoliveira@gmail.com";
 
-  let html = "<h1>Hello</h1>"
-  , text = "Hello world"
-  , suject = "teste"
-  , name  = "Nik"
-  , email = "_nikmoliveira@gmail.com"
-
-  await sendEmail(html, text, suject, name, email)
+  await sendEmail(html, text, suject, name, email);
 
   res.send(200).end();
-
 });
 
 // ** App rodando **

@@ -31,6 +31,7 @@ const studentSchema = new Schema(
     },
     totalScore: { type: Number, required: true, default: 0 },
     monthlyScore: { type: Number, required: true, default: 0 },
+    weeklyClasses: { type: Number, required: true, default: 1 },
     ///
     dateOfBirth: { type: String, required: true },
     permissions: { type: String, required: false, default: "student" },

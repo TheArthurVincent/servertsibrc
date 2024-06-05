@@ -258,6 +258,7 @@ const students_getAll = async (req, res) => {
         fullname: student.name + " " + student.lastname,
         permissions: student.permissions,
         doc: student.doc,
+        weeklyClasses: student.weeklyClasses,
         phoneNumber: student.phoneNumber,
         ankiEmail: student.ankiEmail,
         ankiPassword: student.ankiPassword,
@@ -308,6 +309,7 @@ const students_getOne = async (req, res) => {
       address: student.address,
       phoneNumber: student.phoneNumber,
       picture: student.picture,
+      weeklyClasses: student.weeklyClasses,
       monthlyScore: student.monthlyScore,
       googleDriveLink: student.googleDriveLink,
       totalScore: student.totalScore,
@@ -464,6 +466,7 @@ const student_editGeneralData = async (req, res) => {
     ankiEmail,
     address,
     ankiPassword,
+    weeklyClasses,
     googleDriveLink,
     picture,
     phoneNumber,
@@ -485,6 +488,7 @@ const student_editGeneralData = async (req, res) => {
       studentToEdit.ankiEmail === ankiEmail &&
       studentToEdit.ankiPassword === ankiPassword &&
       studentToEdit.picture === picture &&
+      studentToEdit.weeklyClasses === weeklyClasses &&
       studentToEdit.address === address &&
       studentToEdit.googleDriveLink === googleDriveLink &&
       studentToEdit.fee === numberFee &&
@@ -501,6 +505,7 @@ const student_editGeneralData = async (req, res) => {
       studentToEdit.ankiEmail = ankiEmail;
       studentToEdit.ankiPassword = ankiPassword;
       studentToEdit.googleDriveLink = googleDriveLink;
+      studentToEdit.weeklyClasses = weeklyClasses;
       studentToEdit.picture = picture;
       studentToEdit.address = address;
       studentToEdit.fee = numberFee;
@@ -708,6 +713,7 @@ const student_scoreUpdate = async (req, res) => {
       .json({ error: error, e: "Ocorreu um erro ao atualizar a pontuação" });
   }
 };
+
 
 const student_resetMonth = async (req, res) => {
   try {
