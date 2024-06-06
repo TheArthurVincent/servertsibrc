@@ -297,6 +297,7 @@ const students_getOne = async (req, res) => {
       return res.status(404).json({ message: "Aluno não encontrado" });
     }
 
+
     const formattedStudentData = {
       id: student._id,
       username: student.username,
@@ -309,6 +310,7 @@ const students_getOne = async (req, res) => {
       address: student.address,
       phoneNumber: student.phoneNumber,
       picture: student.picture,
+      dateOfBirth: student.dateOfBirth,
       weeklyClasses: student.weeklyClasses,
       monthlyScore: student.monthlyScore,
       googleDriveLink: student.googleDriveLink,
