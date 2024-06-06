@@ -259,6 +259,8 @@ const students_getAll = async (req, res) => {
         permissions: student.permissions,
         doc: student.doc,
         weeklyClasses: student.weeklyClasses,
+        totalScore: student.totalScore,
+        monthlyScore: student.monthlyScore,
         phoneNumber: student.phoneNumber,
         ankiEmail: student.ankiEmail,
         ankiPassword: student.ankiPassword,
