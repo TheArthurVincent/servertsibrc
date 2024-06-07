@@ -122,19 +122,29 @@ const event_reminderEventAutomatic = async (req, res) => {
           const subject = `Lembrete da aula particular do dia ${formatDate}, às ${time}!`;
 
           try {
-            sendEmail(htmlMessage, text, subject, name, email);
-            sendEmail(
-              `Aula de ${name} às ${formatDate} às ${time}. E-mail enviado`,
-              `${text} - ${name} às ${formatDate} às ${time}. E-mail enviado`,
-              `${subject} - ${name}, ${formatDate}, ${time}.`,
-              name,
-              "arthurcardosocorp@gmail.com"
-            );
-            console.log(`Email de ${name} enviado com sucesso`);
-            res.status(200).json({ message: "Email enviado com sucesso" });
+            if (event.status !== "desmarcado") {
+              sendEmail(htmlMessage, text, subject, name, email);
+              sendEmail(
+                `Aula de ${name} às ${formatDate} às ${time}. E-mail enviado`,
+                `${text} - ${name} às ${formatDate} às ${time}. E-mail enviado`,
+                `${subject} - ${name}, ${formatDate}, ${time}.`,
+                name,
+                "arthurcardosocorp@gmail.com"
+              );
+              console.log(`Email de ${name} enviado com sucesso`);
+              res.status(200).json({ message: "Email enviado com sucesso" });
 
-            event.emailSent = true;
-            await event.save();
+              event.emailSent = true;
+              await event.save();
+            } else {
+              sendEmail(
+                `Aula de ${name} às ${formatDate} às ${time}. E-mail não enviado devido a cancelamento`,
+                `${text} - ${name} às ${formatDate} às ${time}. E-mail não enviado devido a cancelamento`,
+                `${subject} - ${name}, ${formatDate}, ${time}.`,
+                name,
+                "arthurcardosocorp@gmail.com"
+              );
+            }
           } catch (emailError) {
             console.error("Erro ao enviar o email:", emailError);
             res.status(500).json({ error: "Erro ao enviar o email" });
