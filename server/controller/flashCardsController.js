@@ -1,6 +1,7 @@
 const { default: mongoose } = require("mongoose");
 const { Student_Model } = require("../models/Students");
 
+
 const reviewList = async (req, res) => {
   const { id } = req.params;
 
@@ -13,22 +14,37 @@ const reviewList = async (req, res) => {
 
     const currentDate = new Date();
     const dueFlashcards = student.flashCards.filter(card => new Date(card.reviewDate) <= currentDate);
-
-    const newCardsCount = dueFlashcards.filter(card => card.isNew).length;
-    const reviewedCardsCount = dueFlashcards.filter(card => !card.isNew).length;
+    const today = new Date().toISOString().slice(0, 10);
+    const reviewsTodayCount = student.flashcardsDailyReviews.filter(review => review.date.toISOString().slice(0, 10) === today).length;
+    const maxDueFlashcards = 30 - reviewsTodayCount;
+    const limitedDueFlashcards = dueFlashcards.slice(0, maxDueFlashcards);
+    const newCardsCount = limitedDueFlashcards.filter(card => card.isNew).length;
+    const reviewedCardsCount = limitedDueFlashcards.filter(card => !card.isNew).length;
 
     const cardsCount = {
       newCardsCount,
       reviewedCardsCount
-    }
+    };
 
-    return res.status(200).json({ message: "Success", dueFlashcards, cardsCount });
+    return res.status(200).json({ message: "Success", dueFlashcards: limitedDueFlashcards, cardsCount });
 
   } catch (error) {
     console.error("Erro ao processar o pedido:", error);
     res.status(500).json({ error: "Erro ao processar o pedido" });
   }
 };
+
+// const difficulties = {
+//   veryhard: new Date(),
+//   hard: new Date(currentDate.setDate(currentDate.getDate() + 1)),
+//   medium: new Date(currentDate.setDate(currentDate.getDate() + Math.ceil(flashcard.reviewRate))),
+//   easy: new Date(currentDate.setDate(currentDate.getDate() + Math.ceil(flashcard.reviewRate))),
+// }
+
+// limitedDueFlashcards.forEach(card => {
+//   card.difficulty = difficulties[card.difficulty];
+// });
+
 
 const flashcard_createNew = async (req, res) => {
   const { id } = req.params;
@@ -52,7 +68,7 @@ const flashcard_createNew = async (req, res) => {
     student.flashCards.push(...newFlashcards);
 
     await student.save();
-    return res.status(200).json({ message: "Success", student });
+    return res.status(200).json({ message: "Success", newFlashcards });
   } catch (error) {
     console.error("Erro ao processar o pedido:", error);
     res.status(500).json({ error: "Erro ao processar o pedido" });
@@ -175,8 +191,6 @@ const flashcard_reviewCard = async (req, res) => {
 };
 
 
-
-
 const flashcard_deleteCard = async (req, res) => {
   const { id } = req.params;
   const { flashcardId } = req.body;
@@ -194,10 +208,7 @@ const flashcard_deleteCard = async (req, res) => {
       return res.status(404).json({ error: "Flashcard not found" });
     }
 
-
-
     await student.save();
-
 
     return res.status(200).json({ message: "Flashcard deleted successfully", student });
 
