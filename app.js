@@ -81,7 +81,13 @@ const {
   event_reminderGroupClassAutomatic,
 } = require("./server/controller/eventsController");
 const { sendEmail } = require("./server/useful/sendpulse");
-const { Student_Model } = require("./server/models/Students");
+const {
+  flashcard_reviewCard,
+  flashcard_createNew,
+  flashcard_updateOne,
+  flashcard_deleteCard,
+  reviewList,
+} = require("./server/controller/flashCardsController");
 
 database();
 app.use(express.json());
@@ -211,6 +217,13 @@ app.get(`${mainroute}/blogpost/:id`, loggedIn, blogPosts_getOne);
 app.post(`${mainroute}/blogposts`, loggedInADM, blogPosts_postOne);
 app.put(`${mainroute}/blogposts/:id`, loggedInADM, blogPosts_editOne);
 app.delete(`${mainroute}/blogposts/:id`, loggedInADM, blogPosts_deleteOne);
+
+// Flashcards
+app.post(`${mainroute}/flashcard/:id`, /*loggedIn,*/flashcard_createNew);
+app.put(`${mainroute}/reviewflashcard/:id`, /*loggedIn,*/ flashcard_reviewCard);
+app.put(`${mainroute}/flashcard/:id`, /*loggedIn,*/ flashcard_updateOne);
+app.delete(`${mainroute}/flashcard/:id`, /*loggedIn,*/ flashcard_deleteCard);
+app.get(`${mainroute}/flashcards/:id`, /*loggedIn,*/ reviewList);
 
 // Live Classes
 app.post(`${mainroute}/liveclass`, nextLiveClass_postNext);

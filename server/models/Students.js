@@ -24,7 +24,17 @@ const studentSchema = new Schema(
       default: [],
       required: false,
     },
+    flashcardsDailyReviews: {
+      type: Array,
+      default: [],
+      required: false,
+    },
     tutoringDays: {
+      type: Array,
+      default: [],
+      required: false,
+    },
+    flashCards: {
       type: Array,
       default: [],
       required: false,
