@@ -463,7 +463,7 @@ const student_editGeneralData = async (req, res) => {
     name,
     lastname,
     username,
-    email,      
+    email,
     fee,
     address,
     // ankiEmail,
@@ -654,7 +654,7 @@ const student_seeScore = async (req, res) => {
     if (!student) throw new Error("Usuário não encontrado");
 
     const { totalScore, monthlyScore } = student;
-    res.status(200).json({ totalScore, monthlyScore });
+    res.status(200).json({ totalScore, monthlyScore, picture });
   } catch (error) {
     console.error(error);
     res
@@ -670,9 +670,9 @@ const student_getScore = async (req, res) => {
     const student = await Student_Model.findById(id);
     if (!student) throw new Error("Usuário não encontrado");
 
-    const { totalScore, monthlyScore, scoreTimeline } = student;
+    const { totalScore, monthlyScore, scoreTimeline, picture } = student;
     scoreTimeline.reverse();
-    res.status(200).json({ totalScore, monthlyScore, scoreTimeline });
+    res.status(200).json({ totalScore, monthlyScore, scoreTimeline, picture });
   } catch (error) {
     console.error(error);
     res
