@@ -15,8 +15,8 @@ const student_signUp = async (req, res) => {
     dateOfBirth,
     doc,
     address,
-    ankiEmail,
-    ankiPassword,
+    // ankiEmail,
+    // ankiPassword,
     password,
   } = req.body;
   const hashedPassword = bcrypt.hashSync(password, 10);
@@ -41,8 +41,8 @@ const student_signUp = async (req, res) => {
       dateOfBirth,
       doc,
       address,
-      ankiEmail,
-      ankiPassword,
+      // ankiEmail,
+      // ankiPassword,
       password: hashedPassword,
     });
     await newStudent.save();
@@ -96,8 +96,8 @@ const student_login = async (req, res) => {
       dateOfBirth: student.dateOfBirth,
       permissions: student.permissions,
       picture: student.picture,
-      ankiEmail: student.ankiEmail,
-      ankiPassword: student.ankiPassword,
+      // ankiEmail: student.ankiEmail,
+      // ankiPassword: student.ankiPassword,
       googleDriveLink: student.googleDriveLink,
     };
 
@@ -262,8 +262,8 @@ const students_getAll = async (req, res) => {
         totalScore: student.totalScore,
         monthlyScore: student.monthlyScore,
         phoneNumber: student.phoneNumber,
-        ankiEmail: student.ankiEmail,
-        ankiPassword: student.ankiPassword,
+        // ankiEmail: student.ankiEmail,
+        // ankiPassword: student.ankiPassword,
         googleDriveLink: student.googleDriveLink,
         picture: student.picture,
         fee: student.fee,
@@ -317,9 +317,7 @@ const students_getOne = async (req, res) => {
       monthlyScore: student.monthlyScore,
       googleDriveLink: student.googleDriveLink,
       totalScore: student.totalScore,
-      ankiEmail: student.ankiEmail,
       fee: student.fee,
-      ankiPassword: student.ankiPassword,
     };
     res.status(200).json({
       status: "Aluno encontrado",
@@ -358,8 +356,8 @@ const student_postOne = async (req, res) => {
     doc,
     phoneNumber,
     dateOfBirth,
-    ankiEmail,
-    ankiPassword,
+    // ankiEmail,
+    // ankiPassword,
     googleDriveLink,
     date,
     time,
@@ -388,8 +386,8 @@ const student_postOne = async (req, res) => {
       doc,
       phoneNumber,
       dateOfBirth,
-      ankiEmail,
-      ankiPassword,
+      // ankiEmail,
+      // ankiPassword,
       googleDriveLink,
       nextClass: { date, time, link },
     });
@@ -465,11 +463,11 @@ const student_editGeneralData = async (req, res) => {
     name,
     lastname,
     username,
-    email,
+    email,      
     fee,
-    ankiEmail,
     address,
-    ankiPassword,
+    // ankiEmail,
+    // ankiPassword,
     weeklyClasses,
     googleDriveLink,
     picture,
@@ -485,12 +483,12 @@ const student_editGeneralData = async (req, res) => {
     } else if (!username || !email || !name || !lastname || !phoneNumber) {
       return res.status(400).json({ message: "Campos obrigatórios faltando" });
     } else if (
+      // studentToEdit.ankiEmail === ankiEmail &&
+      // studentToEdit.ankiPassword === ankiPassword &&
       studentToEdit.name === name &&
       studentToEdit.lastname === lastname &&
       studentToEdit.username === username &&
       studentToEdit.email === email &&
-      studentToEdit.ankiEmail === ankiEmail &&
-      studentToEdit.ankiPassword === ankiPassword &&
       studentToEdit.picture === picture &&
       studentToEdit.weeklyClasses === weeklyClasses &&
       studentToEdit.address === address &&
@@ -506,8 +504,8 @@ const student_editGeneralData = async (req, res) => {
       studentToEdit.lastname = lastname;
       studentToEdit.username = username;
       studentToEdit.email = email;
-      studentToEdit.ankiEmail = ankiEmail;
-      studentToEdit.ankiPassword = ankiPassword;
+      // studentToEdit.ankiEmail = ankiEmail;
+      // studentToEdit.ankiPassword = ankiPassword;
       studentToEdit.googleDriveLink = googleDriveLink;
       studentToEdit.weeklyClasses = weeklyClasses;
       studentToEdit.picture = picture;
