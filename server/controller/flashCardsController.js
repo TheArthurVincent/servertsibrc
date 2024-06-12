@@ -1,7 +1,6 @@
 const { default: mongoose } = require("mongoose");
 const { Student_Model } = require("../models/Students");
 
-
 const reviewsToday = 30;
 
 const reviewList = async (req, res) => {
@@ -15,26 +14,23 @@ const reviewList = async (req, res) => {
     }
 
     const currentDate = new Date();
+
     const today = new Date().toISOString().slice(0, 10);
 
-    // Contar quantos cards foram revisados hoje
-    const reviewsTodayCount = student.flashcardsDailyReviews.filter(
+    const reviewsDoneTodayCount = student.flashcardsDailyReviews.filter(
       (review) => review.date.toISOString().slice(0, 10) === today
     ).length;
 
-    // Definir quantos flashcards faltam revisar para completar 30 hoje
-    const remainingFlashcardsToReview = reviewsToday - reviewsTodayCount;
+    const remainingFlashcardsToReview = reviewsToday - reviewsDoneTodayCount;
 
-    // Pegar todos os flashcards vencidos até hoje
     let dueFlashcards = student.flashCards.filter(
       (card) => new Date(card.reviewDate) <= currentDate
     );
 
-    // Se os flashcards vencidos forem menos que o necessário, adicionar flashcards futuros
     if (dueFlashcards.length < remainingFlashcardsToReview) {
-      const futureFlashcards = student.flashCards.filter(
-        (card) => new Date(card.reviewDate) > currentDate
-      ).sort((a, b) => new Date(a.reviewDate) - new Date(b.reviewDate));
+      const futureFlashcards = student.flashCards
+        .filter((card) => new Date(card.reviewDate) > currentDate)
+        .sort((a, b) => new Date(a.reviewDate) - new Date(b.reviewDate));
 
       for (let card of futureFlashcards) {
         if (dueFlashcards.length >= remainingFlashcardsToReview) break;
@@ -42,8 +38,10 @@ const reviewList = async (req, res) => {
       }
     }
 
-    // Limitar os flashcards ao número necessário para completar 30 revisões hoje
-    const limitedDueFlashcards = dueFlashcards.slice(0, remainingFlashcardsToReview);
+    const limitedDueFlashcards = dueFlashcards.slice(
+      0,
+      remainingFlashcardsToReview
+    );
 
     const newCardsCount = limitedDueFlashcards.filter(
       (card) => card.isNew
@@ -57,6 +55,19 @@ const reviewList = async (req, res) => {
       reviewedCardsCount,
     };
 
+
+
+    const difficulties = {
+      veryhard: new Date(),
+      hard: new Date(currentDate.setDate(currentDate.getDate() + 1)),
+    }
+
+    limitedDueFlashcards.forEach(card => {
+      card.hard = new Date(currentDate.setDate(currentDate.getDate() + 1.5));
+      card.medium = new Date(currentDate.setDate(currentDate.getDate() + Math.ceil(card.reviewRate * 1.5)));
+      card.easy = new Date(currentDate.setDate(currentDate.getDate() + Math.ceil(card.reviewRate * 2)));
+    });
+
     return res.status(200).json({
       message: "Success",
       dueFlashcards: limitedDueFlashcards,
@@ -68,17 +79,6 @@ const reviewList = async (req, res) => {
   }
 };
 
-
-// const difficulties = {
-//   veryhard: new Date(),
-//   hard: new Date(currentDate.setDate(currentDate.getDate() + 1)),
-//   medium: new Date(currentDate.setDate(currentDate.getDate() + Math.ceil(flashcard.reviewRate))),
-//   easy: new Date(currentDate.setDate(currentDate.getDate() + Math.ceil(flashcard.reviewRate))),
-// }
-
-// limitedDueFlashcards.forEach(card => {
-//   card.difficulty = difficulties[card.difficulty];
-// });
 
 const flashcard_createNew = async (req, res) => {
   const { id } = req.params;
@@ -93,9 +93,9 @@ const flashcard_createNew = async (req, res) => {
       id: new mongoose.Types.ObjectId(),
       front: card.front,
       back: card.back,
-      reviewDate: new Date(),
-      reviewRate: 1,
-      isNew: true,
+      reviewDate: card.reviewDate || new Date(),
+      reviewRate: card.reviewRate || 1,
+      isNew: card.isNew || true,
     }));
 
     student.flashCards.push(...newFlashcards);
@@ -173,22 +173,22 @@ const flashcard_reviewCard = async (req, res) => {
       case "hard":
         flashcard.reviewRate = 1.5;
         flashcard.reviewDate = new Date(
-          currentDate.setDate(currentDate.getDate() + 1)
+          currentDate.setDate(currentDate.getDate() + 1) // Today + 1 = Tomorrow
         );
         break;
       case "medium":
-        flashcard.reviewRate *= 1.5;
+        flashcard.reviewRate *= 1.5; //2.75
         flashcard.reviewDate = new Date(
           currentDate.setDate(
-            currentDate.getDate() + Math.ceil(flashcard.reviewRate)
+            currentDate.getDate() + Math.ceil(flashcard.reviewRate) // 3 days
           )
         );
         break;
       case "easy":
-        flashcard.reviewRate *= 3;
+        flashcard.reviewRate *= 2; // 5.5  // 11
         flashcard.reviewDate = new Date(
           currentDate.setDate(
-            currentDate.getDate() + Math.ceil(flashcard.reviewRate)
+            currentDate.getDate() + Math.ceil(flashcard.reviewRate) // 6 days // 11 days
           )
         );
         break;
@@ -196,10 +196,9 @@ const flashcard_reviewCard = async (req, res) => {
         return res.status(400).json({ error: "Invalid difficulty level" });
     }
 
-
     const today = new Date().toISOString().slice(0, 10);
 
-    const reviewsTodayCount = student.flashcardsDailyReviews.filter(
+    const reviewsDoneTodayCount = student.flashcardsDailyReviews.filter(
       (review) => review.date.toISOString().slice(0, 10) === today
     ).length;
 
@@ -207,12 +206,12 @@ const flashcard_reviewCard = async (req, res) => {
       (item) => item.unique === true
     ).length;
 
-    console.log(uniqueTImeLineItem)
+    console.log(uniqueTImeLineItem);
     const scoreFor30Reviews = 45;
 
     if (
       difficulty !== "veryhard" &&
-      reviewsTodayCount == (reviewsToday - 1) &&
+      reviewsDoneTodayCount == reviewsToday - 1 &&
       uniqueTImeLineItem == 0
     ) {
       student.totalScore += scoreFor30Reviews;
@@ -233,8 +232,6 @@ const flashcard_reviewCard = async (req, res) => {
       (card) => card.id.toString() !== flashcardId
     );
 
-
-
     const newFlashCard = {
       id: new mongoose.Types.ObjectId(),
       front: flashcard.front,
@@ -251,17 +248,13 @@ const flashcard_reviewCard = async (req, res) => {
         date: new Date(),
         card: flashcard.front.text,
       });
-    } else { null }
-
-
-
-
+    } else {
+      null;
+    }
 
     await student.save();
 
-    return res
-      .status(200)
-      .json({ message: "Card reviewed", student });
+    return res.status(200).json({ message: "Card reviewed", student });
   } catch (error) {
     console.error("Not reviewed:", error);
     return res.status(500).json({ error: "Not reviewed" });
