@@ -23,25 +23,42 @@ const reviewList = async (req, res) => {
 
     const remainingFlashcardsToReview = reviewsToday - reviewsDoneTodayCount;
 
+    if (remainingFlashcardsToReview <= 0) {
+      return res.status(200).json({
+        message: "Success",
+        dueFlashcards: [],
+        cardsCount: []
+      });
+    }
+
+    ///// Quais?
     let dueFlashcards = student.flashCards.filter(
       (card) => new Date(card.reviewDate) <= currentDate
     );
 
     if (dueFlashcards.length < remainingFlashcardsToReview) {
-      const futureFlashcards = student.flashCards
-        .filter((card) => new Date(card.reviewDate) > currentDate)
-        .sort((a, b) => new Date(a.reviewDate) - new Date(b.reviewDate));
+      const futureFlashcards = student.flashCards.sort((a, b) => new Date(a.reviewDate) - new Date(b.reviewDate));
 
-      for (let card of futureFlashcards) {
+
+      const filteredCardsFuture = futureFlashcards.filter((card) => {
+        return dueFlashcards.find((duecard) => {
+          return (
+            duecard.id !== card.id && new Date(card.reviewDate) > currentDate
+          );
+        }) == null ? true : false;
+      })
+
+
+      console.log(filteredCardsFuture)
+
+      for (let card of filteredCardsFuture) {
         if (dueFlashcards.length >= remainingFlashcardsToReview) break;
         dueFlashcards.push(card);
       }
+
     }
 
-    const limitedDueFlashcards = dueFlashcards.slice(
-      0,
-      remainingFlashcardsToReview
-    );
+    const limitedDueFlashcards = dueFlashcards.slice(0, remainingFlashcardsToReview);
 
     const newCardsCount = limitedDueFlashcards.filter(
       (card) => card.isNew
@@ -55,17 +72,18 @@ const reviewList = async (req, res) => {
       reviewedCardsCount,
     };
 
-
-
-    const difficulties = {
-      veryhard: new Date(),
-      hard: new Date(currentDate.setDate(currentDate.getDate() + 1)),
-    }
-
-    limitedDueFlashcards.forEach(card => {
+    limitedDueFlashcards.forEach((card) => {
       card.hard = new Date(currentDate.setDate(currentDate.getDate() + 1.5));
-      card.medium = new Date(currentDate.setDate(currentDate.getDate() + Math.ceil(card.reviewRate * 1.5)));
-      card.easy = new Date(currentDate.setDate(currentDate.getDate() + Math.ceil(card.reviewRate * 2)));
+      card.medium = new Date(
+        currentDate.setDate(
+          currentDate.getDate() + Math.ceil(card.reviewRate * 1.5)
+        )
+      );
+      card.easy = new Date(
+        currentDate.setDate(
+          currentDate.getDate() + Math.ceil(card.reviewRate * 2)
+        )
+      );
     });
 
     return res.status(200).json({
@@ -78,6 +96,7 @@ const reviewList = async (req, res) => {
     res.status(500).json({ error: "Erro ao processar o pedido" });
   }
 };
+
 const flashcard_createNew = async (req, res) => {
   const { id } = req.params;
   const { newCards } = req.body;
@@ -87,14 +106,16 @@ const flashcard_createNew = async (req, res) => {
       return res.status(404).json({ error: "Student not found" });
     }
 
-    const newFlashcards = newCards.filter((card) => card !== null).map((card) => ({
-      id: new mongoose.Types.ObjectId(),
-      front: card.front,
-      back: card.back,
-      reviewDate: card.reviewDate || new Date(),
-      reviewRate: card.reviewRate || 1,
-      isNew: card.isNew || true,
-    }));
+    const newFlashcards = newCards
+      .filter((card) => card !== null)
+      .map((card) => ({
+        id: new mongoose.Types.ObjectId(),
+        front: card.front,
+        back: card.back,
+        reviewDate: card.reviewDate || new Date(),
+        reviewRate: card.reviewRate || 1,
+        isNew: card.isNew || true,
+      }));
 
     student.flashCards.push(...newFlashcards);
 
@@ -163,6 +184,9 @@ const flashcard_reviewCard = async (req, res) => {
 
     const currentDate = new Date();
 
+    // NIK CLICKS ON VERY HARD
+
+
     switch (difficulty) {
       case "veryhard":
         flashcard.reviewDate = currentDate;
@@ -171,25 +195,27 @@ const flashcard_reviewCard = async (req, res) => {
       case "hard":
         flashcard.reviewRate = 1.5;
         flashcard.reviewDate = new Date(
-          currentDate.setDate(currentDate.getDate() + 1) // Today + 1 = Tomorrow
+          currentDate.setDate(currentDate.getDate() + 1)
         );
         break;
       case "medium":
-        flashcard.reviewRate *= 1.5; //2.75
+        flashcard.reviewRate *= 1.5;
         flashcard.reviewDate = new Date(
           currentDate.setDate(
-            currentDate.getDate() + Math.ceil(flashcard.reviewRate) // 3 days
+            currentDate.getDate() + Math.ceil(flashcard.reviewRate)
           )
         );
         break;
+
       case "easy":
-        flashcard.reviewRate *= 2; // 5.5  // 11
+        flashcard.reviewRate *= 2;
         flashcard.reviewDate = new Date(
           currentDate.setDate(
-            currentDate.getDate() + Math.ceil(flashcard.reviewRate) // 6 days // 11 days
+            currentDate.getDate() + Math.ceil(flashcard.reviewRate)
           )
         );
         break;
+
       default:
         return res.status(400).json({ error: "Invalid difficulty level" });
     }
@@ -205,20 +231,20 @@ const flashcard_reviewCard = async (req, res) => {
     ).length;
 
     console.log(uniqueTImeLineItem);
-    const scoreFor30Reviews = 45;
+    const scoreForDailyReviews = 45;
 
     if (
       difficulty !== "veryhard" &&
       reviewsDoneTodayCount == reviewsToday - 1 &&
       uniqueTImeLineItem == 0
     ) {
-      student.totalScore += scoreFor30Reviews;
-      student.monthlyScore += scoreFor30Reviews;
+      student.totalScore += scoreForDailyReviews;
+      student.monthlyScore += scoreForDailyReviews;
 
       const timeline = {
         date: new Date(),
         unique: true,
-        score: scoreFor30Reviews,
+        score: scoreForDailyReviews,
         description: "Flashcards revisados",
         type: "Anki",
       };
