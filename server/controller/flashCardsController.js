@@ -78,8 +78,6 @@ const reviewList = async (req, res) => {
     res.status(500).json({ error: "Erro ao processar o pedido" });
   }
 };
-
-
 const flashcard_createNew = async (req, res) => {
   const { id } = req.params;
   const { newCards } = req.body;
@@ -89,7 +87,7 @@ const flashcard_createNew = async (req, res) => {
       return res.status(404).json({ error: "Student not found" });
     }
 
-    const newFlashcards = newCards.map((card) => ({
+    const newFlashcards = newCards.filter((card) => card !== null).map((card) => ({
       id: new mongoose.Types.ObjectId(),
       front: card.front,
       back: card.back,
