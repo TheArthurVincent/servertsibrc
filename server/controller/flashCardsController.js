@@ -1,7 +1,7 @@
 const { default: mongoose } = require("mongoose");
 const { Student_Model } = require("../models/Students");
 
-let reviewsToday = 3;
+let reviewsToday = 30;
 let currentDate = new Date();
 let today = currentDate.toISOString().slice(0, 10);
 
