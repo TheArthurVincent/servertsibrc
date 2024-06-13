@@ -1,7 +1,9 @@
 const { default: mongoose } = require("mongoose");
 const { Student_Model } = require("../models/Students");
 
-const reviewsToday = 30;
+let reviewsToday = 30;
+let currentDate = new Date();
+let today = currentDate.toISOString().slice(0, 10);
 
 const reviewList = async (req, res) => {
   const { id } = req.params;
@@ -13,12 +15,8 @@ const reviewList = async (req, res) => {
       return res.status(404).json({ error: "Student not found" });
     }
 
-    const currentDate = new Date();
-
-    const today = new Date().toISOString().slice(0, 10);
-
     const reviewsDoneTodayCount = student.flashcardsDailyReviews.filter(
-      (review) => review.date.toISOString().slice(0, 10) === today
+      (review) => new Date(review.date).toISOString().slice(0, 10) === today
     ).length;
 
     const remainingFlashcardsToReview = reviewsToday - reviewsDoneTodayCount;
@@ -27,38 +25,41 @@ const reviewList = async (req, res) => {
       return res.status(200).json({
         message: "Success",
         dueFlashcards: [],
-        cardsCount: []
+        cardsCount: [],
       });
     }
 
-    ///// Quais?
-    let dueFlashcards = student.flashCards.filter(
-      (card) => new Date(card.reviewDate) <= currentDate
+    let dueFlashcards = student.flashCards.filter((card) => {
+      const cardDateString = new Date(card.reviewDate)
+        .toISOString()
+        .slice(0, 10);
+      return cardDateString <= today;
+    });
+
+    let futureFlashcards = student.flashCards.filter((card) => {
+      const cardDateString = new Date(card.reviewDate)
+        .toISOString()
+        .slice(0, 10);
+      return cardDateString > today;
+    });
+
+    futureFlashcards.sort(
+      (a, b) => new Date(a.reviewDate) - new Date(b.reviewDate)
     );
 
     if (dueFlashcards.length < remainingFlashcardsToReview) {
-      const futureFlashcards = student.flashCards.sort((a, b) => new Date(a.reviewDate) - new Date(b.reviewDate));
-
-
-      const filteredCardsFuture = futureFlashcards.filter((card) => {
-        return dueFlashcards.find((duecard) => {
-          return (
-            duecard.id !== card.id && new Date(card.reviewDate) > currentDate
-          );
-        }) == null ? true : false;
-      })
-
-
-      console.log(filteredCardsFuture)
-
-      for (let card of filteredCardsFuture) {
-        if (dueFlashcards.length >= remainingFlashcardsToReview) break;
-        dueFlashcards.push(card);
-      }
-
+      const needed = remainingFlashcardsToReview - dueFlashcards.length;
+      dueFlashcards = dueFlashcards.concat(futureFlashcards.slice(0, needed));
     }
 
-    const limitedDueFlashcards = dueFlashcards.slice(0, remainingFlashcardsToReview);
+    const deckOrganized = dueFlashcards.sort(
+      (a, b) => new Date(a.reviewDate) - new Date(b.reviewDate)
+    );
+
+    const limitedDueFlashcards = deckOrganized.slice(
+      0,
+      remainingFlashcardsToReview
+    );
 
     const newCardsCount = limitedDueFlashcards.filter(
       (card) => card.isNew
@@ -73,17 +74,17 @@ const reviewList = async (req, res) => {
     };
 
     limitedDueFlashcards.forEach((card) => {
-      card.hard = new Date(currentDate.setDate(currentDate.getDate() + 1.5));
+      const currentDateClone = new Date(currentDate);
+      card.hard = new Date(
+        currentDateClone.setHours(currentDateClone.getHours() + 23)
+      );
       card.medium = new Date(
-        currentDate.setDate(
-          currentDate.getDate() + Math.ceil(card.reviewRate * 1.5)
-        )
+        currentDateClone.setHours(currentDateClone.getHours() + 24 * card.reviewRate * 1.5)
       );
       card.easy = new Date(
-        currentDate.setDate(
-          currentDate.getDate() + Math.ceil(card.reviewRate * 2)
-        )
+        currentDateClone.setHours(currentDateClone.getHours() + 24 * card.reviewRate * 2)
       );
+
     });
 
     return res.status(200).json({
@@ -94,6 +95,121 @@ const reviewList = async (req, res) => {
   } catch (error) {
     console.error("Erro ao processar o pedido:", error);
     res.status(500).json({ error: "Erro ao processar o pedido" });
+  }
+};
+
+const flashcard_reviewCard = async (req, res) => {
+  const { id } = req.params;
+  const { flashcardId, difficulty } = req.body;
+
+  try {
+    const student = await Student_Model.findById(id);
+
+    if (!student) {
+      return res.status(404).json({ error: "Student not found" });
+    }
+
+    const flashcard = student.flashCards.find(
+      (card) => card.id.toString() === flashcardId
+    );
+
+    if (!flashcard) {
+      return res.status(404).json({ error: "Flashcard not found" });
+    }
+
+    let hoursToAdd;
+    const currentDateClone = new Date(currentDate); // Clone the current date
+
+    switch (difficulty) {
+      case "veryhard":
+        flashcard.reviewDate = new Date(
+          currentDateClone.setSeconds(currentDateClone.getSeconds() + 30)
+        );
+        flashcard.reviewRate = 1.1;
+        break;
+      case "hard":
+        flashcard.reviewRate = 1.5;
+        hoursToAdd = 23; // 1.5 days to hours
+        flashcard.reviewDate = new Date(
+          currentDateClone.setHours(currentDateClone.getHours() + hoursToAdd)
+        );
+        break;
+      case "medium":
+        flashcard.reviewRate *= 1.5;
+        hoursToAdd = flashcard.reviewRate * 24; // reviewRate days to hours
+        flashcard.reviewDate = new Date(
+          currentDateClone.setHours(currentDateClone.getHours() + hoursToAdd)
+        );
+        break;
+      case "easy":
+        flashcard.reviewRate *= 2;
+        hoursToAdd = flashcard.reviewRate * 24; // reviewRate days to hours
+        flashcard.reviewDate = new Date(
+          currentDateClone.setHours(currentDateClone.getHours() + hoursToAdd)
+        );
+        break;
+      default:
+        return res.status(400).json({ error: "Invalid difficulty level" });
+    }
+
+    const reviewsDoneTodayCount = student.flashcardsDailyReviews.filter(
+      (review) => review.date.toISOString().slice(0, 10) === today
+    ).length;
+
+    const uniqueTimeLineItem = student.scoreTimeline.filter(
+      (item) => item.unique == true && item.date == currentDate
+    ).length;
+
+    const scoreForDailyReviews = 45;
+    let remaining = reviewsToday - 1;
+
+    if (
+      difficulty !== "veryhard" &&
+      reviewsDoneTodayCount === remaining &&
+      uniqueTimeLineItem === 0
+    ) {
+      student.totalScore += scoreForDailyReviews;
+      student.monthlyScore += scoreForDailyReviews;
+
+      const timeline = {
+        date: new Date(),
+        unique: true,
+        score: scoreForDailyReviews,
+        description: "Flashcards revisados",
+        type: "Anki",
+      };
+
+      student.scoreTimeline.push(timeline);
+    }
+
+    student.flashCards = student.flashCards.filter(
+      (card) => card.id.toString() !== flashcardId
+    );
+    const newFlashCard = {
+      id: new mongoose.Types.ObjectId(),
+      front: flashcard.front,
+      back: flashcard.back,
+      reviewDate: flashcard.reviewDate,
+      reviewRate: flashcard.reviewRate,
+      numberOfReviews: flashcard.numberOfReviews + 1,
+      isNew: false,
+    };
+
+    student.flashCards.push(newFlashCard);
+
+    if (difficulty !== "veryhard") {
+      student.flashcardsDailyReviews.push({
+        date: currentDate,
+        card: flashcard.front.text,
+      });
+    }
+
+    await student.save();
+
+    return res.status(200).json({ message: "Card reviewed", student });
+  } catch (error) {
+    console.error("Not reviewed:", error);
+    return res.status(500).json({ error: "Not reviewed" });
   }
 };
 
@@ -108,14 +224,27 @@ const flashcard_createNew = async (req, res) => {
 
     const newFlashcards = newCards
       .filter((card) => card !== null)
-      .map((card) => ({
-        id: new mongoose.Types.ObjectId(),
-        front: card.front,
-        back: card.back,
-        reviewDate: card.reviewDate || new Date(),
-        reviewRate: card.reviewRate || 1,
-        isNew: card.isNew || true,
-      }));
+      .map((card, index) => {
+        const reviewDate = card.reviewDate
+          ? new Date(card.reviewDate)
+          : new Date();
+
+        reviewDate.setMinutes(reviewDate.getMinutes() + index);
+
+        return {
+          id: new mongoose.Types.ObjectId(),
+          front: card.front,
+          back: card.back,
+          reviewDate: reviewDate,
+          reviewRate: card.reviewRate || 1,
+          veryhardReviews: card.veryhardReviews || 0,
+          hardReviews: card.hardReviews || 0,
+          mediumReviews: card.mediumReviews || 0,
+          easyReviews: card.easyReviews || 0,
+          numberOfReviews: card.numberOfReviews || 0,
+          isNew: card.isNew || true,
+        };
+      });
 
     student.flashCards.push(...newFlashcards);
 
@@ -162,129 +291,6 @@ const flashcard_updateOne = async (req, res) => {
     res.status(500).json({ error: "Erro ao processar o pedido" });
   }
 };
-
-const flashcard_reviewCard = async (req, res) => {
-  const { id } = req.params;
-  const { flashcardId, difficulty } = req.body;
-
-  try {
-    const student = await Student_Model.findById(id);
-
-    if (!student) {
-      return res.status(404).json({ error: "Student not found" });
-    }
-
-    const flashcard = student.flashCards.find(
-      (card) => card.id.toString() === flashcardId
-    );
-
-    if (!flashcard) {
-      return res.status(404).json({ error: "Flashcard not found" });
-    }
-
-    const currentDate = new Date();
-
-    // NIK CLICKS ON VERY HARD
-
-
-    switch (difficulty) {
-      case "veryhard":
-        flashcard.reviewDate = currentDate;
-        flashcard.reviewRate = 1;
-        break;
-      case "hard":
-        flashcard.reviewRate = 1.5;
-        flashcard.reviewDate = new Date(
-          currentDate.setDate(currentDate.getDate() + 1)
-        );
-        break;
-      case "medium":
-        flashcard.reviewRate *= 1.5;
-        flashcard.reviewDate = new Date(
-          currentDate.setDate(
-            currentDate.getDate() + Math.ceil(flashcard.reviewRate)
-          )
-        );
-        break;
-
-      case "easy":
-        flashcard.reviewRate *= 2;
-        flashcard.reviewDate = new Date(
-          currentDate.setDate(
-            currentDate.getDate() + Math.ceil(flashcard.reviewRate)
-          )
-        );
-        break;
-
-      default:
-        return res.status(400).json({ error: "Invalid difficulty level" });
-    }
-
-    const today = new Date().toISOString().slice(0, 10);
-
-    const reviewsDoneTodayCount = student.flashcardsDailyReviews.filter(
-      (review) => review.date.toISOString().slice(0, 10) === today
-    ).length;
-
-    const uniqueTImeLineItem = student.scoreTimeline.filter(
-      (item) => item.unique === true
-    ).length;
-
-    console.log(uniqueTImeLineItem);
-    const scoreForDailyReviews = 45;
-
-    if (
-      difficulty !== "veryhard" &&
-      reviewsDoneTodayCount == reviewsToday - 1 &&
-      uniqueTImeLineItem == 0
-    ) {
-      student.totalScore += scoreForDailyReviews;
-      student.monthlyScore += scoreForDailyReviews;
-
-      const timeline = {
-        date: new Date(),
-        unique: true,
-        score: scoreForDailyReviews,
-        description: "Flashcards revisados",
-        type: "Anki",
-      };
-
-      student.scoreTimeline.push(timeline);
-    }
-
-    student.flashCards = student.flashCards.filter(
-      (card) => card.id.toString() !== flashcardId
-    );
-
-    const newFlashCard = {
-      id: new mongoose.Types.ObjectId(),
-      front: flashcard.front,
-      back: flashcard.back,
-      reviewDate: flashcard.reviewDate,
-      reviewRate: flashcard.reviewRate,
-      isNew: false,
-    };
-
-    student.flashCards.push(newFlashCard);
-
-    if (difficulty !== "veryhard") {
-      student.flashcardsDailyReviews.push({
-        date: new Date(),
-        card: flashcard.front.text,
-      });
-    } else {
-      null;
-    }
-
-    await student.save();
-
-    return res.status(200).json({ message: "Card reviewed", student });
-  } catch (error) {
-    console.error("Not reviewed:", error);
-    return res.status(500).json({ error: "Not reviewed" });
-  }
-};
-
 const flashcard_deleteCard = async (req, res) => {
   const { id } = req.params;
   const { flashcardId } = req.body;
