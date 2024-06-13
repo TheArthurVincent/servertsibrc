@@ -10,11 +10,16 @@ const homework_getAll = async (req, res) => {
       return res.status(404).json({ error: "Estudante não encontrado" });
     }
 
-    const tutoringHomeworkList = await Homework_Model.find({ studentID: id });
+    const tutoringHomework = await Homework_Model.find({ studentID: id });
 
-    const groupClassHomeworkList = await Homework_Model.find({
+    const groupClassHomework = await Homework_Model.find({
       category: "groupclass",
     });
+
+    
+    const tutoringHomeworkList = tutoringHomework.sort((a, b) => new Date(b.assignmentDate) - new Date(a.assignmentDate));
+    const groupClassHomeworkList = groupClassHomework.sort((a, b) => new Date(b.assignmentDate) - new Date(a.assignmentDate));
+
 
     res.status(200).json({ tutoringHomeworkList, groupClassHomeworkList });
   } catch (error) {
