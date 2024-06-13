@@ -1,3 +1,4 @@
+const { Homework_Model } = require("../models/Homework");
 const { NextTutoring_Model } = require("../models/NextEvents");
 const { Student_Model } = require("../models/Students");
 const { Tutoring_Model } = require("../models/Tutoring");
@@ -6,7 +7,7 @@ const ejs = require("ejs");
 const path = require("path");
 
 const tutoring_postOne = async (req, res) => {
-  const { tutorings } = req.body;
+  const { tutorings, description } = req.body;
   const savedTutorings = [];
   try {
     for (const tutoring of tutorings) {
@@ -21,6 +22,20 @@ const tutoring_postOne = async (req, res) => {
         studentID,
         attachments,
       });
+
+      const dueDate = new Date(date);
+      dueDate.setDate(dueDate.getDate() + 7);
+
+      const newHomework = new Homework_Model({
+        dueDate,
+        videoUrl,
+        studentID,
+        category: "tutoring",
+        googleDriveLink: attachments,
+        description,
+        assignmentDate: new Date(date),
+      });
+
 
       // Recuperar informações do aluno
       const student = await Student_Model.findById(studentID);
@@ -55,6 +70,7 @@ const tutoring_postOne = async (req, res) => {
 
       // Salvar a tutoria
       await newTutoring.save();
+      await newHomework.save()
       savedTutorings.push(newTutoring);
     }
 

@@ -1,4 +1,5 @@
 const { Class_Model } = require("../models/Course");
+const { Homework_Model } = require("../models/Homework");
 const { Blog_Model } = require("../models/Posts");
 
 const courses_getOne = async (req, res) => {
@@ -40,13 +41,28 @@ const courses_postOneClass = async (req, res) => {
       createrAt: new Date(),
     });
 
-    const newBlogPost = await new Blog_Model({
+
+    const today = new Date();
+    const dueDate = new Date();
+    dueDate.setDate(dueDate.getDate() + 7);
+
+
+    const newHomework = new Homework_Model({
+      description,
+      videoUrl,
+      googleDriveLink,
+      category: "groupclass",
+      dueDate,
+      assignmentDate: today,
+    });
+    const newBlogPost = new Blog_Model({
       title: `Group Class: ${classTitle}`,
       videoUrl,
-      text:`Última aula em grupo ao vivo: ${description}`,
+      text: `Última aula em grupo ao vivo: ${description}`,
     });
 
     await newBlogPost.save();
+    await newHomework.save();
     await newClass.save();
     res.status(201).json({
       NewClass: newClass,

@@ -89,6 +89,7 @@ const {
   reviewList,
   flashcard_getOne,
 } = require("./server/controller/flashCardsController");
+const { homework_getAll } = require("./server/controller/homeworkController");
 
 database();
 app.use(express.json());
@@ -145,6 +146,9 @@ app.get(
   events_seeAllTutoringsFromOneStudent
 );
 app.put(`${mainroute}/tutoringevent`, events_editOneTutoring);
+
+// * Homework *
+app.get(`${mainroute}/homework/:id`, loggedIn, homework_getAll);
 
 // * classes *
 app.post(`${mainroute}/courseclass`, loggedInADM, courses_postOneClass);
@@ -227,8 +231,8 @@ app.get(`${mainroute}/flashcardfindone/:id`, loggedIn, flashcard_getOne);
 app.get(`${mainroute}/flashcards/:id`, loggedIn, reviewList);
 
 app.put(`${mainroute}/reviewflashcard/:id`, loggedIn, flashcard_reviewCard);
-app.put(`${mainroute}/flashcard/:id`,  flashcard_updateOne);
-app.delete(`${mainroute}/flashcard/:id`,  flashcard_deleteCard);
+app.put(`${mainroute}/flashcard/:id`, flashcard_updateOne);
+app.delete(`${mainroute}/flashcard/:id`, flashcard_deleteCard);
 
 // Live Classes
 app.post(`${mainroute}/liveclass`, nextLiveClass_postNext);
