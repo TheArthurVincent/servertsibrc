@@ -71,6 +71,7 @@ const reviewList = async (req, res) => {
     const cardsCount = {
       newCardsCount,
       reviewedCardsCount,
+      remainingFlashcardsToReview
     };
 
     limitedDueFlashcards.forEach((card) => {
