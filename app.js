@@ -87,6 +87,7 @@ const {
   flashcard_updateOne,
   flashcard_deleteCard,
   reviewList,
+  flashcard_getOne,
 } = require("./server/controller/flashCardsController");
 
 database();
@@ -219,11 +220,15 @@ app.put(`${mainroute}/blogposts/:id`, loggedInADM, blogPosts_editOne);
 app.delete(`${mainroute}/blogposts/:id`, loggedInADM, blogPosts_deleteOne);
 
 // Flashcards
-app.post(`${mainroute}/flashcard/:id`, /*loggedIn,*/flashcard_createNew);
-app.put(`${mainroute}/reviewflashcard/:id`, /*loggedIn,*/ flashcard_reviewCard);
-app.put(`${mainroute}/flashcard/:id`, /*loggedIn,*/ flashcard_updateOne);
-app.delete(`${mainroute}/flashcard/:id`, /*loggedIn,*/ flashcard_deleteCard);
-app.get(`${mainroute}/flashcards/:id`, /*loggedIn,*/ reviewList);
+app.post(`${mainroute}/flashcard/:id`, loggedIn, flashcard_createNew);
+
+app.get(`${mainroute}/flashcardfindone/:id`, loggedIn, flashcard_getOne);
+
+app.get(`${mainroute}/flashcards/:id`, loggedIn, reviewList);
+
+app.put(`${mainroute}/reviewflashcard/:id`, loggedIn, flashcard_reviewCard);
+app.put(`${mainroute}/flashcard/:id`,  flashcard_updateOne);
+app.delete(`${mainroute}/flashcard/:id`,  flashcard_deleteCard);
 
 // Live Classes
 app.post(`${mainroute}/liveclass`, nextLiveClass_postNext);

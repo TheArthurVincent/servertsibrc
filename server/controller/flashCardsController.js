@@ -71,7 +71,7 @@ const reviewList = async (req, res) => {
     const cardsCount = {
       newCardsCount,
       reviewedCardsCount,
-      remainingFlashcardsToReview
+      remainingFlashcardsToReview,
     };
 
     limitedDueFlashcards.forEach((card) => {
@@ -80,12 +80,15 @@ const reviewList = async (req, res) => {
         currentDateClone.setHours(currentDateClone.getHours() + 23)
       );
       card.medium = new Date(
-        currentDateClone.setHours(currentDateClone.getHours() + 24 * card.reviewRate * 1.5)
+        currentDateClone.setHours(
+          currentDateClone.getHours() + 24 * card.reviewRate * 1.5
+        )
       );
       card.easy = new Date(
-        currentDateClone.setHours(currentDateClone.getHours() + 24 * card.reviewRate * 2)
+        currentDateClone.setHours(
+          currentDateClone.getHours() + 24 * card.reviewRate * 2
+        )
       );
-
     });
 
     return res.status(200).json({
@@ -256,10 +259,36 @@ const flashcard_createNew = async (req, res) => {
     res.status(500).json({ error: "Erro ao processar o pedido" });
   }
 };
+const flashcard_getOne = async (req, res) => {
+  const { id } = req.params;
+  const { cardId } = req.query;
 
+  try {
+    const student = await Student_Model.findById(id);
+
+    let foundFlashcard = student.flashCards.find(
+      (flashcard) => flashcard.id == cardId
+    );
+
+    if (!foundFlashcard) {
+      return res.status(404).json({ error: "Flashcard not found" });
+    }
+
+    return res
+      .status(200)
+      .json({
+        message: "Flashcard found successfully",
+        flashcard: foundFlashcard,
+      });
+  } catch (error) {
+    console.error("Erro ao processar o pedido:", error);
+    return res.status(500).json({ error: "Erro ao processar o pedido" });
+  }
+};
 const flashcard_updateOne = async (req, res) => {
   const { id } = req.params;
-  const { flashcardId, newFront, newBack } = req.body;
+  const { cardId } = req.query;
+  const { newLGBack, newLGFront, newFront, newBack } = req.body;
 
   try {
     const student = await Student_Model.findById(id);
@@ -268,19 +297,35 @@ const flashcard_updateOne = async (req, res) => {
       return res.status(404).json({ error: "Student not found" });
     }
 
-    const flashcard = student.flashCards.id(flashcardId);
+    const flashcardIndex = student.flashCards.findIndex(
+      (flashcard) => flashcard.id == cardId
+    );
 
-    if (!flashcard) {
+    if (flashcardIndex === -1) {
       return res.status(404).json({ error: "Flashcard not found" });
     }
 
-    if (newFront) {
-      flashcard.front = { ...flashcard.front, ...newFront };
-    }
+    const flashcard = student.flashCards[flashcardIndex];
 
-    if (newBack) {
-      flashcard.back = { ...flashcard.back, ...newBack };
-    }
+    student.flashCards.splice(flashcardIndex, 1);
+
+    const newFlashcard = {
+      id: flashcard.id,
+      front: {
+        text: newFront || flashcard.front.text,
+        language: newLGFront || flashcard.front.language,
+      },
+      back: {
+        text: newBack || flashcard.back.text,
+        language: newLGBack || flashcard.back.language,
+      },
+      reviewDate: flashcard.reviewDate,
+      reviewRate: flashcard.reviewRate,
+      numberOfReviews: flashcard.numberOfReviews,
+      isNew: flashcard.isNew,
+    };
+
+    student.flashCards.push(newFlashcard);
 
     await student.save();
 
@@ -292,9 +337,10 @@ const flashcard_updateOne = async (req, res) => {
     res.status(500).json({ error: "Erro ao processar o pedido" });
   }
 };
+
 const flashcard_deleteCard = async (req, res) => {
   const { id } = req.params;
-  const { flashcardId } = req.body;
+  const { cardId } = req.query;
 
   try {
     const student = await Student_Model.findById(id);
@@ -303,11 +349,15 @@ const flashcard_deleteCard = async (req, res) => {
       return res.status(404).json({ error: "Student not found" });
     }
 
-    const flashcard = student.flashCards.id(flashcardId);
+    const flashcardIndex = student.flashCards.findIndex(
+      (flashcard) => flashcard.id == cardId
+    );
 
-    if (!flashcard) {
+    if (flashcardIndex === -1) {
       return res.status(404).json({ error: "Flashcard not found" });
     }
+
+    student.flashCards.splice(flashcardIndex, 1);
 
     await student.save();
 
@@ -324,6 +374,7 @@ module.exports = {
   flashcard_reviewCard,
   flashcard_updateOne,
   flashcard_createNew,
+  flashcard_getOne,
   flashcard_deleteCard,
   reviewList,
 };
