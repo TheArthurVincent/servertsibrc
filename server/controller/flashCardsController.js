@@ -164,27 +164,27 @@ const flashcard_reviewCard = async (req, res) => {
       (item) => item.unique == true && item.date == currentDate
     ).length;
 
-    const scoreForDailyReviews = 45;
+    const scoreForDailyReviews = 80;
     let remaining = reviewsToday - 1;
 
-    if (
-      difficulty !== "veryhard" &&
-      reviewsDoneTodayCount === remaining &&
-      uniqueTimeLineItem === 0
-    ) {
-      student.totalScore += scoreForDailyReviews;
-      student.monthlyScore += scoreForDailyReviews;
+    // if (
+    //   difficulty !== "veryhard" &&
+    //   reviewsDoneTodayCount === remaining &&
+    //   uniqueTimeLineItem === 0
+    // ) {
+    //   student.totalScore += scoreForDailyReviews;
+    //   student.monthlyScore += scoreForDailyReviews;
 
-      const timeline = {
-        date: new Date(),
-        unique: true,
-        score: scoreForDailyReviews,
-        description: "Flashcards revisados",
-        type: "Anki",
-      };
+    //   const timeline = {
+    //     date: new Date(),
+    //     unique: true,
+    //     score: scoreForDailyReviews,
+    //     description: "Flashcards do dia totalmente revisados",
+    //     type: "Anki",
+    //   };
 
-      student.scoreTimeline.push(timeline);
-    }
+    //   student.scoreTimeline.push(timeline);
+    // }
 
     student.flashCards = student.flashCards.filter(
       (card) => card.id.toString() !== flashcardId
@@ -202,10 +202,23 @@ const flashcard_reviewCard = async (req, res) => {
     student.flashCards.push(newFlashCard);
 
     if (difficulty !== "veryhard") {
+
       student.flashcardsDailyReviews.push({
         date: currentDate,
         card: flashcard.front.text,
       });
+
+      const timelineCard = {
+        date: new Date(),
+        score: 3,
+        description: `3 Pontos por ter revisado o flashcard ${flashcard.front.text}`,
+        type: "Anki",
+      };
+
+      // student.totalScore += 3;
+      // student.monthlyScore += 3;
+      // student.scoreTimeline.push(timelineCard);
+
     }
 
     await student.save();
