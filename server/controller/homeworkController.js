@@ -17,8 +17,8 @@ const homework_getAll = async (req, res) => {
     });
 
     
-    const tutoringHomeworkList = tutoringHomework.sort((a, b) => new Date(b.assignmentDate) - new Date(a.assignmentDate));
-    const groupClassHomeworkList = groupClassHomework.sort((a, b) => new Date(b.assignmentDate) - new Date(a.assignmentDate));
+    const tutoringHomeworkList = (tutoringHomework.sort((a, b) => new Date(b.dueDate) - new Date(a.dueDate))).reverse();
+    const groupClassHomeworkList = (groupClassHomework.sort((a, b) => new Date(b.dueDate) - new Date(a.dueDate))).reverse();
 
 
     res.status(200).json({ tutoringHomeworkList, groupClassHomeworkList });

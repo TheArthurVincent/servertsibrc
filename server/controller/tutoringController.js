@@ -7,7 +7,7 @@ const ejs = require("ejs");
 const path = require("path");
 
 const tutoring_postOne = async (req, res) => {
-  const { tutorings, description } = req.body;
+  const { tutorings, description, dueDate } = req.body;
   const savedTutorings = [];
   try {
     for (const tutoring of tutorings) {
@@ -23,17 +23,15 @@ const tutoring_postOne = async (req, res) => {
         attachments,
       });
 
-      const dueDate = new Date(date);
-      dueDate.setDate(dueDate.getDate() + 7);
 
       const newHomework = new Homework_Model({
-        dueDate,
+        assignmentDate: new Date(date),
+        dueDate: new Date(dueDate),
         videoUrl,
         studentID,
         category: "tutoring",
         googleDriveLink: attachments,
         description,
-        assignmentDate: new Date(date),
       });
 
 
