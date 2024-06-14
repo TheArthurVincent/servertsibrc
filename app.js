@@ -88,6 +88,7 @@ const {
   flashcard_deleteCard,
   reviewList,
   flashcard_getOne,
+  allCardsList,
 } = require("./server/controller/flashCardsController");
 const { homework_getAll } = require("./server/controller/homeworkController");
 
@@ -224,9 +225,10 @@ app.put(`${mainroute}/blogposts/:id`, loggedInADM, blogPosts_editOne);
 app.delete(`${mainroute}/blogposts/:id`, loggedInADM, blogPosts_deleteOne);
 
 // Flashcards
-app.post(`${mainroute}/flashcard/:id`, loggedIn, flashcard_createNew);
+app.post(`${mainroute}/flashcard/:id`, flashcard_createNew);
 
 app.get(`${mainroute}/flashcardfindone/:id`, loggedIn, flashcard_getOne);
+app.get(`${mainroute}/cards/:id`, loggedIn, allCardsList);
 
 app.get(`${mainroute}/flashcards/:id`, loggedIn, reviewList);
 

@@ -5,6 +5,8 @@ let reviewsToday = 30;
 let currentDate = new Date();
 let today = currentDate.toISOString().slice(0, 10);
 
+
+
 const reviewList = async (req, res) => {
   const { id } = req.params;
 
@@ -252,6 +254,7 @@ const flashcard_createNew = async (req, res) => {
           id: new mongoose.Types.ObjectId(),
           front: card.front,
           back: card.back,
+          backComments: card.backComments || "",
           reviewDate: reviewDate,
           reviewRate: card.reviewRate || 1,
           veryhardReviews: card.veryhardReviews || 0,
@@ -301,7 +304,7 @@ const flashcard_getOne = async (req, res) => {
 const flashcard_updateOne = async (req, res) => {
   const { id } = req.params;
   const { cardId } = req.query;
-  const { newLGBack, newLGFront, newFront, newBack } = req.body;
+  const { newLGBack, newLGFront, newFront, newBack, newBackComments } = req.body;
 
   try {
     const student = await Student_Model.findById(id);
@@ -324,6 +327,7 @@ const flashcard_updateOne = async (req, res) => {
 
     const newFlashcard = {
       id: flashcard.id,
+      backComments: newBackComments,
       front: {
         text: newFront || flashcard.front.text,
         language: newLGFront || flashcard.front.language,
@@ -383,11 +387,35 @@ const flashcard_deleteCard = async (req, res) => {
   }
 };
 
+
+const allCardsList = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const student = await Student_Model.findById(id);
+
+    if (!student) {
+      return res.status(404).json({ error: "Student not found" });
+    }
+
+    let allFlashCards = student.flashCards
+
+    allFlashCards.sort(
+      (a, b) => new Date(a.reviewDate) - new Date(b.reviewDate)
+    );
+
+    return res.status(200).json({ message: "Success", allFlashCards, });
+  } catch (error) {
+    console.error("Erro ao processar o pedido:", error);
+    res.status(500).json({ error: "Erro ao processar o pedido" });
+  }
+};
+
 module.exports = {
   flashcard_reviewCard,
   flashcard_updateOne,
   flashcard_createNew,
   flashcard_getOne,
   flashcard_deleteCard,
-  reviewList,
+  reviewList, allCardsList
 };
