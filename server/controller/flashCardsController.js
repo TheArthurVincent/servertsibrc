@@ -169,24 +169,24 @@ const flashcard_reviewCard = async (req, res) => {
     const scoreForDailyReviews = 80;
     let remaining = reviewsToday - 1;
 
-    // if (
-    //   difficulty !== "veryhard" &&
-    //   reviewsDoneTodayCount === remaining &&
-    //   uniqueTimeLineItem === 0
-    // ) {
-    //   student.totalScore += scoreForDailyReviews;
-    //   student.monthlyScore += scoreForDailyReviews;
+    if (
+      difficulty !== "veryhard" &&
+      reviewsDoneTodayCount === remaining &&
+      uniqueTimeLineItem === 0
+    ) {
+      student.totalScore += scoreForDailyReviews;
+      student.monthlyScore += scoreForDailyReviews;
 
-    //   const timeline = {
-    //     date: new Date(),
-    //     unique: true,
-    //     score: scoreForDailyReviews,
-    //     description: "Flashcards do dia totalmente revisados",
-    //     type: "Anki",
-    //   };
+      const timeline = {
+        date: new Date(),
+        unique: true,
+        score: scoreForDailyReviews,
+        description: "Flashcards do dia totalmente revisados",
+        type: "Anki",
+      };
 
-    //   student.scoreTimeline.push(timeline);
-    // }
+      student.scoreTimeline.push(timeline);
+    }
 
     student.flashCards = student.flashCards.filter(
       (card) => card.id.toString() !== flashcardId
@@ -217,9 +217,9 @@ const flashcard_reviewCard = async (req, res) => {
         type: "Anki",
       };
 
-      // student.totalScore += 3;
-      // student.monthlyScore += 3;
-      // student.scoreTimeline.push(timelineCard);
+      student.totalScore += 3;
+      student.monthlyScore += 3;
+      student.scoreTimeline.push(timelineCard);
 
     }
 

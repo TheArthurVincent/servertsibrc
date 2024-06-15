@@ -46,14 +46,25 @@ const courses_postOneClass = async (req, res) => {
     const dueDate = new Date();
     dueDate.setDate(dueDate.getDate() + 7);
 
+    function addOneDay(dateString) {
+      let date = new Date(dateString);
+
+      date.setDate(date.getDate() + 1);
+
+      let newDateString = date.toISOString().split('T')[0];
+
+      return newDateString;
+    }
+
+
 
     const newHomework = new Homework_Model({
       description,
       videoUrl,
       googleDriveLink,
       category: "groupclass",
-      dueDate,
-      assignmentDate: today,
+      dueDate: addOneDay(dueDate),
+      assignmentDate: addOneDay(today),
     });
     const newBlogPost = new Blog_Model({
       title: `Group Class: ${classTitle}`,

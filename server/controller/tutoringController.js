@@ -23,10 +23,17 @@ const tutoring_postOne = async (req, res) => {
         attachments,
       });
 
+      function addOneDay(dateString) {
+        let date = new Date(dateString);
+        date.setDate(date.getDate() + 1);
+        let newDateString = date.toISOString().split('T')[0];
+        return newDateString;
+      }
+
 
       const newHomework = new Homework_Model({
-        assignmentDate: new Date(date),
-        dueDate: new Date(dueDate),
+        assignmentDate: addOneDay(date),
+        dueDate: addOneDay(dueDate),
         videoUrl,
         studentID,
         category: "tutoring",
