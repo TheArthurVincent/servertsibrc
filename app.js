@@ -90,7 +90,7 @@ const {
   flashcard_getOne,
   allCardsList,
 } = require("./server/controller/flashCardsController");
-const { homework_getAll } = require("./server/controller/homeworkController");
+const { homework_getAll, homework_done } = require("./server/controller/homeworkController");
 
 database();
 app.use(express.json());
@@ -150,6 +150,7 @@ app.put(`${mainroute}/tutoringevent`, events_editOneTutoring);
 
 // * Homework *
 app.get(`${mainroute}/homework/:id`, loggedIn, homework_getAll);
+app.put(`${mainroute}/homework/:id`,  homework_done);
 
 // * classes *
 app.post(`${mainroute}/courseclass`, loggedInADM, courses_postOneClass);

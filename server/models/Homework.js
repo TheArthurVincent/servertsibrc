@@ -9,7 +9,8 @@ const homeworkSchema = new Schema({
   description: { type: String, required: false },
   videoUrl: { type: String, required: false },
   googleDriveLink: { type: String, required: false },
-  status: { type: Boolean, required: false },
+  status: { type: String, required: false },
+  studentsWhoDidIt: { type: Array, required: false }
 });
 
 const Homework_Model = mongoose.model("Homework", homeworkSchema);
