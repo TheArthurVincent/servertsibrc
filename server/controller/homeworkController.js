@@ -52,6 +52,16 @@ const homework_done = async (req, res) => {
       tutoringHomework.status = "done";
       await tutoringHomework.save();
 
+
+
+      const timeline = {
+        date: new Date(),
+        score,
+        description: "Homework done",
+        type: "Tutoring",
+      };
+
+      student.scoreTimeline.push(timeline);
       student.monthlyScore += score;
       student.totalScore += score;
       await student.save();
@@ -62,8 +72,18 @@ const homework_done = async (req, res) => {
         groupClassHomework.studentsWhoDidIt.push(id);
         await groupClassHomework.save();
 
+
+        const timeline = {
+          date: new Date(),
+          score,
+          description: "Group class homework done",
+          type: "Group class",
+        };
+
+        student.scoreTimeline.push(timeline);
         student.monthlyScore += score;
         student.totalScore += score;
+
         await student.save();
       }
     }
@@ -75,7 +95,30 @@ const homework_done = async (req, res) => {
   }
 };
 
+
+const homework_allpending = async (req, res) => {
+
+  try {
+
+    const tutoringHomework = await Homework_Model.find();
+    tutoringHomework.map(async (tt) => {
+
+      tt.category == "tutoring" ? tutoringHomework.status = "pending" : null;
+      await tt.save();
+
+    })
+
+    res.status(200).json("success");
+
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Nenhum homework encontrado" });
+  }
+}
+
+
 module.exports = {
   homework_getAll,
-  homework_done,
+  homework_done, homework_allpending
 };

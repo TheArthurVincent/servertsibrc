@@ -9,7 +9,7 @@ const homeworkSchema = new Schema({
   description: { type: String, required: false },
   videoUrl: { type: String, required: false },
   googleDriveLink: { type: String, required: false },
-  status: { type: String, required: false },
+  status: { type: String, default: "pending", required: true },
   studentsWhoDidIt: { type: Array, required: false }
 });
 

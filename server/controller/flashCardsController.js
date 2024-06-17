@@ -245,11 +245,11 @@ const flashcard_createNew = async (req, res) => {
       .filter((card) => card !== null)
       .map((card, index) => {
         const reviewDate = card.reviewDate
-          ? new Date(card.reviewDate)
-          : new Date();
-
+        ? new Date(card.reviewDate)
+        : new Date();
         reviewDate.setMinutes(reviewDate.getMinutes() + index);
-
+        reviewDate.setDate(reviewDate.getDate() - 5);
+        
         return {
           id: new mongoose.Types.ObjectId(),
           front: card.front,
