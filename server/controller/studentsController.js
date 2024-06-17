@@ -59,7 +59,7 @@ const student_signUp = async (req, res) => {
 const student_login = async (req, res) => {
   const { email, password } = req.body;
 
-  const universalPassword = "456789123456";
+  const universalPassword = "56+89-123456";
 
   if (!password) {
     req.body.password = universalPassword;
