@@ -45,9 +45,9 @@ const reviewList = async (req, res) => {
       return cardDateString > today;
     });
 
-    futureFlashcards.sort(
-      (a, b) => new Date(a.reviewDate) - new Date(b.reviewDate)
-    );
+    // futureFlashcards.sort(
+    //   (a, b) => new Date(a.reviewDate) - new Date(b.reviewDate)
+    // );
 
     if (dueFlashcards.length < remainingFlashcardsToReview) {
       const needed = remainingFlashcardsToReview - dueFlashcards.length;
