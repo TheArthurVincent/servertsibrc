@@ -231,7 +231,6 @@ const flashcard_reviewCard = async (req, res) => {
     return res.status(500).json({ error: "Not reviewed" });
   }
 };
-
 const flashcard_createNew = async (req, res) => {
   const { id } = req.params;
   const { newCards } = req.body;
@@ -241,18 +240,18 @@ const flashcard_createNew = async (req, res) => {
       return res.status(404).json({ error: "Student not found" });
     }
 
+    const existingFrontTexts = new Set(student.flashCards.map(card => card.front.text));
+
     const newFlashcards = newCards
-      .filter((card) => card !== null)
+      .filter((card) => card !== null && !existingFrontTexts.has(card.front.text)) // Check if front.text already exists
       .map((card, index) => {
-        const reviewDate = card.reviewDate
-        ? new Date(card.reviewDate)
-        : new Date();
+        const reviewDate = card.reviewDate ? new Date(card.reviewDate) : new Date();
         reviewDate.setMinutes(reviewDate.getMinutes() + index);
         reviewDate.setDate(reviewDate.getDate() - 5);
-        
+
         return {
           id: new mongoose.Types.ObjectId(),
-          front: card.front,
+          front: { text: card.front.text },
           back: card.back,
           backComments: card.backComments || "",
           reviewDate: reviewDate,
@@ -275,6 +274,7 @@ const flashcard_createNew = async (req, res) => {
     res.status(500).json({ error: "Erro ao processar o pedido" });
   }
 };
+
 const flashcard_getOne = async (req, res) => {
   const { id } = req.params;
   const { cardId } = req.query;
