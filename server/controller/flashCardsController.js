@@ -17,6 +17,10 @@ const reviewList = async (req, res) => {
       return res.status(404).json({ error: "Student not found" });
     }
 
+    const checkDateBeforeCount = student.flashcardsDailyReviews.filter(
+      (review) => new Date(review.date).toISOString().slice(0, 10) === today
+    );
+
     const reviewsDoneTodayCount = student.flashcardsDailyReviews.filter(
       (review) => new Date(review.date).toISOString().slice(0, 10) === today
     ).length;
@@ -100,7 +104,8 @@ const reviewList = async (req, res) => {
       reviewsToday,
       currentDate,
       today,
-      remainingFlashcardsToReview
+      remainingFlashcardsToReview,
+      checkDateBeforeCount 
     });
   } catch (error) {
     console.error("Erro ao processar o pedido:", error);
