@@ -97,6 +97,9 @@ const reviewList = async (req, res) => {
       message: "Success",
       dueFlashcards: limitedDueFlashcards,
       cardsCount,
+      reviewsToday,
+      currentDate,
+      today,
     });
   } catch (error) {
     console.error("Erro ao processar o pedido:", error);
