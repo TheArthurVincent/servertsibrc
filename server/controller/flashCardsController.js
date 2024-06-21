@@ -105,8 +105,10 @@ const reviewList = async (req, res) => {
       currentDate,
       today,
       remainingFlashcardsToReview,
-      checkDateBeforeCount 
+      checkDateBeforeCount,
+      rightNow: new Date()
     });
+
   } catch (error) {
     console.error("Erro ao processar o pedido:", error);
     res.status(500).json({ error: "Erro ao processar o pedido" });
