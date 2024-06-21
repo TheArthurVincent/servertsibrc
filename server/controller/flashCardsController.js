@@ -100,6 +100,7 @@ const reviewList = async (req, res) => {
       reviewsToday,
       currentDate,
       today,
+      remainingFlashcardsToReview
     });
   } catch (error) {
     console.error("Erro ao processar o pedido:", error);
