@@ -262,7 +262,7 @@ const flashcard_createNew = async (req, res) => {
 
         return {
           id: new mongoose.Types.ObjectId(),
-          front: { text: card.front.text },
+          front: card.front,
           back: card.back,
           backComments: card.backComments || "",
           reviewDate: reviewDate,
