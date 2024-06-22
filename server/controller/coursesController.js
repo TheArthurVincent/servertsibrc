@@ -43,6 +43,8 @@ const courseClasses_postMultipleClasses = async (req, res) => {
     return res.status(400).json({ message: "Nenhuma aula fornecida" });
   }
 
+  const allClasses = await CourseClass_Model.find()
+
   try {
     const newClasses = await Promise.all(
       classes.map(async (classItem) => {
@@ -56,20 +58,14 @@ const courseClasses_postMultipleClasses = async (req, res) => {
           elements } =
           classItem;
 
-        if (!title) {
-          throw new Error("Título faltando");
-        } else if (!module) {
-          throw new Error("Módulo faltando");
-        } else if (!order) {
-          throw new Error("Ordem faltando");
-        }
-
         const moduleTitle = CourseInfo_Model.findById(module);
 
+        const theOrder = order ? order : allClasses.length + 1
+
         const newClass = new CourseClass_Model({
-          title,
+          title: title ? title : moduleTitle.title,
           module: moduleTitle.title ? moduleTitle.title : module,
-          order,
+          order: theOrder,
           description: description ? description : `${title} | ${module}`,
           image: image ? image : null,
           video: video ? video : null,
@@ -78,11 +74,10 @@ const courseClasses_postMultipleClasses = async (req, res) => {
 
         await newClass.save();
 
-        return { newClass };
+        return newClass;
       })
     );
 
-    console.log(newClasses);
     res.status(201).json(newClasses);
   } catch (error) {
     res.status(400).json({
