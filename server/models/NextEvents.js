@@ -22,9 +22,9 @@ const nextLiveClass = new Schema(
 );
 
 const NextTutoring_Model = mongoose.model("nextTutoring", nextTutoring);
-const NextLiveClass_Model = mongoose.model("nextLiveClass", nextLiveClass);
+const NextLiveGroupClass_Model = mongoose.model("nextLiveClass", nextLiveClass);
 
 module.exports = {
   NextTutoring_Model,
-  NextLiveClass_Model,
+  NextLiveGroupClass_Model,
 };

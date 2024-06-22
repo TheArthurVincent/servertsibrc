@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const { Schema } = mongoose;
 
-const classSchema = new Schema({
+const groupClassSchema = new Schema({
   classTitle: { type: String, required: true },
   description: { type: String, required: false },
   videoUrl: { type: String, required: false },
@@ -26,8 +26,8 @@ const classSchema = new Schema({
   ],
 });
 
-const Class_Model = mongoose.model("Class", classSchema);
+const GroupClass_Model = mongoose.model("Class", groupClassSchema);
 
 module.exports = {
-  Class_Model,
+  GroupClass_Model,
 };

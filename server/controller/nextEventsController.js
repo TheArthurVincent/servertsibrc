@@ -1,6 +1,6 @@
 const {
   NextTutoring_Model,
-  NextLiveClass_Model,
+  NextLiveGroupClass_Model,
 } = require("../models/NextEvents");
 const { Student_Model } = require("../models/Students");
 
@@ -131,7 +131,7 @@ const nextTutoring_seeAllTutorings = async (req, res) => {
 
 const nextLiveClass_postNext = async (req, res) => {
   const { title, meetingUrl, date, time } = req.body;
-  const nxtLive = new NextLiveClass_Model({ title, meetingUrl, date, time });
+  const nxtLive = new NextLiveGroupClass_Model({ title, meetingUrl, date, time });
   await nxtLive.save();
   res.status(201).json({ msg: "Aula registrada" });
   try {
@@ -143,7 +143,7 @@ const nextLiveClass_postNext = async (req, res) => {
 
 const nextLiveClass_getNext = async (req, res) => {
   try {
-    const nxtLive = await NextLiveClass_Model.find();
+    const nxtLive = await NextLiveGroupClass_Model.find();
     const currentDate = new Date();
     currentDate.setHours(currentDate.getHours() - 4);
 

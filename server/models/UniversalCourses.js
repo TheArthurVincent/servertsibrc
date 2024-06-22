@@ -32,4 +32,4 @@ const universalCourseSchema = new Schema(
 
 const Course_Model = mongoose.model("Course", universalCourseSchema);
 const Module_Model = mongoose.model("Module", moduleCourseSchema);
-const Class_Model = mongoose.model("Class", classCourseSchema);
+const GroupClass_Model = mongoose.model("Class", classCourseSchema);
