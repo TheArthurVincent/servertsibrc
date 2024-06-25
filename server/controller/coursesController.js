@@ -3,6 +3,7 @@ const {
   CourseInfo_Model,
   ModulesInfo_Model,
 } = require("../models/CourseClass");
+
 const courseClasses_getAll = async (req, res) => {
   try {
     const classesDetails = await CourseClass_Model.find();
@@ -11,11 +12,9 @@ const courseClasses_getAll = async (req, res) => {
       return res.status(404).json({ error: "Aulas não encontradas" });
     }
 
-    // Fetch all courses and modules
     const courses = await CourseInfo_Model.find();
     const modules = await ModulesInfo_Model.find();
 
-    // Transform classes into a nested structure grouped by course
     const transformClassesByCourse = (classes, courses, modules) => {
       const coursesMap = courses.reduce((acc, course) => {
         acc[course._id] = { ...course.toObject(), modules: {} };

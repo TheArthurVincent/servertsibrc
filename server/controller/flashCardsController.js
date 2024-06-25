@@ -2,13 +2,13 @@ const { default: mongoose } = require("mongoose");
 const { Student_Model } = require("../models/Students");
 
 let reviewsToday = 30;
-let currentDate = new Date();
-let today = currentDate.toISOString().slice(0, 10);
 
 
 
 const reviewList = async (req, res) => {
   const { id } = req.params;
+  let currentDate = new Date();
+  let today = currentDate.toISOString().slice(0, 10);
 
   try {
     const student = await Student_Model.findById(id);
@@ -103,7 +103,7 @@ const reviewList = async (req, res) => {
       cardsCount,
       reviewsToday,
       AAAcurrentDate: currentDate,
-      BBBtoday:today,
+      BBBtoday: today,
       CCCrightNow: new Date(),
       remainingFlashcardsToReview,
       checkDateBeforeCount,
@@ -118,6 +118,8 @@ const reviewList = async (req, res) => {
 const flashcard_reviewCard = async (req, res) => {
   const { id } = req.params;
   const { flashcardId, difficulty } = req.body;
+  let currentDate = new Date();
+  let today = currentDate.toISOString().slice(0, 10);
 
   try {
     const student = await Student_Model.findById(id);
@@ -243,6 +245,9 @@ const flashcard_reviewCard = async (req, res) => {
   }
 };
 const flashcard_createNew = async (req, res) => {
+  let currentDate = new Date();
+  let today = currentDate.toISOString().slice(0, 10);
+
   const { id } = req.params;
   const { newCards } = req.body;
   const student = await Student_Model.findById(id);
@@ -289,6 +294,9 @@ const flashcard_createNew = async (req, res) => {
 const flashcard_getOne = async (req, res) => {
   const { id } = req.params;
   const { cardId } = req.query;
+  let currentDate = new Date();
+  let today = currentDate.toISOString().slice(0, 10);
+
 
   try {
     const student = await Student_Model.findById(id);
@@ -313,6 +321,10 @@ const flashcard_getOne = async (req, res) => {
   }
 };
 const flashcard_updateOne = async (req, res) => {
+
+  let currentDate = new Date();
+  let today = currentDate.toISOString().slice(0, 10);
+
   const { id } = req.params;
   const { cardId } = req.query;
   const { newLGBack, newLGFront, newFront, newBack, newBackComments } = req.body;
@@ -400,6 +412,10 @@ const flashcard_deleteCard = async (req, res) => {
 
 
 const allCardsList = async (req, res) => {
+
+  let currentDate = new Date();
+  let today = currentDate.toISOString().slice(0, 10);
+
   const { id } = req.params;
 
   try {
