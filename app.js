@@ -53,8 +53,6 @@ const {
   groupClasses_editOneClass,
   groupClasses_getClassesFromOneModule,
   groupClasses_deleteOneClass,
-  groupClasses_getCoursesTitles,
-  groupClasses_getOneCourse,
   groupClasses_getAllObjects,
 } = require("./server/controller/groupClassesController");
 const {
@@ -78,7 +76,6 @@ const {
   events_seeNext,
   event_reminderEvent,
   event_reminderEventAutomatic,
-  event_reminderGroupClassAutomatic,
 } = require("./server/controller/eventsController");
 const { sendEmail } = require("./server/useful/sendpulse");
 const {
@@ -90,8 +87,17 @@ const {
   flashcard_getOne,
   allCardsList,
 } = require("./server/controller/flashCardsController");
-const { homework_getAll, homework_done, homework_allpending } = require("./server/controller/homeworkController");
-const { courseClasses_postMultipleClasses, courseClasses_getAll, courseClasses_getOne, courseClasses_postNewCourse } = require("./server/controller/coursesController");
+const {
+  homework_getAll,
+  homework_done,
+} = require("./server/controller/homeworkController");
+const {
+  courseClasses_postMultipleClasses,
+  courseClasses_getAll,
+  courseClasses_getOne,
+  courseClasses_postNewCourse,
+  courseClasses_postNewModule,
+} = require("./server/controller/coursesController");
 
 database();
 app.use(express.json());
@@ -157,6 +163,7 @@ app.put(`${mainroute}/homework/:id`, homework_done);
 // * Courses Management *
 app.post(`${mainroute}/courseclasses`, courseClasses_postMultipleClasses);
 app.post(`${mainroute}/course`, courseClasses_postNewCourse);
+app.post(`${mainroute}/module`, courseClasses_postNewModule)
 
 app.get(`${mainroute}/courses`, courseClasses_getAll);
 app.get(`${mainroute}/course/:id`, courseClasses_getOne);
@@ -164,9 +171,17 @@ app.get(`${mainroute}/course/:id`, courseClasses_getOne);
 // * group classes *
 app.post(`${mainroute}/groupclass`, loggedInADM, groupClasses_postOneClass);
 app.put(`${mainroute}/groupclass/:id`, loggedInADM, groupClasses_editOneClass);
-app.get(`${mainroute}/groupclass/`, loggedIn, groupClasses_getClassesFromOneModule);
+app.get(
+  `${mainroute}/groupclass/`,
+  loggedIn,
+  groupClasses_getClassesFromOneModule
+);
 app.get(`${mainroute}/groupclass/:id`, loggedIn, groupClasses_getOne);
-app.delete(`${mainroute}/groupclass/:id`, loggedInADM, groupClasses_deleteOneClass);
+app.delete(
+  `${mainroute}/groupclass/:id`,
+  loggedInADM,
+  groupClasses_deleteOneClass
+);
 
 // ** NEXT CLASSES **
 app.get(`${mainroute}/nexttutoring`, loggedIn, nextTutoring_seeAllTutorings);
