@@ -102,11 +102,11 @@ const reviewList = async (req, res) => {
       dueFlashcards: limitedDueFlashcards,
       cardsCount,
       reviewsToday,
-      AAAcurrentDate,
-      BBBtoday,
+      AAAcurrentDate: currentDate,
+      BBBtoday:today,
+      CCCrightNow: new Date(),
       remainingFlashcardsToReview,
       checkDateBeforeCount,
-      CCCrightNow: new Date()
     });
 
   } catch (error) {
