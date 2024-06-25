@@ -4,7 +4,6 @@ const { Schema } = mongoose;
 const courseClass = new Schema({
   title: { type: String, required: true },
   module: { type: String, required: true },
-  moduleOrder: { type: Number, required: true },
   courseId: { type: String, required: true },
   order: { type: Number, required: true },
   image: { type: String, required: false },
@@ -14,6 +13,7 @@ const courseClass = new Schema({
 });
 const courseInfo = new Schema({
   title: { type: String, required: true, unique: true },
+  order: { type: Number, required: true },
   image: { type: String, required: false },
   studentsWhoHaveAccessToIt: { type: Array, required: false },
 });
