@@ -5,6 +5,7 @@ const {
 } = require("../models/CourseClass");
 
 const courseClasses_getAll = async (req, res) => {
+  const {studentId} = req.params
   try {
     const classesDetails = await CourseClass_Model.find();
 

@@ -165,7 +165,7 @@ app.post(`${mainroute}/courseclasses`, courseClasses_postMultipleClasses);
 app.post(`${mainroute}/course`, courseClasses_postNewCourse);
 app.post(`${mainroute}/module`, courseClasses_postNewModule)
 
-app.get(`${mainroute}/courses`, courseClasses_getAll);
+app.get(`${mainroute}/courses/:studentId`, courseClasses_getAll);
 app.get(`${mainroute}/course/:id`, courseClasses_getOne);
 
 // * group classes *
