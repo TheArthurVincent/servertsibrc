@@ -5,36 +5,43 @@ const {
 } = require("../models/CourseClass");
 
 const courseClasses_getAll = async (req, res) => {
-  const {studentId} = req.params
+  const { studentId } = req.params
   try {
     const classesDetails = await CourseClass_Model.find();
+    const courses = await CourseInfo_Model.find();
+    const coursesYes = await CourseInfo_Model.find({ studentsWhoHaveAccessToIt: studentId });
+    const coursesNo = await CourseInfo_Model.find({ studentsWhoHaveAccessToIt: { $ne: studentId } });
+
+    const modules = await ModulesInfo_Model.find();
 
     if (!classesDetails) {
       return res.status(404).json({ error: "Aulas não encontradas" });
     }
 
-    const courses = await CourseInfo_Model.find();
-    const modules = await ModulesInfo_Model.find();
-
-    const transformClassesByCourse = (classes, courses, modules) => {
+    const transformAuthClassesByCourse = (classes, courses, modules) => {
       const coursesMap = courses.reduce((acc, course) => {
         acc[course._id] = { ...course.toObject(), modules: {} };
         return acc;
       }, {});
-
+    
       const modulesMap = modules.reduce((acc, module) => {
         acc[module._id] = { title: module.title, order: module.order };
         return acc;
       }, {});
-
+    
       classes.forEach((lesson) => {
         const course = coursesMap[lesson.courseId];
+        if (!course) return; // Verifica se o curso existe
+    
+        const moduleInfo = modulesMap[lesson.module];
+        if (!moduleInfo) return; // Verifica se o módulo existe
+    
         if (!course.modules[lesson.module]) {
           course.modules[lesson.module] = [];
         }
         course.modules[lesson.module].push(lesson);
       });
-
+    
       const sortModulesByOrder = (modules) => {
         return Object.entries(modules)
           .sort((a, b) => modulesMap[a[0]].order - modulesMap[b[0]].order)
@@ -43,22 +50,68 @@ const courseClasses_getAll = async (req, res) => {
             lessons,
           }));
       };
-
+    
       return Object.values(coursesMap).map((course) => ({
         ...course,
         modules: sortModulesByOrder(course.modules),
       }));
     };
+    const transformNonAuthClassesByCourse = (classes, courses, modules) => {
+      const coursesMap = courses.reduce((acc, course) => {
+        acc[course._id] = { ...course.toObject(), modules: {} };
+        return acc;
+      }, {});
+    
+      const modulesMap = modules.reduce((acc, module) => {
+        acc[module._id] = { title: module.title, order: module.order };
+        return acc;
+      }, {});
+    
+      classes.forEach((lesson) => {
+        const course = coursesMap[lesson.courseId];
+        if (!course) return; // Verifica se o curso existe
+    
+        const moduleInfo = modulesMap[lesson.module];
+        if (!moduleInfo) return; // Verifica se o módulo existe
+    
+        if (!course.modules[lesson.module]) {
+          course.modules[lesson.module] = [];
+        }
+        // Adiciona um placeholder para aulas não autorizadas
+        course.modules[lesson.module].push({ title: "No Access" });
+      });
+    
+      const sortModulesByOrder = (modules) => {
+        return Object.entries(modules)
+          .sort((a, b) => modulesMap[a[0]].order - modulesMap[b[0]].order)
+          .map(([moduleId, lessons]) => ({
+            module: modulesMap[moduleId]?.title || "Título não encontrado",
+            lessons,
+          }));
+      };
+    
+      return Object.values(coursesMap).map((course) => ({
+        ...course,
+        modules: sortModulesByOrder(course.modules),
+      }));
+    };
+    
 
-    const groupedClasses = transformClassesByCourse(
+    const groupedAuthClasses = transformAuthClassesByCourse(
       classesDetails,
-      courses,
+      coursesYes,
+      modules
+    );
+    const groupedNonAuthClasses = transformNonAuthClassesByCourse(
+      classesDetails,
+      coursesNo,
       modules
     );
 
     res.status(200).json({
       totalOfClasses: classesDetails.length,
-      courses: groupedClasses,
+      courses: groupedAuthClasses,
+      coursesNonAuth: groupedNonAuthClasses,
     });
   } catch (error) {
     console.error("Erro ao obter os detalhes da aula:", error);
@@ -106,29 +159,23 @@ const courseClasses_postMultipleClasses = async (req, res) => {
           courseId,
         } = classItem;
 
-        // var theModule = await ModulesInfo_Model.findById(module);
-        // var theCourse = await ModulesInfo_Model.findById(courseId);
+        const theOrder = order ? order : allClasses.length + 1;
 
-        // if (!theModule || !theCourse) {
-        //   return;
-        // } 
-          const theOrder = order ? order : allClasses.length + 1;
+        const newClass = new CourseClass_Model({
+          title,
+          module,
+          order: theOrder,
+          courseId,
+          description: description ? description : `${title} | ${module}`,
+          image: image ? image : null,
+          video: video ? video : null,
+          elements: elements ? elements : null,
+        });
 
-          const newClass = new CourseClass_Model({
-            title,
-            module,
-            order: theOrder,
-            courseId,
-            description: description ? description : `${title} | ${module}`,
-            image: image ? image : null,
-            video: video ? video : null,
-            elements: elements ? elements : null,
-          });
+        await newClass.save();
 
-          await newClass.save();
+        return newClass;
 
-          return newClass;
-        
       })
     );
 
