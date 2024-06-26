@@ -15,8 +15,6 @@ const student_signUp = async (req, res) => {
     dateOfBirth,
     doc,
     address,
-    // ankiEmail,
-    // ankiPassword,
     password,
   } = req.body;
   const hashedPassword = bcrypt.hashSync(password, 10);

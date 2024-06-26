@@ -23,34 +23,34 @@ const courseClasses_getAll = async (req, res) => {
         acc[course._id] = { ...course.toObject(), modules: {} };
         return acc;
       }, {});
-    
+
       const modulesMap = modules.reduce((acc, module) => {
         acc[module._id] = { title: module.title, order: module.order };
         return acc;
       }, {});
-    
+
       classes.forEach((lesson) => {
         const course = coursesMap[lesson.courseId];
-        if (!course) return; // Verifica se o curso existe
-    
+        if (!course) return;
+
         const moduleInfo = modulesMap[lesson.module];
-        if (!moduleInfo) return; // Verifica se o módulo existe
-    
+        if (!moduleInfo) return;
+
         if (!course.modules[lesson.module]) {
           course.modules[lesson.module] = [];
         }
         course.modules[lesson.module].push(lesson);
       });
-    
+
       const sortModulesByOrder = (modules) => {
         return Object.entries(modules)
           .sort((a, b) => modulesMap[a[0]].order - modulesMap[b[0]].order)
           .map(([moduleId, lessons]) => ({
             module: modulesMap[moduleId]?.title || "Título não encontrado",
-            lessons,
+            lessons: lessons.sort((a, b) => a.order - b.order)
           }));
       };
-    
+
       return Object.values(coursesMap).map((course) => ({
         ...course,
         modules: sortModulesByOrder(course.modules),
@@ -61,26 +61,25 @@ const courseClasses_getAll = async (req, res) => {
         acc[course._id] = { ...course.toObject(), modules: {} };
         return acc;
       }, {});
-    
+
       const modulesMap = modules.reduce((acc, module) => {
         acc[module._id] = { title: module.title, order: module.order };
         return acc;
       }, {});
-    
+
       classes.forEach((lesson) => {
         const course = coursesMap[lesson.courseId];
-        if (!course) return; // Verifica se o curso existe
-    
+        if (!course) return;
+
         const moduleInfo = modulesMap[lesson.module];
-        if (!moduleInfo) return; // Verifica se o módulo existe
-    
+        if (!moduleInfo) return;
+
         if (!course.modules[lesson.module]) {
           course.modules[lesson.module] = [];
         }
-        // Adiciona um placeholder para aulas não autorizadas
         course.modules[lesson.module].push({ title: "No Access" });
       });
-    
+
       const sortModulesByOrder = (modules) => {
         return Object.entries(modules)
           .sort((a, b) => modulesMap[a[0]].order - modulesMap[b[0]].order)
@@ -89,13 +88,13 @@ const courseClasses_getAll = async (req, res) => {
             lessons,
           }));
       };
-    
+
       return Object.values(coursesMap).map((course) => ({
         ...course,
         modules: sortModulesByOrder(course.modules),
       }));
     };
-    
+
 
     const groupedAuthClasses = transformAuthClassesByCourse(
       classesDetails,
