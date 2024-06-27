@@ -2,6 +2,7 @@ const { Student_Model } = require("../models/Students");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const { promisify } = require("util");
+const { HistoryRanking_Model } = require("../models/HistoryRanking");
 
 // Login stuff
 
@@ -99,9 +100,7 @@ const student_login = async (req, res) => {
       googleDriveLink: student.googleDriveLink,
     };
 
-    res
-      .status(200)
-      .json({ token: token, loggedIn: loggedIn });
+    res.status(200).json({ token: token, loggedIn: loggedIn });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: error, e: "Ocorreu um erro ao fazer login" });
@@ -297,7 +296,6 @@ const students_getOne = async (req, res) => {
       return res.status(404).json({ message: "Aluno não encontrado" });
     }
 
-
     const formattedStudentData = {
       id: student._id,
       username: student.username,
@@ -455,7 +453,6 @@ const signup = async (req, res) => {
   }
 };
 
-
 const student_editGeneralData = async (req, res) => {
   const {
     name,
@@ -464,8 +461,6 @@ const student_editGeneralData = async (req, res) => {
     email,
     fee,
     address,
-    // ankiEmail,
-    // ankiPassword,
     weeklyClasses,
     googleDriveLink,
     picture,
@@ -474,7 +469,7 @@ const student_editGeneralData = async (req, res) => {
 
   const numberFee = parseInt(fee);
   try {
-    const { id } = req.params
+    const { id } = req.params;
     const studentToEdit = await Student_Model.findById(id);
     if (!studentToEdit) {
       return res.status(404).json({ message: "Aluno não encontrado" });
@@ -502,8 +497,6 @@ const student_editGeneralData = async (req, res) => {
       studentToEdit.lastname = lastname;
       studentToEdit.username = username;
       studentToEdit.email = email;
-      // studentToEdit.ankiEmail = ankiEmail;
-      // studentToEdit.ankiPassword = ankiPassword;
       studentToEdit.googleDriveLink = googleDriveLink;
       studentToEdit.weeklyClasses = weeklyClasses;
       studentToEdit.picture = picture;
@@ -737,6 +730,25 @@ const student_resetMonth = async (req, res) => {
   }
 };
 
+
+const student_newRankingItem = async (req, res) => {
+  const { scoreMonth } = req.body;
+  try {
+    if (scoreMonth) {
+      // const score = new HistoryRanking_Model(scoreMonth);
+      // score.save();
+
+      console.log(scoreMonth)
+      res.status(200).json("Sucesso");
+    } else {
+      throw new Error();
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: error, e: "Ocorreu um erro " });
+  }
+};
+
 module.exports = {
   // Security
   loggedIn,
@@ -745,6 +757,7 @@ module.exports = {
   student_postOne,
   student_signUp,
   signup,
+  student_newRankingItem,
   //R
   students_getAll,
   students_getOneFullName,
