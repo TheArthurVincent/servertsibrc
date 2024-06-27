@@ -25,6 +25,7 @@ const {
   students_getTotalAllScores,
   student_signUp,
   student_newRankingItem,
+  student_getallRankingItem,
 } = require("./server/controller/studentsController");
 const {
   blogPosts_getAll,
@@ -199,6 +200,7 @@ app.get(
   students_getTotalAllScores
 );
 app.post(`${mainroute}/newitemhistory`, student_newRankingItem);
+app.get(`${mainroute}/newitemhistory`, student_getallRankingItem);
 
 
 app.get(`${mainroute}/score/:id`, loggedIn, student_getScore);

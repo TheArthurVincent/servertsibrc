@@ -99,7 +99,6 @@ const reviewList = async (req, res) => {
 
     return res.status(200).json({
       message: "Success",
-      message2: "teste gustavo",
       dueFlashcards: limitedDueFlashcards,
       cardsCount,
       reviewsToday,
@@ -173,7 +172,7 @@ const flashcard_reviewCard = async (req, res) => {
     }
 
     const reviewsDoneTodayCount = student.flashcardsDailyReviews.filter(
-      (review) => review.date.toISOString().slice(0, 10) === today
+      (review) => { if (review.date.toISOString()) review.date.toISOString().slice(0, 10) === today }
     ).length;
 
     const uniqueTimeLineItem = student.scoreTimeline.filter(

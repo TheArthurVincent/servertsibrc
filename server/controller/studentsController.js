@@ -735,12 +735,11 @@ const student_newRankingItem = async (req, res) => {
   const { scoreMonth } = req.body;
   try {
     if (scoreMonth) {
-      // const score = new HistoryRanking_Model(scoreMonth);
-      // score.save();
-
-      console.log(scoreMonth)
-      res.status(200).json("Sucesso");
+      const score = new HistoryRanking_Model({ score: scoreMonth });
+      score.save();
+      res.status(200).json({ score, message: "Sucesso" });
     } else {
+      res.status(500).json({ error: error, e: "Ocorreu um erro " });
       throw new Error();
     }
   } catch (error) {
@@ -748,6 +747,21 @@ const student_newRankingItem = async (req, res) => {
     res.status(500).json({ error: error, e: "Ocorreu um erro " });
   }
 };
+
+
+
+const student_getallRankingItem = async (req, res) => {
+  try {
+    const scoreMonth = (await HistoryRanking_Model.find());
+    res.status(200).json({ scoreMonth: scoreMonth.reverse(), message: "Sucesso" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: error, e: "Ocorreu um erro " });
+  }
+};
+
+
+
 
 module.exports = {
   // Security
@@ -759,7 +773,7 @@ module.exports = {
   signup,
   student_newRankingItem,
   //R
-  students_getAll,
+  students_getAll, student_getallRankingItem,
   students_getOneFullName,
   students_getAllScores,
   students_getTotalAllScores,
