@@ -99,6 +99,7 @@ const reviewList = async (req, res) => {
 
     return res.status(200).json({
       message: "Success",
+      message2: "teste gustavo",
       dueFlashcards: limitedDueFlashcards,
       cardsCount,
       reviewsToday,
