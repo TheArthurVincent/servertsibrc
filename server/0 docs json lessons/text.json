@@ -1,0 +1,6 @@
+{
+    "subtitle": "Text",
+    "order": 1,
+    "text": "<h2>Choose the Correct Article</h2> <ol> <li class='exercise'><span>I saw ____ elephant at the zoo.</span><select> <option value=''>Select</option> <option value='the'>the</option> <option value='a'>a</option> <option value='an'>an</option></select></li> <li class='exercise'><span>____ sun rises in the east.</span><select> <option value=''>Select</option> <option value='the'>the</option> <option value='a'>a</option> <option value='an'>an</option></select></li> <li class='exercise'><span>She bought ____ apple from the market.</span><select> <option value=''>Select</option> <option value='the'>the</option> <option value='a'>a</option> <option value='an'>an</option></select></li> <li class='exercise'><span>He is ____ best player on the team.</span><select> <option value=''>Select</option> <option value='the'>the</option> <option value='a'>a</option> <option value='an'>an</option></select></li> <li class='exercise'><span>We saw ____ movie last night.</span><select> <option value=''>Select</option> <option value='the'>the</option> <option value='a'>a</option> <option value='an'>an</option></select></li> </ol>",
+    "type": "text"
+}

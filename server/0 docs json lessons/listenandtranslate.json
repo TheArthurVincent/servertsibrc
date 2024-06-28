@@ -1,0 +1,13 @@
+{
+    "subtitle": "Practice Vocabulary",
+    "comments": "Vocabulário adicional para prática.",
+    "order": 0,
+    "grid": 3,
+    "type": "sentences",
+    "sentences": [
+        {
+            "english": "Board game",
+            "portuguese": "Jogo de tabuleiro"
+        }
+    ]
+}

@@ -1,0 +1,11 @@
+{
+  "subtitle": "Dialogue Practice #2",
+  "order": 3,
+  "type": "dialogue",
+  "dialogue": [
+    "Mr. Johnson, can you provide an overview of our annual revenue?",
+    "Of course Ms. Lee. Our annual revenue has increased by 15%.",
+    "That's impressive! Dr. Brown, what contributed to this growth?",
+    "The main factors were our new product lines and an expanded market reach."
+  ]
+}

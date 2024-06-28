@@ -1,0 +1,64 @@
+{
+    "subtitle": "Select exercise",
+    "order": 1,
+    "type": "selectexercise",
+    "options": [
+        {
+            "question": "I saw ____ elephant at the zoo.",
+            "options": [
+                "an",
+                "a",
+                "the"
+            ],
+            "correct": "an",
+            "answer": "Eu vi um elefante no zoológico",
+            "studentsWhoDidIt": [
+                "ewfuhifuweiufehiewbc"
+            ]
+        },
+        {
+            "question": "____ sun rises in the east.",
+            "options": [
+                "the",
+                "a",
+                "an"
+            ],
+            "correct": "the",
+            "answer": "O sol nasce no leste",
+            "studentsWhoDidIt": []
+        },
+        {
+            "question": "She bought ____ apple from the market.",
+            "options": [
+                "an",
+                "a",
+                "the"
+            ],
+            "correct": "an",
+            "answer": "Ela comprou uma maçã no mercado",
+            "studentsWhoDidIt": []
+        },
+        {
+            "question": "He is ____ best player on the team.",
+            "options": [
+                "the",
+                "a",
+                "an"
+            ],
+            "correct": "the",
+            "answer": "Ele é o melhor jogador do time",
+            "studentsWhoDidIt": []
+        },
+        {
+            "question": "We saw ____ movie last night.",
+            "options": [
+                "a",
+                "the",
+                "an"
+            ],
+            "correct": "a",
+            "answer": "Nós vimos um filme ontem à noite",
+            "studentsWhoDidIt": []
+        }
+    ]
+}
