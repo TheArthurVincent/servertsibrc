@@ -1,9 +1,7 @@
 const { default: mongoose } = require("mongoose");
 const { Student_Model } = require("../models/Students");
 
-let reviewsToday = 30;
-
-
+let reviewsToday = 40;
 
 const reviewList = async (req, res) => {
   const { id } = req.params;
@@ -67,34 +65,16 @@ const reviewList = async (req, res) => {
       remainingFlashcardsToReview
     );
 
-    const newCardsCount = limitedDueFlashcards.filter(
-      (card) => card.isNew
-    ).length;
-    const reviewedCardsCount = limitedDueFlashcards.filter(
-      (card) => !card.isNew
-    ).length;
+    const newCardsCount = limitedDueFlashcards.filter((card) => card.isNew).length;
+    const reviewedCardsCount = limitedDueFlashcards.filter((card) => !card.isNew).length;
 
-    const cardsCount = {
-      newCardsCount,
-      reviewedCardsCount,
-      remainingFlashcardsToReview,
-    };
+    const cardsCount = { newCardsCount, reviewedCardsCount, remainingFlashcardsToReview };
 
     limitedDueFlashcards.forEach((card) => {
       const currentDateClone = new Date(currentDate);
-      card.hard = new Date(
-        currentDateClone.setHours(currentDateClone.getHours() + 23)
-      );
-      card.medium = new Date(
-        currentDateClone.setHours(
-          currentDateClone.getHours() + 24 * card.reviewRate * 1.5
-        )
-      );
-      card.easy = new Date(
-        currentDateClone.setHours(
-          currentDateClone.getHours() + 24 * card.reviewRate * 2
-        )
-      );
+      card.hard = new Date(currentDateClone.setHours(currentDateClone.getHours() + 10));
+      card.medium = new Date(currentDateClone.setHours(currentDateClone.getHours() + 24 * card.reviewRate * 1.5));
+      card.easy = new Date(currentDateClone.setHours(currentDateClone.getHours() + 24 * card.reviewRate * 2));
     });
 
     return res.status(200).json({
@@ -148,7 +128,7 @@ const flashcard_reviewCard = async (req, res) => {
         break;
       case "hard":
         flashcard.reviewRate = 1.5;
-        hoursToAdd = 23; // 1.5 days to hours
+        hoursToAdd = 24; // 1.5 days to hours
         flashcard.reviewDate = new Date(
           currentDateClone.setHours(currentDateClone.getHours() + hoursToAdd)
         );
@@ -182,24 +162,22 @@ const flashcard_reviewCard = async (req, res) => {
     const scoreForDailyReviews = 80;
     let remaining = reviewsToday - 1;
 
-    if (
-      difficulty !== "veryhard" &&
-      reviewsDoneTodayCount === remaining &&
-      uniqueTimeLineItem === 0
-    ) {
-      student.totalScore += scoreForDailyReviews;
-      student.monthlyScore += scoreForDailyReviews;
-
-      const timeline = {
-        date: new Date(),
-        unique: true,
-        score: scoreForDailyReviews,
-        description: "Flashcards do dia totalmente revisados",
-        type: "Anki",
-      };
-
-      student.scoreTimeline.push(timeline);
-    }
+    // if (
+    //   difficulty !== "veryhard" &&
+    //   reviewsDoneTodayCount === remaining &&
+    //   uniqueTimeLineItem === 0
+    // ) {
+    //   student.totalScore += scoreForDailyReviews;
+    //   student.monthlyScore += scoreForDailyReviews;
+    //   const timeline = {
+    //     date: new Date(),
+    //     unique: true,
+    //     score: scoreForDailyReviews,
+    //     description: "Flashcards do dia totalmente revisados",
+    //     type: "Anki",
+    //   };
+    //   student.scoreTimeline.push(timeline);
+    // }
 
     student.flashCards = student.flashCards.filter(
       (card) => card.id.toString() !== flashcardId
@@ -223,15 +201,17 @@ const flashcard_reviewCard = async (req, res) => {
         card: flashcard.front.text,
       });
 
+      let scoreFor1Card = 5;
+
       const timelineCard = {
         date: new Date(),
-        score: 3,
-        description: `3 Pontos por ter revisado o flashcard ${flashcard.front.text}`,
+        score: scoreFor1Card,
+        description: `${scoreFor1Card} Pontos por ter revisado o flashcard ${flashcard.front.text}`,
         type: "Anki",
       };
 
-      student.totalScore += 3;
-      student.monthlyScore += 3;
+      student.totalScore += scoreFor1Card;
+      student.monthlyScore += scoreFor1Card;
       student.scoreTimeline.push(timelineCard);
 
     }
@@ -409,7 +389,6 @@ const flashcard_deleteCard = async (req, res) => {
     res.status(500).json({ error: "Erro ao processar o pedido" });
   }
 };
-
 
 const allCardsList = async (req, res) => {
 

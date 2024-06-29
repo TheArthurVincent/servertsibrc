@@ -1,64 +1,33 @@
 {
-    "subtitle": "Select exercise",
-    "order": 1,
+    "subtitle": "What is the right question word to use?",
+    "order": 2,
     "type": "selectexercise",
     "options": [
         {
-            "question": "I saw ____ elephant at the zoo.",
+            "question": "Pode ser que a gente vá na festa amanhã.",
+            "audio": "",
             "options": [
-                "an",
-                "a",
-                "the"
-            ],
-            "correct": "an",
-            "answer": "Eu vi um elefante no zoológico",
-            "studentsWhoDidIt": [
-                "ewfuhifuweiufehiewbc"
+                {
+                    "option": "We can go to the party tomorrow.",
+                    "status": "right",
+                    "reason": "can versa sobre a habilidade"
+                },
+                {
+                    "option": "We might go to the party tomorrow.",
+                    "status": "right",
+                    "reason": "Might versa sobre a possibilidade de algo acontecer"
+                },
+                {
+                    "option": "We could go to the party tomorrow.",
+                    "status": "right",
+                    "reason": "could significa 'poderia'"
+                },
+                {
+                    "option": "We will go to the party tomorrow.",
+                    "status": "right",
+                    "reason": "will versa sobre futuro"
+                }
             ]
-        },
-        {
-            "question": "____ sun rises in the east.",
-            "options": [
-                "the",
-                "a",
-                "an"
-            ],
-            "correct": "the",
-            "answer": "O sol nasce no leste",
-            "studentsWhoDidIt": []
-        },
-        {
-            "question": "She bought ____ apple from the market.",
-            "options": [
-                "an",
-                "a",
-                "the"
-            ],
-            "correct": "an",
-            "answer": "Ela comprou uma maçã no mercado",
-            "studentsWhoDidIt": []
-        },
-        {
-            "question": "He is ____ best player on the team.",
-            "options": [
-                "the",
-                "a",
-                "an"
-            ],
-            "correct": "the",
-            "answer": "Ele é o melhor jogador do time",
-            "studentsWhoDidIt": []
-        },
-        {
-            "question": "We saw ____ movie last night.",
-            "options": [
-                "a",
-                "the",
-                "an"
-            ],
-            "correct": "a",
-            "answer": "Nós vimos um filme ontem à noite",
-            "studentsWhoDidIt": []
         }
     ]
 }

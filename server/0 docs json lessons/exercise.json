@@ -1,6 +1,6 @@
 {
-    "subtitle": "Questions",
-    "comments": "Tente responder estas perguntas usando o que você aprendeu.",
+    "subtitle": "Altere as frases abaixo conforme a alteração sugerida",
+    "comments": "Exemplo: Martha is my sister, and she is here with me. / Martha é minha irmã, e ela está aqui comigo",
     "order": 2,
     "type": "exercise",
     "items": [

@@ -29,18 +29,22 @@ const tutoring_postOne = async (req, res) => {
         let newDateString = date.toISOString().split('T')[0];
         return newDateString;
       }
+      if (description) {
 
+        const newHomework = new Homework_Model({
+          assignmentDate: addOneDay(date),
+          dueDate: addOneDay(dueDate),
+          videoUrl,
+          studentID,
+          category: "tutoring",
+          googleDriveLink: attachments,
+          description,
+        });
 
-      const newHomework = new Homework_Model({
-        assignmentDate: addOneDay(date),
-        dueDate: addOneDay(dueDate),
-        videoUrl,
-        studentID,
-        category: "tutoring",
-        googleDriveLink: attachments,
-        description,
-      });
-
+        await newHomework.save()
+      } else {
+        null
+      }
 
       // Recuperar informações do aluno
       const student = await Student_Model.findById(studentID);
@@ -75,7 +79,6 @@ const tutoring_postOne = async (req, res) => {
 
       // Salvar a tutoria
       await newTutoring.save();
-      await newHomework.save()
       savedTutorings.push(newTutoring);
     }
 
