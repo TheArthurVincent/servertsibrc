@@ -10,6 +10,7 @@ const courseClass = new Schema({
   description: { type: String, required: false },
   video: { type: String, required: false },
   elements: { type: Array, required: false },
+  comments: { type: String, required: false },
 });
 const courseInfo = new Schema({
   title: { type: String, required: true, unique: true },
