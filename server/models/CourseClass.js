@@ -1,6 +1,9 @@
 const mongoose = require("mongoose");
 const { Schema } = mongoose;
 
+
+
+
 const courseClass = new Schema({
   title: { type: String, required: true },
   module: { type: String, required: true },
@@ -11,7 +14,10 @@ const courseClass = new Schema({
   video: { type: String, required: false },
   elements: { type: Array, required: false },
   comments: { type: String, required: false },
+  studentsComments: { type: Array, required: false },
 });
+
+
 const courseInfo = new Schema({
   title: { type: String, required: true, unique: true },
   order: { type: Number, required: true },

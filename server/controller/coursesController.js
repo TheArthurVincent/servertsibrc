@@ -8,7 +8,6 @@ const courseClasses_getAll = async (req, res) => {
   const { studentId } = req.params
   try {
     const classesDetails = await CourseClass_Model.find();
-    const courses = await CourseInfo_Model.find();
     const coursesYes = await CourseInfo_Model.find({ studentsWhoHaveAccessToIt: studentId });
     const coursesNo = await CourseInfo_Model.find({ studentsWhoHaveAccessToIt: { $ne: studentId } });
 
