@@ -29,7 +29,7 @@ const tutoring_postOne = async (req, res) => {
         let newDateString = date.toISOString().split('T')[0];
         return newDateString;
       }
-      if (description) {
+      if (description && dueDate) {
 
         const newHomework = new Homework_Model({
           assignmentDate: addOneDay(date),
@@ -46,11 +46,9 @@ const tutoring_postOne = async (req, res) => {
         null
       }
 
-      // Recuperar informações do aluno
       const student = await Student_Model.findById(studentID);
       const { name, lastname, email } = student;
 
-      // Renderizar o template EJS
       const templatePath = path.join(__dirname, "../email/postedClass.ejs");
       ejs.renderFile(
         templatePath,
