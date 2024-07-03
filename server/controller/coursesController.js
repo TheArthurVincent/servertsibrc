@@ -164,7 +164,7 @@ const courseClasses_postMultipleClasses = async (req, res) => {
           module,
           order: theOrder,
           courseId,
-          description: description ? description : `${title} | ${module}`,
+          description: description ? description : `This class is about ${title}`,
           image: image ? image : null,
           video: video ? video : null,
           elements: elements ? elements : null,
