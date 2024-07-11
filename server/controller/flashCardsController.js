@@ -99,7 +99,7 @@ const flashcard_reviewCard = async (req, res) => {
   const { id } = req.params;
   const { flashcardId, difficulty } = req.body;
   let currentDate = new Date();
-  let today = currentDate.toISOString().slice(0, 10);
+  // let today = currentDate.toISOString().slice(0, 10);
 
   try {
     const student = await Student_Model.findById(id);
@@ -151,16 +151,16 @@ const flashcard_reviewCard = async (req, res) => {
         return res.status(400).json({ error: "Invalid difficulty level" });
     }
 
-    const reviewsDoneTodayCount = student.flashcardsDailyReviews.filter(
-      (review) => { if (review.date.toISOString()) review.date.toISOString().slice(0, 10) === today }
-    ).length;
+    // const reviewsDoneTodayCount = student.flashcardsDailyReviews.filter(
+    //   (review) => { if (review.date.toISOString()) review.date.toISOString().slice(0, 10) === today }
+    // ).length;
 
-    const uniqueTimeLineItem = student.scoreTimeline.filter(
-      (item) => item.unique == true && item.date == currentDate
-    ).length;
+    // const uniqueTimeLineItem = student.scoreTimeline.filter(
+    //   (item) => item.unique == true && item.date == currentDate
+    // ).length;
 
-    const scoreForDailyReviews = 80;
-    let remaining = reviewsToday - 1;
+    // const scoreForDailyReviews = 80;
+    // let remaining = reviewsToday - 1;
 
     // if (
     //   difficulty !== "veryhard" &&
