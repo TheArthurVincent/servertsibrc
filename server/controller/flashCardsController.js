@@ -47,10 +47,6 @@ const reviewList = async (req, res) => {
       return cardDateString > today;
     });
 
-    // futureFlashcards.sort(
-    //   (a, b) => new Date(a.reviewDate) - new Date(b.reviewDate)
-    // );
-
     if (dueFlashcards.length < remainingFlashcardsToReview) {
       const needed = remainingFlashcardsToReview - dueFlashcards.length;
       dueFlashcards = dueFlashcards.concat(futureFlashcards.slice(0, needed));
@@ -65,16 +61,34 @@ const reviewList = async (req, res) => {
       remainingFlashcardsToReview
     );
 
-    const newCardsCount = limitedDueFlashcards.filter((card) => card.isNew).length;
-    const reviewedCardsCount = limitedDueFlashcards.filter((card) => !card.isNew).length;
+    const newCardsCount = limitedDueFlashcards.filter(
+      (card) => card.isNew
+    ).length;
+    const reviewedCardsCount = limitedDueFlashcards.filter(
+      (card) => !card.isNew
+    ).length;
 
-    const cardsCount = { newCardsCount, reviewedCardsCount, remainingFlashcardsToReview };
+    const cardsCount = {
+      newCardsCount,
+      reviewedCardsCount,
+      remainingFlashcardsToReview,
+    };
 
     limitedDueFlashcards.forEach((card) => {
       const currentDateClone = new Date(currentDate);
-      card.hard = new Date(currentDateClone.setHours(currentDateClone.getHours() + 10));
-      card.medium = new Date(currentDateClone.setHours(currentDateClone.getHours() + 24 * card.reviewRate * 1.5));
-      card.easy = new Date(currentDateClone.setHours(currentDateClone.getHours() + 24 * card.reviewRate * 2));
+      card.hard = new Date(
+        currentDateClone.setHours(currentDateClone.getHours() + 10)
+      );
+      card.medium = new Date(
+        currentDateClone.setHours(
+          currentDateClone.getHours() + 24 * card.reviewRate * 1.5
+        )
+      );
+      card.easy = new Date(
+        currentDateClone.setHours(
+          currentDateClone.getHours() + 24 * card.reviewRate * 2
+        )
+      );
     });
 
     return res.status(200).json({
@@ -88,18 +102,15 @@ const reviewList = async (req, res) => {
       remainingFlashcardsToReview,
       checkDateBeforeCount,
     });
-
   } catch (error) {
     console.error("Erro ao processar o pedido:", error);
     res.status(500).json({ error: "Erro ao processar o pedido" });
   }
 };
-
 const flashcard_reviewCard = async (req, res) => {
   const { id } = req.params;
   const { flashcardId, difficulty } = req.body;
   let currentDate = new Date();
-  // let today = currentDate.toISOString().slice(0, 10);
 
   try {
     const student = await Student_Model.findById(id);
@@ -117,7 +128,7 @@ const flashcard_reviewCard = async (req, res) => {
     }
 
     let hoursToAdd;
-    const currentDateClone = new Date(currentDate); // Clone the current date
+    const currentDateClone = new Date(currentDate);
 
     switch (difficulty) {
       case "veryhard":
@@ -128,21 +139,21 @@ const flashcard_reviewCard = async (req, res) => {
         break;
       case "hard":
         flashcard.reviewRate = 1.5;
-        hoursToAdd = 24; // 1.5 days to hours
+        hoursToAdd = 24;
         flashcard.reviewDate = new Date(
           currentDateClone.setHours(currentDateClone.getHours() + hoursToAdd)
         );
         break;
       case "medium":
         flashcard.reviewRate *= 1.5;
-        hoursToAdd = flashcard.reviewRate * 24; // reviewRate days to hours
+        hoursToAdd = flashcard.reviewRate * 24;
         flashcard.reviewDate = new Date(
           currentDateClone.setHours(currentDateClone.getHours() + hoursToAdd)
         );
         break;
       case "easy":
         flashcard.reviewRate *= 2;
-        hoursToAdd = flashcard.reviewRate * 24; // reviewRate days to hours
+        hoursToAdd = flashcard.reviewRate * 24;
         flashcard.reviewDate = new Date(
           currentDateClone.setHours(currentDateClone.getHours() + hoursToAdd)
         );
@@ -150,34 +161,6 @@ const flashcard_reviewCard = async (req, res) => {
       default:
         return res.status(400).json({ error: "Invalid difficulty level" });
     }
-
-    // const reviewsDoneTodayCount = student.flashcardsDailyReviews.filter(
-    //   (review) => { if (review.date.toISOString()) review.date.toISOString().slice(0, 10) === today }
-    // ).length;
-
-    // const uniqueTimeLineItem = student.scoreTimeline.filter(
-    //   (item) => item.unique == true && item.date == currentDate
-    // ).length;
-
-    // const scoreForDailyReviews = 80;
-    // let remaining = reviewsToday - 1;
-
-    // if (
-    //   difficulty !== "veryhard" &&
-    //   reviewsDoneTodayCount === remaining &&
-    //   uniqueTimeLineItem === 0
-    // ) {
-    //   student.totalScore += scoreForDailyReviews;
-    //   student.monthlyScore += scoreForDailyReviews;
-    //   const timeline = {
-    //     date: new Date(),
-    //     unique: true,
-    //     score: scoreForDailyReviews,
-    //     description: "Flashcards do dia totalmente revisados",
-    //     type: "Anki",
-    //   };
-    //   student.scoreTimeline.push(timeline);
-    // }
 
     student.flashCards = student.flashCards.filter(
       (card) => card.id.toString() !== flashcardId
@@ -195,23 +178,21 @@ const flashcard_reviewCard = async (req, res) => {
     student.flashCards.push(newFlashCard);
 
     if (difficulty !== "veryhard") {
-
       function adjustDate(currentDate) {
         const date = new Date(currentDate);
         const hours = date.getHours();
-    
+
         if (hours < 5) {
-            date.setDate(date.getDate() - 1);
-            date.setHours(20);
-            date.setMinutes(0);
-            date.setSeconds(0);
-            date.setMilliseconds(0);
+          date.setDate(date.getDate() - 1);
+          date.setHours(20);
+          date.setMinutes(0);
+          date.setSeconds(0);
+          date.setMilliseconds(0);
         }
         return date.toISOString();
-    }
+      }
 
-    const adjustedDate = adjustDate(currentDate);
-
+      const adjustedDate = adjustDate(currentDate);
 
       student.flashcardsDailyReviews.push({
         date: adjustedDate,
@@ -230,7 +211,6 @@ const flashcard_reviewCard = async (req, res) => {
       student.totalScore += scoreFor1Card;
       student.monthlyScore += scoreFor1Card;
       student.scoreTimeline.push(timelineCard);
-
     }
 
     await student.save();
@@ -253,12 +233,18 @@ const flashcard_createNew = async (req, res) => {
       return res.status(404).json({ error: "Student not found" });
     }
 
-    const existingFrontTexts = new Set(student.flashCards.map(card => card.front.text));
+    const existingFrontTexts = new Set(
+      student.flashCards.map((card) => card.front.text)
+    );
 
     const newFlashcards = newCards
-      .filter((card) => card !== null && !existingFrontTexts.has(card.front.text)) // Check if front.text already exists
+      .filter(
+        (card) => card !== null && !existingFrontTexts.has(card.front.text)
+      ) // Check if front.text already exists
       .map((card, index) => {
-        const reviewDate = card.reviewDate ? new Date(card.reviewDate) : new Date();
+        const reviewDate = card.reviewDate
+          ? new Date(card.reviewDate)
+          : new Date();
         reviewDate.setMinutes(reviewDate.getMinutes() + index);
         reviewDate.setDate(reviewDate.getDate() - 5);
 
@@ -287,13 +273,11 @@ const flashcard_createNew = async (req, res) => {
     res.status(500).json({ error: "Erro ao processar o pedido" });
   }
 };
-
 const flashcard_getOne = async (req, res) => {
   const { id } = req.params;
   const { cardId } = req.query;
   let currentDate = new Date();
   let today = currentDate.toISOString().slice(0, 10);
-
 
   try {
     const student = await Student_Model.findById(id);
@@ -306,25 +290,23 @@ const flashcard_getOne = async (req, res) => {
       return res.status(404).json({ error: "Flashcard not found" });
     }
 
-    return res
-      .status(200)
-      .json({
-        message: "Flashcard found successfully",
-        flashcard: foundFlashcard,
-      });
+    return res.status(200).json({
+      message: "Flashcard found successfully",
+      flashcard: foundFlashcard,
+    });
   } catch (error) {
     console.error("Erro ao processar o pedido:", error);
     return res.status(500).json({ error: "Erro ao processar o pedido" });
   }
 };
 const flashcard_updateOne = async (req, res) => {
-
   let currentDate = new Date();
   let today = currentDate.toISOString().slice(0, 10);
 
   const { id } = req.params;
   const { cardId } = req.query;
-  const { newLGBack, newLGFront, newFront, newBack, newBackComments } = req.body;
+  const { newLGBack, newLGFront, newFront, newBack, newBackComments } =
+    req.body;
 
   try {
     const student = await Student_Model.findById(id);
@@ -374,7 +356,6 @@ const flashcard_updateOne = async (req, res) => {
     res.status(500).json({ error: "Erro ao processar o pedido" });
   }
 };
-
 const flashcard_deleteCard = async (req, res) => {
   const { id } = req.params;
   const { cardId } = req.query;
@@ -406,9 +387,7 @@ const flashcard_deleteCard = async (req, res) => {
     res.status(500).json({ error: "Erro ao processar o pedido" });
   }
 };
-
 const allCardsList = async (req, res) => {
-
   let currentDate = new Date();
   let today = currentDate.toISOString().slice(0, 10);
 
@@ -421,13 +400,13 @@ const allCardsList = async (req, res) => {
       return res.status(404).json({ error: "Student not found" });
     }
 
-    let allFlashCards = student.flashCards
+    let allFlashCards = student.flashCards;
 
     allFlashCards.sort(
       (a, b) => new Date(a.reviewDate) - new Date(b.reviewDate)
     );
 
-    return res.status(200).json({ message: "Success", allFlashCards, });
+    return res.status(200).json({ message: "Success", allFlashCards });
   } catch (error) {
     console.error("Erro ao processar o pedido:", error);
     res.status(500).json({ error: "Erro ao processar o pedido" });
@@ -440,5 +419,6 @@ module.exports = {
   flashcard_createNew,
   flashcard_getOne,
   flashcard_deleteCard,
-  reviewList, allCardsList
+  reviewList,
+  allCardsList,
 };
