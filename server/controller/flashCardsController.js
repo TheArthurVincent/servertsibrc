@@ -196,8 +196,25 @@ const flashcard_reviewCard = async (req, res) => {
 
     if (difficulty !== "veryhard") {
 
+      function adjustDate(currentDate) {
+        const date = new Date(currentDate);
+        const hours = date.getHours();
+    
+        if (hours < 5) {
+            date.setDate(date.getDate() - 1);
+            date.setHours(20);
+            date.setMinutes(0);
+            date.setSeconds(0);
+            date.setMilliseconds(0);
+        }
+        return date.toISOString();
+    }
+
+    const adjustedDate = adjustDate(currentDate);
+
+
       student.flashcardsDailyReviews.push({
-        date: currentDate,
+        date: adjustedDate,
         card: flashcard.front.text,
       });
 
