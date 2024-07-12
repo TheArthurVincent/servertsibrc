@@ -276,8 +276,6 @@ const flashcard_createNew = async (req, res) => {
 const flashcard_getOne = async (req, res) => {
   const { id } = req.params;
   const { cardId } = req.query;
-  let currentDate = new Date();
-  let today = currentDate.toISOString().slice(0, 10);
 
   try {
     const student = await Student_Model.findById(id);
@@ -300,8 +298,6 @@ const flashcard_getOne = async (req, res) => {
   }
 };
 const flashcard_updateOne = async (req, res) => {
-  let currentDate = new Date();
-  let today = currentDate.toISOString().slice(0, 10);
 
   const { id } = req.params;
   const { cardId } = req.query;
