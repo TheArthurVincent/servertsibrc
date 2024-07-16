@@ -268,8 +268,8 @@ const flashcard_createNew = async (req, res) => {
           ? new Date(card.reviewDate)
           : new Date();
         reviewDate.setMinutes(reviewDate.getMinutes() + index);
-        reviewDate.setDate(reviewDate.getDate() - 2);
-        const reviewFuture = reviewDate.setDate(reviewDate.getDate() + 3);
+        reviewDate.setDate(reviewDate.getDate() - 5);
+        const reviewFuture = reviewDate.setDate(reviewDate.getDate() + 6);
 
         return {
           id: new mongoose.Types.ObjectId(),
