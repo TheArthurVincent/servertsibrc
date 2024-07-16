@@ -222,9 +222,6 @@ const flashcard_reviewCard = async (req, res) => {
   }
 };
 const flashcard_createNew = async (req, res) => {
-  let currentDate = new Date();
-  let today = currentDate.toISOString().slice(0, 10);
-
   const { id } = req.params;
   const { newCards } = req.body;
   const student = await Student_Model.findById(id);
