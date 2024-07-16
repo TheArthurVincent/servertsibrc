@@ -261,8 +261,6 @@ const flashcard_createNew = async (req, res) => {
         };
       });
 
-    student.flashCards.push(...newFlashcards);
-    
     const newFlashcardsOpposite = newCards
       .filter(
         (card) => card !== null
