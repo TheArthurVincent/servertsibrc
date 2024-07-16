@@ -3,6 +3,7 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const { promisify } = require("util");
 const { HistoryRanking_Model } = require("../models/HistoryRanking");
+const { CourseInfo_Model } = require("../models/CourseClass");
 
 // Login stuff
 
@@ -40,15 +41,22 @@ const student_signUp = async (req, res) => {
       dateOfBirth,
       doc,
       address,
-      // ankiEmail,
-      // ankiPassword,
       password: hashedPassword,
     });
     await newStudent.save();
 
+    console.log(newStudent.id);
+    const register = "";
+    const englishGrammarCourse = await CourseInfo_Model.findById(
+      "667a9dd14648eac1993646fc"
+    );
+    englishGrammarCourse.studentsWhoHaveAccessToIt.push(newStudent.id);
+    englishGrammarCourse.save();
+
     res.status(201).json({
       status: "Aluno registrado",
       newStudent,
+      register,
     });
   } catch (error) {
     res.status(500).json({ Erro: "Aluno não registrado", error });
@@ -706,7 +714,6 @@ const student_scoreUpdate = async (req, res) => {
   }
 };
 
-
 const student_resetMonth = async (req, res) => {
   try {
     const students = await Student_Model.find();
@@ -729,7 +736,6 @@ const student_resetMonth = async (req, res) => {
   }
 };
 
-
 const student_newRankingItem = async (req, res) => {
   const { scoreMonth } = req.body;
   try {
@@ -747,20 +753,17 @@ const student_newRankingItem = async (req, res) => {
   }
 };
 
-
-
 const student_getallRankingItem = async (req, res) => {
   try {
-    const scoreMonth = (await HistoryRanking_Model.find());
-    res.status(200).json({ scoreMonth: scoreMonth.reverse(), message: "Sucesso" });
+    const scoreMonth = await HistoryRanking_Model.find();
+    res
+      .status(200)
+      .json({ scoreMonth: scoreMonth.reverse(), message: "Sucesso" });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: error, e: "Ocorreu um erro " });
   }
 };
-
-
-
 
 module.exports = {
   // Security
@@ -772,7 +775,8 @@ module.exports = {
   signup,
   student_newRankingItem,
   //R
-  students_getAll, student_getallRankingItem,
+  students_getAll,
+  student_getallRankingItem,
   students_getOneFullName,
   students_getAllScores,
   students_getTotalAllScores,
