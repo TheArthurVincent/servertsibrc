@@ -237,7 +237,7 @@ const flashcard_createNew = async (req, res) => {
     const newFlashcards = newCards
       .filter(
         (card) => card !== null && !existingFrontTexts.has(card.front.text)
-      ) 
+      )
       .map((card, index) => {
         const reviewDate = card.reviewDate
           ? new Date(card.reviewDate)
@@ -262,9 +262,7 @@ const flashcard_createNew = async (req, res) => {
       });
 
     const newFlashcardsOpposite = newCards
-      .filter(
-        (card) => card !== null
-      ) 
+      .filter((card) => card !== null)
       .map((card, index) => {
         const reviewDate = card.reviewDate
           ? new Date(card.reviewDate)
@@ -323,7 +321,6 @@ const flashcard_getOne = async (req, res) => {
   }
 };
 const flashcard_updateOne = async (req, res) => {
-
   const { id } = req.params;
   const { cardId } = req.query;
   const { newLGBack, newLGFront, newFront, newBack, newBackComments } =
