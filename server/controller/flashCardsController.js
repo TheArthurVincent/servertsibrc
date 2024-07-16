@@ -237,7 +237,7 @@ const flashcard_createNew = async (req, res) => {
     const newFlashcards = newCards
       .filter(
         (card) => card !== null && !existingFrontTexts.has(card.front.text)
-      ) // Check if front.text already exists
+      ) 
       .map((card, index) => {
         const reviewDate = card.reviewDate
           ? new Date(card.reviewDate)
@@ -262,6 +262,36 @@ const flashcard_createNew = async (req, res) => {
       });
 
     student.flashCards.push(...newFlashcards);
+    
+    const newFlashcardsOpposite = newCards
+      .filter(
+        (card) => card !== null
+      ) 
+      .map((card, index) => {
+        const reviewDate = card.reviewDate
+          ? new Date(card.reviewDate)
+          : new Date();
+        reviewDate.setMinutes(reviewDate.getMinutes() + index);
+        reviewDate.setDate(reviewDate.getDate() - 2);
+        const reviewFuture = reviewDate.setDate(reviewDate.getDate() +1);
+
+        return {
+          id: new mongoose.Types.ObjectId(),
+          front: card.back,
+          back: card.front,
+          backComments: card.backComments || "",
+          reviewDate: reviewFuture,
+          reviewRate: 2,
+          veryhardReviews: card.veryhardReviews || 0,
+          hardReviews: card.hardReviews || 0,
+          mediumReviews: card.mediumReviews || 0,
+          easyReviews: card.easyReviews || 0,
+          numberOfReviews: card.numberOfReviews || 0,
+          isNew: card.isNew || true,
+        };
+      });
+
+    student.flashCards.push(...newFlashcards, ...newFlashcardsOpposite);
 
     await student.save();
     return res.status(200).json({ message: "Success", newFlashcards });
