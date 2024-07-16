@@ -89,9 +89,13 @@ const event_reminderEventAutomatic = async (req, res) => {
   }
 
   for (let event of events) {
-    const { studentID, date, time, description, link } = event;
+    const { studentID, date, time, description, link, category } = event;
     const [eventHour] = time.split(":").map(Number);
-    if (now.getHours() + 1 !== eventHour) {
+    const test =
+      category !== "Group Class" &&
+      category !== "Test" &&
+      category !== "Standalone";
+    if (now.getHours() + 1 !== eventHour && test) {
       continue;
     }
     const student = await Student_Model.findById(studentID);
@@ -211,13 +215,7 @@ const event_reminderGroupClassAutomatic = async (req, res) => {
               const text = `Lembrete da aula particular do dia ${formatDate}, às ${time}!`;
               const subject = `Lembrete da aula particular do dia ${formatDate}, às ${time}!`;
               try {
-                await sendEmail(
-                  htmlMessage,
-                  text,
-                  subject,
-                  name,
-                  email
-                );
+                await sendEmail(htmlMessage, text, subject, name, email);
                 console.log(`Email de ${name} enviado com sucesso`);
                 resolve();
               } catch (emailError) {
@@ -237,12 +235,13 @@ const event_reminderGroupClassAutomatic = async (req, res) => {
       "Email do group Class",
       "text",
       "Group Class Sent",
-      'Teacher Arthur',
+      "Teacher Arthur",
       "arthurcardosocorp@gmail.com"
     );
 
-    res.status(200).json({ message: "Emails da aula em grupo enviados com sucesso" });
-
+    res
+      .status(200)
+      .json({ message: "Emails da aula em grupo enviados com sucesso" });
   } catch (error) {
     console.error("Erro ao enviar os emails:", error);
     res.status(500).json({ error: "Erro ao enviar os emails" });
@@ -510,7 +509,7 @@ const event_NewTutoring = async (req, res) => {
 
       nextWeekDaySameDay.setDate(
         nextWeekDaySameDay.getDate() +
-        ((daysOfWeek.indexOf(day) + 7 - nextWeekDaySameDay.getDay()) % 7)
+          ((daysOfWeek.indexOf(day) + 7 - nextWeekDaySameDay.getDay()) % 7)
       );
 
       const eventDate = new Date(
@@ -622,7 +621,7 @@ const events_editOneTutoring = async (req, res) => {
 
         nextWeekDaySameDay.setDate(
           nextWeekDaySameDay.getDate() +
-          ((daysOfWeek.indexOf(day) + 7 - nextWeekDaySameDay.getDay()) % 7)
+            ((daysOfWeek.indexOf(day) + 7 - nextWeekDaySameDay.getDay()) % 7)
         );
 
         const eventDate = new Date(
