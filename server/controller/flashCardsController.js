@@ -1,7 +1,7 @@
 const { default: mongoose } = require("mongoose");
 const { Student_Model } = require("../models/Students");
 
-let reviewsToday = 40;
+let reviewsToday = 50;
 
 const reviewList = async (req, res) => {
   const { id } = req.params;
