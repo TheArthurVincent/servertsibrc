@@ -277,7 +277,7 @@ const flashcard_createNew = async (req, res) => {
           back: card.front,
           backComments: card.backComments || "",
           reviewDate: reviewFuture,
-          reviewRate: 2,
+          reviewRate: 3,
           veryhardReviews: card.veryhardReviews || 0,
           hardReviews: card.hardReviews || 0,
           mediumReviews: card.mediumReviews || 0,
