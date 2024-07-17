@@ -234,6 +234,7 @@ const flashcard_createNew = async (req, res) => {
       student.flashCards.map((card) => card.front.text)
     );
 
+
     const newFlashcards = newCards
       .filter(
         (card) => card !== null && !existingFrontTexts.has(card.front.text)
@@ -262,7 +263,9 @@ const flashcard_createNew = async (req, res) => {
       });
 
     const newFlashcardsOpposite = newCards
-      .filter((card) => card !== null)
+      .filter(
+        (card) => card !== null && !existingFrontTexts.has(card.front.text)
+      )
       .map((card, index) => {
         const reviewDate = card.reviewDate
           ? new Date(card.reviewDate)
