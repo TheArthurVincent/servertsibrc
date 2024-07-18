@@ -193,9 +193,9 @@ const flashcard_reviewCard = async (req, res) => {
       }
 
       const adjustedDate = adjustDate(currentDate);
-
+  ///
       student.flashcardsDailyReviews.push({
-        date: adjustedDate,
+        date: currentDate,
         card: flashcard.front.text,
       });
 
