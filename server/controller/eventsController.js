@@ -1,6 +1,6 @@
 const { default: mongoose } = require("mongoose");
 const { Events_Model } = require("../models/Events");
-const { Student_Model } = require("../models/Students");
+const { Members_Model } = require("../models/Members");
 const ejs = require("ejs");
 const path = require("path");
 const { sendEmail } = require("../useful/sendpulse");
@@ -13,7 +13,7 @@ const event_reminderEvent = async (req, res) => {
   }
 
   const { studentID, date, time, description, link } = event;
-  const student = await Student_Model.findById(studentID);
+  const student = await Members_Model.findById(studentID);
 
   if (!student) {
     return res.status(404).json({ error: "Student not found" });
@@ -98,7 +98,7 @@ const event_reminderEventAutomatic = async (req, res) => {
     if (now.getHours() + 1 !== eventHour && test) {
       continue;
     }
-    const student = await Student_Model.findById(studentID);
+    const student = await Members_Model.findById(studentID);
 
     if (!student) {
       continue;
@@ -192,7 +192,7 @@ const event_reminderGroupClassAutomatic = async (req, res) => {
       const { date, time, description, link } = event;
       const [eventHour] = time.split(":").map(Number);
       // if (now.getHours() + 3 !== eventHour) { continue }
-      const students = await Student_Model.find();
+      const students = await Members_Model.find();
 
       const emailPromises = students.map((student) => {
         const { name, email } = student;
@@ -256,7 +256,7 @@ const event_New = async (req, res) => {
       res.status(500).json({ Erro: "Informações faltantes" });
     } else {
       if (studentID) {
-        var student = await Student_Model.findById(studentID);
+        var student = await Members_Model.findById(studentID);
         var studentName = student.name + " " + student.lastname;
       }
       const newEvent = await Events_Model({
@@ -301,7 +301,7 @@ const events_seeAll = async (req, res) => {
   };
 
   try {
-    const student = await Student_Model.findById(id);
+    const student = await Members_Model.findById(id);
 
     if (!student) {
       return res.status(404).json({ error: "Student not found" });
@@ -343,7 +343,7 @@ const events_seeNext = async (req, res) => {
   const { id } = req.params;
 
   try {
-    const student = await Student_Model.findById(id);
+    const student = await Members_Model.findById(id);
 
     if (!student) {
       return res.status(404).json({ error: "Student not found" });
@@ -391,7 +391,7 @@ const events_editOne = async (req, res) => {
     req.body;
   const { id } = req.params;
   const editedEvent = await Events_Model.findById(id);
-  const student = studentID ? await Student_Model.findById(studentID) : null;
+  const student = studentID ? await Members_Model.findById(studentID) : null;
   const studentName = studentID ? student.name + " " + student.lastname : null;
   try {
     if (!date || !link || !category || !status || !editedEvent) {
@@ -466,7 +466,7 @@ const event_NewTutoring = async (req, res) => {
       return `${hours.padStart(2, "0")}:${minutes.padStart(2, "0")}`;
     };
 
-    const student = await Student_Model.findById(studentID);
+    const student = await Members_Model.findById(studentID);
     if (!student) {
       return res.status(404).json({ message: "Aluno não encontrado" });
     }
@@ -552,7 +552,7 @@ const events_seeAllTutoringsFromOneStudent = async (req, res) => {
     if (!studentId) {
       res.status(500).json({ message: "Informações faltantes" });
     } else {
-      const student = await Student_Model.findById(studentId);
+      const student = await Members_Model.findById(studentId);
       if (!student) {
         res.status(500).json({ message: "Aluno não encontrado" });
       } else {
@@ -571,7 +571,7 @@ const events_editOneTutoring = async (req, res) => {
       return res.status(400).json({ message: "Informações faltantes" });
     }
 
-    const student = await Student_Model.findById(studentID);
+    const student = await Members_Model.findById(studentID);
     if (!student) {
       return res.status(404).json({ message: "Aluno não encontrado" });
     }
@@ -665,7 +665,7 @@ const event_DeleteTutoring = async (req, res) => {
       return res.status(400).json({ message: "Informações faltantes" });
     }
 
-    const student = await Student_Model.findById(studentID);
+    const student = await Members_Model.findById(studentID);
     if (!student) {
       return res.status(404).json({ message: "Aluno não encontrado" });
     }

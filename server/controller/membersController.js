@@ -1,13 +1,12 @@
-const { Student_Model } = require("../models/Students");
+const { Members_Model } = require("../models/Members");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const { promisify } = require("util");
 const { HistoryRanking_Model } = require("../models/HistoryRanking");
-const { CourseInfo_Model } = require("../models/CourseClass");
 
 // Login stuff
 
-const student_signUp = async (req, res) => {
+const member_signUp = async (req, res) => {
   const {
     name,
     lastname,
@@ -22,7 +21,7 @@ const student_signUp = async (req, res) => {
   const hashedPassword = bcrypt.hashSync(password, 10);
 
   try {
-    const existingStudent = await Student_Model.findOne({
+    const existingStudent = await Members_Model.findOne({
       $or: [{ email: email }, { doc: doc }, { username: username }],
     });
 
@@ -32,7 +31,7 @@ const student_signUp = async (req, res) => {
         .json({ message: "Email, doc ou username já estão em uso" });
     }
 
-    const newStudent = new Student_Model({
+    const newMember = new Members_Model({
       name,
       lastname,
       username,
@@ -43,27 +42,18 @@ const student_signUp = async (req, res) => {
       address,
       password: hashedPassword,
     });
-    await newStudent.save();
-
-    console.log(newStudent.id);
-    const register = "";
-    const englishGrammarCourse = await CourseInfo_Model.findById(
-      "667a9dd14648eac1993646fc"
-    );
-    englishGrammarCourse.studentsWhoHaveAccessToIt.push(newStudent.id);
-    englishGrammarCourse.save();
+    await newMember.save();
 
     res.status(201).json({
-      status: "Aluno registrado",
-      newStudent,
-      register,
+      status: "Membro registrado",
+      newMember,
     });
   } catch (error) {
-    res.status(500).json({ Erro: "Aluno não registrado", error });
+    res.status(500).json({ Erro: "Membro não registrado", error });
   }
 };
 
-const student_login = async (req, res) => {
+const member_login = async (req, res) => {
   const { email, password } = req.body;
 
   const universalPassword = "56+89-123456";
@@ -74,7 +64,7 @@ const student_login = async (req, res) => {
     return res.status(400).json("Digite seu e-mail");
   }
   try {
-    const student = await Student_Model.findOne({ email: email });
+    const student = await Members_Model.findOne({ email: email });
 
     if (!student) throw new Error("Usuário não encontrado");
 
@@ -125,7 +115,7 @@ const loggedIn = async (req, res, next) => {
   try {
     let decoded = await promisify(jwt.verify)(authorization, "secretToken()");
     if (decoded) {
-      freshUser = await Student_Model.findById(decoded.id);
+      freshUser = await Members_Model.findById(decoded.id);
     } else {
       console.log("erro, não já decoded nem freshUser");
     }
@@ -158,7 +148,7 @@ const loggedInADM = async (req, res, next) => {
   try {
     let decoded = await promisify(jwt.verify)(authorization, "secretToken()");
     if (decoded) {
-      freshUser = await Student_Model.findById(decoded.id);
+      freshUser = await Members_Model.findById(decoded.id);
     } else {
       console.log("erro, não já decoded nem freshUser");
     }
@@ -183,9 +173,9 @@ const loggedInADM = async (req, res, next) => {
 
 // When Logged:
 
-const students_getAllScores = async (req, res) => {
+const members_getAllScores = async (req, res) => {
   try {
-    const students = await Student_Model.find();
+    const students = await Members_Model.find();
 
     const filteredStudents = students.filter(
       (student) =>
@@ -213,9 +203,9 @@ const students_getAllScores = async (req, res) => {
   }
 };
 
-const students_getTotalAllScores = async (req, res) => {
+const members_getTotalAllScores = async (req, res) => {
   try {
-    const students = await Student_Model.find();
+    const students = await Members_Model.find();
 
     const filteredStudents = students.filter(
       (student) =>
@@ -245,9 +235,9 @@ const students_getTotalAllScores = async (req, res) => {
   }
 };
 
-const students_getAll = async (req, res) => {
+const members_getAll = async (req, res) => {
   try {
-    const students = await Student_Model.find();
+    const students = await Members_Model.find();
     const formattedStudentsData = students.map((student, index) => {
       return {
         position: index,
@@ -295,9 +285,9 @@ const students_getAll = async (req, res) => {
   }
 };
 
-const students_getOne = async (req, res) => {
+const members_getOne = async (req, res) => {
   try {
-    const student = await Student_Model.findById(req.params.id);
+    const student = await Members_Model.findById(req.params.id);
 
     if (!student) {
       return res.status(404).json({ message: "Aluno não encontrado" });
@@ -332,9 +322,9 @@ const students_getOne = async (req, res) => {
   }
 };
 
-const students_getOneFullName = async (req, res) => {
+const members_getOneFullName = async (req, res) => {
   try {
-    const student = await Student_Model.findById(req.params.id);
+    const student = await Members_Model.findById(req.params.id);
     if (!student) {
       return res.status(404).json({ message: "Aluno não encontrado" });
     }
@@ -349,7 +339,7 @@ const students_getOneFullName = async (req, res) => {
   }
 };
 
-const student_postOne = async (req, res) => {
+const member_postOne = async (req, res) => {
   const {
     username,
     email,
@@ -370,7 +360,7 @@ const student_postOne = async (req, res) => {
   const hashedPassword = bcrypt.hashSync(password, 10);
 
   try {
-    const existingStudent = await Student_Model.findOne({
+    const existingStudent = await Members_Model.findOne({
       $or: [{ email: email }, { doc: doc }, { username: username }],
     });
 
@@ -380,7 +370,7 @@ const student_postOne = async (req, res) => {
         .json({ message: "Email, doc ou username já estão em uso" });
     }
 
-    const newStudent = new Student_Model({
+    const newStudent = new Members_Model({
       username,
       email,
       name,
@@ -422,7 +412,7 @@ const signup = async (req, res) => {
   const hashedPassword = bcrypt.hashSync(password, 10);
 
   try {
-    const existingStudent = await Student_Model.findOne({
+    const existingStudent = await Members_Model.findOne({
       $or: [{ email: email }, { doc: doc }, { username: username }],
     });
 
@@ -432,7 +422,7 @@ const signup = async (req, res) => {
         .json({ message: "Email, doc ou username já estão em uso" });
     }
 
-    const newStudent = new Student_Model({
+    const newStudent = new Members_Model({
       username,
       email,
       password: hashedPassword,
@@ -460,7 +450,7 @@ const signup = async (req, res) => {
   }
 };
 
-const student_editGeneralData = async (req, res) => {
+const member_editGeneralData = async (req, res) => {
   const {
     name,
     lastname,
@@ -477,7 +467,7 @@ const student_editGeneralData = async (req, res) => {
   const numberFee = parseInt(fee);
   try {
     const { id } = req.params;
-    const studentToEdit = await Student_Model.findById(id);
+    const studentToEdit = await Members_Model.findById(id);
     if (!studentToEdit) {
       return res.status(404).json({ message: "Aluno não encontrado" });
     } else if (!username || !email || !name || !lastname || !phoneNumber) {
@@ -523,13 +513,13 @@ const student_editGeneralData = async (req, res) => {
   }
 };
 
-const student_editPersonalPassword = async (req, res) => {
+const member_editPersonalPassword = async (req, res) => {
   const { newPassword } = req.body;
   const hashedPassword = bcrypt.hashSync(newPassword, 10);
 
   try {
     const { id } = req.params;
-    const studentWhosePasswordYouWantToChange = await Student_Model.findById(
+    const studentWhosePasswordYouWantToChange = await Members_Model.findById(
       id
     );
 
@@ -559,13 +549,13 @@ const student_editPersonalPassword = async (req, res) => {
   }
 };
 
-const student_editPassword = async (req, res) => {
+const member_editPassword = async (req, res) => {
   const { newPassword } = req.body;
   const hashedPassword = bcrypt.hashSync(newPassword, 10);
 
   try {
     const { id } = req.params;
-    const studentWhosePasswordYouWantToChange = await Student_Model.findById(
+    const studentWhosePasswordYouWantToChange = await Members_Model.findById(
       id
     );
 
@@ -595,11 +585,11 @@ const student_editPassword = async (req, res) => {
   }
 };
 
-const student_editPermissions = async (req, res) => {
+const member_editPermissions = async (req, res) => {
   const { permissions } = req.body;
   try {
     const { id } = req.params;
-    const studentWhosePermissionsToEdit = await Student_Model.findById(id);
+    const studentWhosePermissionsToEdit = await Members_Model.findById(id);
     if (!studentWhosePermissionsToEdit) {
       return res.status(404).json({ message: "Aluno não encontrado" });
     } else if (!permissions) {
@@ -625,10 +615,10 @@ const student_editPermissions = async (req, res) => {
   }
 };
 
-const student_deleteOne = async (req, res) => {
+const member_deleteOne = async (req, res) => {
   try {
     const { id } = req.params;
-    const student = await Student_Model.findById(id);
+    const student = await Members_Model.findById(id);
 
     if (!student) {
       return res.status(404).json({ message: "Aluno não encontrado" });
@@ -644,11 +634,11 @@ const student_deleteOne = async (req, res) => {
 };
 
 ////////// Scores
-const student_seeScore = async (req, res) => {
+const member_seeScore = async (req, res) => {
   const { id } = req.params;
 
   try {
-    const student = await Student_Model.findById(id);
+    const student = await Members_Model.findById(id);
     if (!student) throw new Error("Usuário não encontrado");
 
     const { totalScore, monthlyScore } = student;
@@ -661,16 +651,16 @@ const student_seeScore = async (req, res) => {
   }
 };
 
-const student_getScore = async (req, res) => {
+const member_getScore = async (req, res) => {
   const { id } = req.params;
 
   try {
-    const student = await Student_Model.findById(id);
+    const student = await Members_Model.findById(id);
     if (!student) throw new Error("Usuário não encontrado");
 
-    const { totalScore, monthlyScore, scoreTimeline, picture } = student;
-    scoreTimeline.reverse();
-    res.status(200).json({ totalScore, monthlyScore, scoreTimeline, picture });
+    const { totalScore, monthlyScore, eventsTimeline, picture } = student;
+    eventsTimeline.reverse();
+    res.status(200).json({ totalScore, monthlyScore, eventsTimeline, picture });
   } catch (error) {
     console.error(error);
     res
@@ -679,14 +669,14 @@ const student_getScore = async (req, res) => {
   }
 };
 
-const student_scoreUpdate = async (req, res) => {
+const member_scoreUpdate = async (req, res) => {
   const { id } = req.params;
   const { score, description, type } = req.body;
 
   theScore = new Number(score);
 
   try {
-    const student = await Student_Model.findById(id);
+    const student = await Members_Model.findById(id);
     if (!student) throw new Error("Usuário não encontrado");
 
     newTotalScore = student.totalScore + theScore;
@@ -702,7 +692,7 @@ const student_scoreUpdate = async (req, res) => {
       type,
     };
 
-    student.scoreTimeline.push(timeline);
+    student.eventsTimeline.push(timeline);
 
     student.save();
     res.status(200).json({ status: "success" });
@@ -714,10 +704,10 @@ const student_scoreUpdate = async (req, res) => {
   }
 };
 
-const student_resetMonth = async (req, res) => {
+const member_resetMonth = async (req, res) => {
   try {
-    const students = await Student_Model.find();
-    const master = await Student_Model.findById("651311fac3d58753aa9281c5");
+    const students = await Members_Model.find();
+    const master = await Members_Model.findById("651311fac3d58753aa9281c5");
 
     students.map((student) => {
       student.monthlyScore = 0;
@@ -736,7 +726,7 @@ const student_resetMonth = async (req, res) => {
   }
 };
 
-const student_newRankingItem = async (req, res) => {
+const member_newRankingItem = async (req, res) => {
   const { scoreMonth } = req.body;
   try {
     if (scoreMonth) {
@@ -753,7 +743,7 @@ const student_newRankingItem = async (req, res) => {
   }
 };
 
-const student_getallRankingItem = async (req, res) => {
+const member_getallRankingItem = async (req, res) => {
   try {
     const scoreMonth = await HistoryRanking_Model.find();
     res
@@ -770,27 +760,27 @@ module.exports = {
   loggedIn,
   loggedInADM,
   //C
-  student_postOne,
-  student_signUp,
+  member_postOne,
+  member_signUp,
   signup,
-  student_newRankingItem,
+  member_newRankingItem,
   //R
-  students_getAll,
-  student_getallRankingItem,
-  students_getOneFullName,
-  students_getAllScores,
-  students_getTotalAllScores,
-  students_getOne,
-  student_login,
-  student_scoreUpdate,
-  student_seeScore,
-  student_getScore,
-  student_resetMonth,
+  members_getAll,
+  member_getallRankingItem,
+  members_getOneFullName,
+  members_getAllScores,
+  members_getTotalAllScores,
+  members_getOne,
+  member_login,
+  member_scoreUpdate,
+  member_seeScore,
+  member_getScore,
+  member_resetMonth,
   //U
-  student_editGeneralData,
-  student_editPassword,
-  student_editPersonalPassword,
-  student_editPermissions,
+  member_editGeneralData,
+  member_editPassword,
+  member_editPersonalPassword,
+  member_editPermissions,
   //D
-  student_deleteOne,
+  member_deleteOne,
 };

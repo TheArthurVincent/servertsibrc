@@ -1,6 +1,6 @@
 const { Homework_Model } = require("../models/Homework");
 const { NextTutoring_Model } = require("../models/NextEvents");
-const { Student_Model } = require("../models/Students");
+const { Members_Model } = require("../models/Members");
 const { Tutoring_Model } = require("../models/Tutoring");
 const { sendEmail } = require("../useful/sendpulse");
 const ejs = require("ejs");
@@ -46,7 +46,7 @@ const tutoring_postOne = async (req, res) => {
         null
       }
 
-      const student = await Student_Model.findById(studentID);
+      const student = await Members_Model.findById(studentID);
       const { name, lastname, email } = student;
 
       const templatePath = path.join(__dirname, "../email/postedClass.ejs");
@@ -110,7 +110,7 @@ const tutoring_deleteOne = async (req, res) => {
 const tutoring_getAll = async (req, res) => {
   try {
     const tutorings = await Tutoring_Model.find();
-    const students = await Student_Model.find();
+    const students = await Members_Model.find();
     const tutoringsByStudent = {};
     tutorings.forEach((tutoring) => {
       const studentID = tutoring.studentID;
@@ -176,7 +176,7 @@ const tutoring_getAllFromParticularStudent = async (req, res) => {
   const { studentID } = req.params;
   try {
     const tutoring = await Tutoring_Model.find({ studentID });
-    const studentTheClassBelongsTo = await Student_Model.findOne({
+    const studentTheClassBelongsTo = await Members_Model.findOne({
       _id: studentID,
     });
 

@@ -1,10 +1,10 @@
 const { Homework_Model } = require("../models/Homework");
-const { Student_Model } = require("../models/Students");
+const { Members_Model } = require("../models/Members");
 const homework_getAll = async (req, res) => {
   const { id } = req.params;
 
   try {
-    const student = await Student_Model.findById(id);
+    const student = await Members_Model.findById(id);
     if (!student) {
       return res.status(404).json({ error: "Estudante não encontrado" });
     }
@@ -45,7 +45,7 @@ const homework_done = async (req, res) => {
   const { tutoringId, score } = req.body;
 
   try {
-    const student = await Student_Model.findById(id);
+    const student = await Members_Model.findById(id);
     if (!student) {
       return res.status(404).json({ error: "Estudante não encontrado" });
     }
@@ -64,7 +64,7 @@ const homework_done = async (req, res) => {
         type: "Tutoring",
       };
 
-      student.scoreTimeline.push(timeline);
+      student.eventsTimeline.push(timeline);
       student.monthlyScore += score;
       student.totalScore += score;
       await student.save();
@@ -83,7 +83,7 @@ const homework_done = async (req, res) => {
           type: "Group class",
         };
 
-        student.scoreTimeline.push(timeline);
+        student.eventsTimeline.push(timeline);
         student.monthlyScore += score;
         student.totalScore += score;
 

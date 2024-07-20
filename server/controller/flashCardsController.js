@@ -1,5 +1,5 @@
 const { default: mongoose } = require("mongoose");
-const { Student_Model } = require("../models/Students");
+const { Members_Model } = require("../models/Members");
 
 let reviewsToday = 50;
 
@@ -9,7 +9,7 @@ const reviewList = async (req, res) => {
   let today = currentDate.toISOString().slice(0, 10);
 
   try {
-    const student = await Student_Model.findById(id);
+    const student = await Members_Model.findById(id);
 
     if (!student) {
       return res.status(404).json({ error: "Student not found" });
@@ -113,7 +113,7 @@ const flashcard_reviewCard = async (req, res) => {
   let currentDate = new Date();
 
   try {
-    const student = await Student_Model.findById(id);
+    const student = await Members_Model.findById(id);
 
     if (!student) {
       return res.status(404).json({ error: "Student not found" });
@@ -210,7 +210,7 @@ const flashcard_reviewCard = async (req, res) => {
 
       student.totalScore += scoreFor1Card;
       student.monthlyScore += scoreFor1Card;
-      student.scoreTimeline.push(timelineCard);
+      student.eventsTimeline.push(timelineCard);
     }
 
     await student.save();
@@ -224,7 +224,7 @@ const flashcard_reviewCard = async (req, res) => {
 const flashcard_createNew = async (req, res) => {
   const { id } = req.params;
   const { newCards } = req.body;
-  const student = await Student_Model.findById(id);
+  const student = await Members_Model.findById(id);
   try {
     if (!student) {
       return res.status(404).json({ error: "Student not found" });
@@ -304,7 +304,7 @@ const flashcard_getOne = async (req, res) => {
   const { cardId } = req.query;
 
   try {
-    const student = await Student_Model.findById(id);
+    const student = await Members_Model.findById(id);
 
     let foundFlashcard = student.flashCards.find(
       (flashcard) => flashcard.id == cardId
@@ -330,7 +330,7 @@ const flashcard_updateOne = async (req, res) => {
     req.body;
 
   try {
-    const student = await Student_Model.findById(id);
+    const student = await Members_Model.findById(id);
 
     if (!student) {
       return res.status(404).json({ error: "Student not found" });
@@ -382,7 +382,7 @@ const flashcard_deleteCard = async (req, res) => {
   const { cardId } = req.query;
 
   try {
-    const student = await Student_Model.findById(id);
+    const student = await Members_Model.findById(id);
 
     if (!student) {
       return res.status(404).json({ error: "Student not found" });
@@ -415,7 +415,7 @@ const allCardsList = async (req, res) => {
   const { id } = req.params;
 
   try {
-    const student = await Student_Model.findById(id);
+    const student = await Members_Model.findById(id);
 
     if (!student) {
       return res.status(404).json({ error: "Student not found" });

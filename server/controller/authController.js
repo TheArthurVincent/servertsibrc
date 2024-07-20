@@ -1,4 +1,4 @@
-const Student_Model = require("../models/Students");
+const Members_Model = require("../models/Members");
 //importe o arquivo sendpulse.js
 const mailSend = require("../useful/sendpulse");
 
@@ -6,7 +6,7 @@ const mailSend = require("../useful/sendpulse");
 const mail = new mailSend();
 
 const signup = async (req, res, next) => {
-  const newUser = await Student_Model.create(req.body);
+  const newUser = await Members_Model.create(req.body);
 
   const { email, name } = req.body;
 

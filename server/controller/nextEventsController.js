@@ -2,7 +2,7 @@ const {
   NextTutoring_Model,
   NextLiveGroupClass_Model,
 } = require("../models/NextEvents");
-const { Student_Model } = require("../models/Students");
+const { Members_Model } = require("../models/Members");
 
 const nextTutoring_editNext = async (req, res) => {
   const { studentID, meetingUrl, date, time } = req.body;
@@ -56,7 +56,7 @@ const nextTutoring_seeAllTutorings = async (req, res) => {
   try {
     const tutorings = await NextTutoring_Model.find();
     const studentIDs = tutorings.map((tutoring) => tutoring.studentID);
-    const students = await Student_Model.find({ _id: { $in: studentIDs } });
+    const students = await Members_Model.find({ _id: { $in: studentIDs } });
     const validTutorings = tutorings.filter((tutoring) =>
       students.some(
         (student) => student._id.toString() === tutoring.studentID.toString()

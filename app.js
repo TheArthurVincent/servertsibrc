@@ -5,28 +5,28 @@ const PORT = 3502;
 const path = require("path");
 const cors = require("cors");
 const {
-  students_getAll,
-  students_getOne,
-  student_postOne,
-  student_deleteOne,
-  student_editGeneralData,
-  student_editPassword,
-  student_editPermissions,
-  student_login,
+  members_getAll,
+  members_getOne,
+  member_postOne,
+  member_deleteOne,
+  member_editGeneralData,
+  member_editPassword,
+  member_editPermissions,
+  member_login,
   loggedIn,
   loggedInADM,
-  student_scoreUpdate,
-  student_seeScore,
-  student_resetMonth,
-  students_getAllScores,
-  student_getScore,
-  students_getOneFullName,
-  student_editPersonalPassword,
-  students_getTotalAllScores,
-  student_signUp,
-  student_newRankingItem,
-  student_getallRankingItem,
-} = require("./server/controller/studentsController");
+  member_scoreUpdate,
+  member_seeScore,
+  member_resetMonth,
+  members_getAllScores,
+  member_getScore,
+  members_getOneFullName,
+  member_editPersonalPassword,
+  members_getTotalAllScores,
+  member_signUp,
+  member_newRankingItem,
+  member_getallRankingItem,
+} = require("./server/controller/membersController");
 const {
   blogPosts_getAll,
   blogPosts_editOne,
@@ -113,6 +113,84 @@ app.use(
 
 app.use("/uploads", express.static(path.resolve(__dirname, "upload")));
 
+
+// ** MEMBERS **
+app.post(`${mainroute}/signupmember`, member_signUp);
+
+
+
+
+
+
+
+
+// ** MEMBERS **
+app.post(`${mainroute}/studentlogin/`, member_login);
+app.get(`${mainroute}/students`, loggedInADM, members_getAll);
+app.get(`${mainroute}/scoresranking`, loggedIn, members_getAllScores);
+app.get(
+  `${mainroute}/scorestotalranking`,
+  loggedIn,
+  members_getTotalAllScores
+);
+app.post(`${mainroute}/newitemhistory`, member_newRankingItem);
+app.get(`${mainroute}/newitemhistory`, member_getallRankingItem);
+
+
+app.get(`${mainroute}/score/:id`, loggedIn, member_getScore);
+app.get(`${mainroute}/score/:id`, loggedIn, member_seeScore);
+app.put(`${mainroute}/score/:id`, member_scoreUpdate);
+app.get(`${mainroute}/student/:id`, loggedIn, members_getOne);
+app.get(`${mainroute}/studentname/:id`, loggedIn, members_getOneFullName);
+app.post(`${mainroute}/students`, loggedInADM, member_postOne);
+app.put(`${mainroute}/students/:id`, loggedInADM, member_editGeneralData);
+app.put(`${mainroute}/studentpassword/:id`, loggedInADM, member_editPassword);
+app.put(
+  `${mainroute}/studentperspassword/:id`,
+  loggedIn,
+  member_editPersonalPassword
+);
+app.put(
+  `${mainroute}/studentpermissions/:id`,
+  loggedInADM,
+  member_editPermissions
+);
+app.put("/api/v1/resetmonthscoresecurethepoints", member_resetMonth);
+// app.put("/api/v1/setweeklyclasses", async (req, res) => {
+//   try {
+//     const students = await Members_Model.find();
+//     students.map((student) => {
+//       student.weeklyClasses = 1;
+//       student.save();
+//     });
+//     res.status(200).json({ students, status: "success" });
+//   } catch (error) {
+//     console.error(error);
+//     res
+//       .status(500)
+//       .json({ error: error, e: "Ocorreu um erro ao atualizar as aulas" });
+//   }
+// });
+
+app.delete(`${mainroute}/students/:id`, loggedInADM, member_deleteOne);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // ** COURSES **
 // app.get(`${mainroute}/courses`, loggedIn, groupClasses_getCoursesTitles);
 // app.get(`${mainroute}/course`, loggedIn, groupClasses_getOneCourse);
@@ -189,57 +267,6 @@ app.delete(
 app.get(`${mainroute}/nexttutoring`, loggedIn, nextTutoring_seeAllTutorings);
 app.post(`${mainroute}/nexttutoring`, loggedInADM, nextTutoring_editNext);
 app.get(`${mainroute}/nexttutoring/:id`, loggedIn, tutoring_getNext);
-
-// ** STUDENTS **
-app.post(`${mainroute}/studentlogin/`, student_login);
-app.get(`${mainroute}/students`, loggedInADM, students_getAll);
-app.get(`${mainroute}/scoresranking`, loggedIn, students_getAllScores);
-app.get(
-  `${mainroute}/scorestotalranking`,
-  loggedIn,
-  students_getTotalAllScores
-);
-app.post(`${mainroute}/newitemhistory`, student_newRankingItem);
-app.get(`${mainroute}/newitemhistory`, student_getallRankingItem);
-
-
-app.get(`${mainroute}/score/:id`, loggedIn, student_getScore);
-app.get(`${mainroute}/score/:id`, loggedIn, student_seeScore);
-app.put(`${mainroute}/score/:id`, student_scoreUpdate);
-app.get(`${mainroute}/student/:id`, loggedIn, students_getOne);
-app.get(`${mainroute}/studentname/:id`, loggedIn, students_getOneFullName);
-app.post(`${mainroute}/students`, loggedInADM, student_postOne);
-app.post(`${mainroute}/signupstudent`, student_signUp);
-app.put(`${mainroute}/students/:id`, loggedInADM, student_editGeneralData);
-app.put(`${mainroute}/studentpassword/:id`, loggedInADM, student_editPassword);
-app.put(
-  `${mainroute}/studentperspassword/:id`,
-  loggedIn,
-  student_editPersonalPassword
-);
-app.put(
-  `${mainroute}/studentpermissions/:id`,
-  loggedInADM,
-  student_editPermissions
-);
-app.put("/api/v1/resetmonthscoresecurethepoints", student_resetMonth);
-// app.put("/api/v1/setweeklyclasses", async (req, res) => {
-//   try {
-//     const students = await Student_Model.find();
-//     students.map((student) => {
-//       student.weeklyClasses = 1;
-//       student.save();
-//     });
-//     res.status(200).json({ students, status: "success" });
-//   } catch (error) {
-//     console.error(error);
-//     res
-//       .status(500)
-//       .json({ error: error, e: "Ocorreu um erro ao atualizar as aulas" });
-//   }
-// });
-
-app.delete(`${mainroute}/students/:id`, loggedInADM, student_deleteOne);
 
 // **Material**
 app.post(`${mainroute}/material`, loggedInADM, material_postNew);

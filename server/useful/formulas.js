@@ -1,4 +1,4 @@
-const { Student_Model } = require("../models/Students");
+const { Members_Model } = require("../models/Members");
 
 const formatDate = (dataString) => {
   const data = new Date(dataString);
@@ -10,6 +10,6 @@ const formatDate = (dataString) => {
   return `${diaFormatado}/${mesFormatado}/${ano}`;
 }
 
-const getStudent = async (id) => { await Student_Model.findById(id) };
+const getStudent = async (id) => { await Members_Model.findById(id) };
 
 module.exports = { formatDate, getStudent };
