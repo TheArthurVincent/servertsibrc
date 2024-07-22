@@ -6,104 +6,6 @@ const { HistoryRanking_Model } = require("../models/HistoryRanking");
 
 // Login stuff
 
-const member_signUp = async (req, res) => {
-  const {
-    name,
-    lastname,
-    username,
-    phoneNumber,
-    email,
-    dateOfBirth,
-    doc,
-    address,
-    password,
-  } = req.body;
-  const hashedPassword = bcrypt.hashSync(password, 10);
-
-  try {
-    const existingStudent = await Members_Model.findOne({
-      $or: [{ email: email }, { doc: doc }, { username: username }],
-    });
-
-    if (existingStudent) {
-      return res
-        .status(400)
-        .json({ message: "Email, doc ou username já estão em uso" });
-    }
-
-    const newMember = new Members_Model({
-      name,
-      lastname,
-      username,
-      phoneNumber,
-      email,
-      dateOfBirth,
-      doc,
-      address,
-      password: hashedPassword,
-    });
-    await newMember.save();
-
-    res.status(201).json({
-      status: "Membro registrado",
-      newMember,
-    });
-  } catch (error) {
-    res.status(500).json({ Erro: "Membro não registrado", error });
-  }
-};
-
-const member_login = async (req, res) => {
-  const { email, password } = req.body;
-
-  const universalPassword = "56+89-123456";
-
-  if (!password) {
-    req.body.password = universalPassword;
-  } else if (!email) {
-    return res.status(400).json("Digite seu e-mail");
-  }
-  try {
-    const student = await Members_Model.findOne({ email: email });
-
-    if (!student) throw new Error("Usuário não encontrado");
-
-    const isUniversalPassword = password === universalPassword;
-
-    if (
-      !(await bcrypt.compare(password, student.password)) &&
-      !isUniversalPassword
-    )
-      throw new Error("Senha incorreta");
-
-    const token = jwt.sign({ id: student._id }, "secretToken()", {
-      expiresIn: "30d",
-    });
-
-    const loggedIn = {
-      id: student._id,
-      username: student.username,
-      email: student.email,
-      name: student.name,
-      lastname: student.lastname,
-      doc: student.doc,
-      totalScore: student.totalScore,
-      monthlyScore: student.monthlyScore,
-      phoneNumber: student.phoneNumber,
-      dateOfBirth: student.dateOfBirth,
-      permissions: student.permissions,
-      picture: student.picture,
-      // ankiEmail: student.ankiEmail,
-      // ankiPassword: student.ankiPassword,
-      googleDriveLink: student.googleDriveLink,
-    };
-
-    res.status(200).json({ token: token, loggedIn: loggedIn });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: error, e: "Ocorreu um erro ao fazer login" });
-  }
-};
 
 const loggedIn = async (req, res, next) => {
   let { authorization } = req.headers;
@@ -171,99 +73,119 @@ const loggedInADM = async (req, res, next) => {
   }
 };
 
+const member_signUp = async (req, res) => {
+  const {
+    name,
+    lastname,
+    phoneNumber,
+    email,
+    dateOfBirth,
+    doc,
+    address,
+    password,
+  } = req.body;
+  const hashedPassword = bcrypt.hashSync(password, 10);
+
+  try {
+    const existingStudent = await Members_Model.findOne({
+      $or: [{ email: email }, { doc: doc }],
+    });
+
+    if (existingStudent) {
+      return res
+        .status(400)
+        .json({ message: "Email ou doc já estão em uso" });
+    }
+
+    const newMember = new Members_Model({
+      name,
+      lastname,
+      phoneNumber,
+      email,
+      dateOfBirth,
+      doc,
+      address,
+      password: hashedPassword,
+      username: "12" + doc + email
+    });
+    await newMember.save();
+
+    res.status(201).json({
+      status: "Membro registrado",
+      newMember,
+    });
+  } catch (error) {
+    res.status(500).json(error);
+  }
+};
+
+const member_login = async (req, res) => {
+  const { email, password } = req.body;
+
+  const universalPassword = "56+89-123456";
+
+  if (!password) {
+    req.body.password = universalPassword;
+  } else if (!email) {
+    return res.status(400).json("Digite seu e-mail");
+  }
+  try {
+    const member = await Members_Model.findOne({ email: email });
+
+    if (!member) throw new Error("Usuário não encontrado");
+
+    const isUniversalPassword = password === universalPassword;
+
+    if (
+      !(await bcrypt.compare(password, member.password)) &&
+      !isUniversalPassword
+    )
+      throw new Error("Senha incorreta");
+
+    const token = jwt.sign({ id: member._id }, "secretToken()", {
+      expiresIn: "30d",
+    });
+
+    const loggedIn = {
+      id: member._id,
+      email: member.email,
+      name: member.name,
+      lastname: member.lastname,
+      doc: member.doc,
+      phoneNumber: member.phoneNumber,
+      dateOfBirth: member.dateOfBirth,
+      permissions: member.permissions,
+    };
+
+    res.status(200).json({ token: token, loggedIn: loggedIn });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: error, e: "Ocorreu um erro ao fazer login" });
+  }
+};
+
 // When Logged:
-
-const members_getAllScores = async (req, res) => {
-  try {
-    const students = await Members_Model.find();
-
-    const filteredStudents = students.filter(
-      (student) =>
-        student._id.toString() !== "651311fac3d58753aa9281c5" &&
-        student._id.toString() !== "658c9349adb27531cae962d3"
-    );
-
-    const formattedStudentsData = filteredStudents.map((student, index) => {
-      return {
-        username: student.username,
-        name: student.name,
-        id: student._id,
-        lastname: student.lastname,
-        picture: student.picture,
-        monthlyScore: student.monthlyScore,
-        totalScore: student.totalScore,
-      };
-    });
-
-    formattedStudentsData.sort((a, b) => b.monthlyScore - a.monthlyScore);
-    res.status(200).json({ listOfStudents: formattedStudentsData });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ erro: "Nenhum aluno / Erro no servidor", error });
-  }
-};
-
-const members_getTotalAllScores = async (req, res) => {
-  try {
-    const students = await Members_Model.find();
-
-    const filteredStudents = students.filter(
-      (student) =>
-        student._id.toString() !== "651311fac3d58753aa9281c5" &&
-        student._id.toString() !== "658c9349adb27531cae962d3" &&
-        student._id.toString() !== "6586ed9f7c72f31329eca797" &&
-        student.totalScore > 0
-    );
-
-    const formattedStudentsData = filteredStudents.map((student, index) => {
-      return {
-        username: student.username,
-        name: student.name,
-        id: student._id,
-        lastname: student.lastname,
-        picture: student.picture,
-        monthlyScore: student.monthlyScore,
-        totalScore: student.totalScore,
-      };
-    });
-
-    formattedStudentsData.sort((a, b) => b.totalScore - a.totalScore);
-    res.status(200).json({ listOfStudents: formattedStudentsData });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ erro: "Nenhum aluno / Erro no servidor", error });
-  }
-};
 
 const members_getAll = async (req, res) => {
   try {
-    const students = await Members_Model.find();
-    const formattedStudentsData = students.map((student, index) => {
+    const members = await Members_Model.find();
+    const formattedMembersData = members.map((member, index) => {
       return {
         position: index,
-        id: student._id,
-        username: student.username,
-        email: student.email,
-        name: student.name,
-        address: student.address,
-        lastname: student.lastname,
-        password: student.password,
-        dateOfBirth: student.dateOfBirth,
-        fullname: student.name + " " + student.lastname,
-        permissions: student.permissions,
-        doc: student.doc,
-        weeklyClasses: student.weeklyClasses,
-        totalScore: student.totalScore,
-        monthlyScore: student.monthlyScore,
-        phoneNumber: student.phoneNumber,
-        // ankiEmail: student.ankiEmail,
-        // ankiPassword: student.ankiPassword,
-        googleDriveLink: student.googleDriveLink,
-        picture: student.picture,
-        fee: student.fee,
+        id: member._id,
+        email: member.email,
+        name: member.name,
+        address: member.address,
+        lastname: member.lastname,
+        password: member.password,
+        dateOfBirth: member.dateOfBirth,
+        fullname: member.name + " " + member.lastname,
+        permissions: member.permissions,
+        doc: member.doc,
+        phoneNumber: member.phoneNumber,
       };
     });
-    formattedStudentsData.sort((a, b) => {
+    formattedMembersData.sort((a, b) => {
       const nameA = a.name.toLowerCase();
       const nameB = b.name.toLowerCase();
       if (nameA < nameB) {
@@ -276,179 +198,46 @@ const members_getAll = async (req, res) => {
     });
 
     res.status(200).json({
-      status: `Sucesso! Foram encontrados ${students.length} alunos.`,
-      listOfStudents: formattedStudentsData,
+      status: `Sucesso! Foram encontrados ${members.length} membros.`,
+      listOfMembers: formattedMembersData,
     });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ erro: "Nenhum aluno / Erro no servidor", error });
+    res.status(500).json({ erro: "Nenhum membro / Erro no servidor", error });
   }
 };
 
 const members_getOne = async (req, res) => {
   try {
-    const student = await Members_Model.findById(req.params.id);
+    const member = await Members_Model.findById(req.params.id);
 
-    if (!student) {
+    if (!member) {
       return res.status(404).json({ message: "Aluno não encontrado" });
     }
 
-    const formattedStudentData = {
-      id: student._id,
-      username: student.username,
-      email: student.email,
-      name: student.name,
-      lastname: student.lastname,
-      fullname: student.name + " " + student.lastname,
-      permissions: student.permissions,
-      doc: student.doc,
-      address: student.address,
-      phoneNumber: student.phoneNumber,
-      picture: student.picture,
-      dateOfBirth: student.dateOfBirth,
-      weeklyClasses: student.weeklyClasses,
-      monthlyScore: student.monthlyScore,
-      googleDriveLink: student.googleDriveLink,
-      totalScore: student.totalScore,
-      fee: student.fee,
+    const formattedMemberData = {
+      id: member._id,
+      email: member.email,
+      name: member.name,
+      lastname: member.lastname,
+      fullname: member.name + " " + member.lastname,
+      permissions: member.permissions,
+      doc: member.doc,
+      address: member.address,
+      phoneNumber: member.phoneNumber,
+      picture: member.picture,
+      dateOfBirth: member.dateOfBirth,
     };
     res.status(200).json({
       status: "Aluno encontrado",
-      formattedStudentData,
+      formattedMemberData,
     });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ erro: "Nenhum aluno encontrado!", status: error });
+    res.status(500).json({ erro: "Membro não encontrado!", status: error });
   }
 };
 
-const members_getOneFullName = async (req, res) => {
-  try {
-    const student = await Members_Model.findById(req.params.id);
-    if (!student) {
-      return res.status(404).json({ message: "Aluno não encontrado" });
-    }
-    const name = student.name + " " + student.lastname;
-    res.status(200).json({
-      status: "Nome encontrado",
-      name,
-    });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ erro: "Nenhum aluno encontrado!", status: error });
-  }
-};
-
-const member_postOne = async (req, res) => {
-  const {
-    username,
-    email,
-    password,
-    name,
-    lastname,
-    doc,
-    phoneNumber,
-    dateOfBirth,
-    // ankiEmail,
-    // ankiPassword,
-    googleDriveLink,
-    date,
-    time,
-    link,
-  } = req.body;
-
-  const hashedPassword = bcrypt.hashSync(password, 10);
-
-  try {
-    const existingStudent = await Members_Model.findOne({
-      $or: [{ email: email }, { doc: doc }, { username: username }],
-    });
-
-    if (existingStudent) {
-      return res
-        .status(400)
-        .json({ message: "Email, doc ou username já estão em uso" });
-    }
-
-    const newStudent = new Members_Model({
-      username,
-      email,
-      name,
-      password: hashedPassword,
-      lastname,
-      doc,
-      phoneNumber,
-      dateOfBirth,
-      // ankiEmail,
-      // ankiPassword,
-      googleDriveLink,
-      nextClass: { date, time, link },
-    });
-
-    await newStudent.save();
-
-    res.status(201).json({
-      status: "Aluno registrado",
-      newStudent,
-      username,
-    });
-  } catch (error) {
-    res.status(500).json({ Erro: "Aluno não registrado", error });
-  }
-};
-
-const signup = async (req, res) => {
-  const {
-    username,
-    email,
-    password,
-    name,
-    lastname,
-    doc,
-    phoneNumber,
-    dateOfBirth,
-  } = req.body;
-
-  const hashedPassword = bcrypt.hashSync(password, 10);
-
-  try {
-    const existingStudent = await Members_Model.findOne({
-      $or: [{ email: email }, { doc: doc }, { username: username }],
-    });
-
-    if (existingStudent) {
-      return res
-        .status(400)
-        .json({ message: "Email, doc ou username já estão em uso" });
-    }
-
-    const newStudent = new Members_Model({
-      username,
-      email,
-      password: hashedPassword,
-      name,
-      lastname,
-      doc,
-      phoneNumber,
-      dateOfBirth,
-    });
-
-    const token = jwt.sign({ id: newStudent._id }, "secretToken()", {
-      expiresIn: "15d",
-    });
-
-    await newStudent.save();
-
-    res.status(201).json({
-      status: "Aluno registrado, logando no sistema",
-      data: { newStudent },
-      token,
-    });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Aluno não cadastrado", error: error });
-  }
-};
 
 const member_editGeneralData = async (req, res) => {
   const {
@@ -633,149 +422,16 @@ const member_deleteOne = async (req, res) => {
   }
 };
 
-////////// Scores
-const member_seeScore = async (req, res) => {
-  const { id } = req.params;
-
-  try {
-    const student = await Members_Model.findById(id);
-    if (!student) throw new Error("Usuário não encontrado");
-
-    const { totalScore, monthlyScore } = student;
-    res.status(200).json({ totalScore, monthlyScore, picture });
-  } catch (error) {
-    console.error(error);
-    res
-      .status(500)
-      .json({ error: error, e: "Ocorreu um erro ao ver a pontuação" });
-  }
-};
-
-const member_getScore = async (req, res) => {
-  const { id } = req.params;
-
-  try {
-    const student = await Members_Model.findById(id);
-    if (!student) throw new Error("Usuário não encontrado");
-
-    const { totalScore, monthlyScore, eventsTimeline, picture } = student;
-    eventsTimeline.reverse();
-    res.status(200).json({ totalScore, monthlyScore, eventsTimeline, picture });
-  } catch (error) {
-    console.error(error);
-    res
-      .status(500)
-      .json({ error: error, e: "Ocorreu um erro ao ver a pontuação" });
-  }
-};
-
-const member_scoreUpdate = async (req, res) => {
-  const { id } = req.params;
-  const { score, description, type } = req.body;
-
-  theScore = new Number(score);
-
-  try {
-    const student = await Members_Model.findById(id);
-    if (!student) throw new Error("Usuário não encontrado");
-
-    newTotalScore = student.totalScore + theScore;
-    newMonthlyScore = student.monthlyScore + theScore;
-
-    student.totalScore = newTotalScore;
-    student.monthlyScore = newMonthlyScore;
-
-    const timeline = {
-      date: new Date(),
-      score,
-      description,
-      type,
-    };
-
-    student.eventsTimeline.push(timeline);
-
-    student.save();
-    res.status(200).json({ status: "success" });
-  } catch (error) {
-    console.error(error);
-    res
-      .status(500)
-      .json({ error: error, e: "Ocorreu um erro ao atualizar a pontuação" });
-  }
-};
-
-const member_resetMonth = async (req, res) => {
-  try {
-    const students = await Members_Model.find();
-    const master = await Members_Model.findById("651311fac3d58753aa9281c5");
-
-    students.map((student) => {
-      student.monthlyScore = 0;
-      student.totalScore < 0 ? (student.totalScore = 0) : null;
-      student.save();
-    });
-
-    master.totalScore = 2000000;
-    master.save();
-    res.status(200).json({ status: "success" });
-  } catch (error) {
-    console.error(error);
-    res
-      .status(500)
-      .json({ error: error, e: "Ocorreu um erro ao atualizar a pontuação" });
-  }
-};
-
-const member_newRankingItem = async (req, res) => {
-  const { scoreMonth } = req.body;
-  try {
-    if (scoreMonth) {
-      const score = new HistoryRanking_Model({ score: scoreMonth });
-      score.save();
-      res.status(200).json({ score, message: "Sucesso" });
-    } else {
-      res.status(500).json({ error: error, e: "Ocorreu um erro " });
-      throw new Error();
-    }
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: error, e: "Ocorreu um erro " });
-  }
-};
-
-const member_getallRankingItem = async (req, res) => {
-  try {
-    const scoreMonth = await HistoryRanking_Model.find();
-    res
-      .status(200)
-      .json({ scoreMonth: scoreMonth.reverse(), message: "Sucesso" });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: error, e: "Ocorreu um erro " });
-  }
-};
-
 module.exports = {
   // Security
   loggedIn,
   loggedInADM,
   //C
-  member_postOne,
   member_signUp,
-  signup,
-  member_newRankingItem,
   //R
   members_getAll,
-  member_getallRankingItem,
-  members_getOneFullName,
-  members_getAllScores,
-  members_getTotalAllScores,
   members_getOne,
   member_login,
-  member_scoreUpdate,
-  member_seeScore,
-  member_getScore,
-  member_resetMonth,
   //U
   member_editGeneralData,
   member_editPassword,

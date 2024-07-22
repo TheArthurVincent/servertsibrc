@@ -6,10 +6,11 @@ const { Schema } = mongoose;
 const memberSchema = new Schema(
   {
     password: { type: String, required: true },
+    username: { type: String, required: true },
     email: {
       type: String,
       required: true,
-      unique: true,
+      unique: false,
       lowercase: true,
       validade: [validator.isEmail, "Escolha um e-mail válido"],
     },
@@ -25,18 +26,10 @@ const memberSchema = new Schema(
     dateOfBirth: { type: String, required: true },
     permissions: { type: String, required: false, default: "member" },
     address: { type: String, required: false },
-    picture: {
-      type: String,
-      required: false,
-      default:
-        "https://ik.imagekit.io/vjz75qw96/assets/arvin_visuals/profile.jpg?updatedAt=1705408334723",
-    }
   },
   { timestamps: true }
 );
 
 const Members_Model = mongoose.model("Members", memberSchema);
 
-module.exports = {
-  Members_Model,
-};
+module.exports = { Members_Model };
